@@ -49,24 +49,18 @@ class RRT_Node:
         self.parent = parent
 
     def add_child(self, child):
-        if child.parent == self.parent:
-            self.children.append(child)
-        else:
-            print(f'{child} This child does not belong to parent {self.parent}')
+        self.children.append(child)
 
 def sample_conf():
     is_goal_conf = False
     low = np.array([-2*np.pi, -2*np.pi, -np.pi])
     high = np.array([2*np.pi, 2*np.pi, np.pi])
 
-    # Based on probability we choose to either select goal or rand conf
     p_goal = 0.05
     if np.random.rand() < p_goal:
-        # selects goal conf point
         sample_q = goal_conf
         is_goal_conf = True
     else:
-        # selects random conf point
         sample_q = tuple(np.random.uniform(low, high))
 
     return sample_q, is_goal_conf
@@ -110,7 +104,34 @@ def steer_to(rand_node, nearest_node):
     return True
 
 def steer_to_until(rand_node, nearest_node):
-    pass
+    q_near = np.array(nearest_node.conf, dtype=float)
+    q_rand = np.array(rand_node.conf, dtype=float)
+
+    direction = q_rand - q_near
+    dist = np.linalg.norm(direction)
+
+    if dist == 0:
+        return None
+
+    step = 0.05
+    num = int(np.ceil(dist / step))
+
+    last_valid = None
+
+    for i in range(1, num + 1):
+        t = i / num
+        q = q_near + t * direction
+        q_tuple = tuple(q.tolist())
+
+        if collision_fn(q_tuple):
+            break
+        last_valid = q_tuple
+
+    if last_valid is None:
+        return None
+
+    new_node = RRT_Node(last_valid)
+    return new_node
 
 def RRT():
     ###############################################
@@ -151,7 +172,56 @@ def BiRRT():
     #################################################
     # TODO your code to implement the birrt algorithm
     #################################################
-    pass
+    # Initialize two trees
+    start_root = RRT_Node(start_conf)
+    goal_root  = RRT_Node(goal_conf)
+
+    Ta = [start_root]
+    Tb = [goal_root]
+
+    while True:
+        # 1) sample random configuration
+        q_rand, _ = sample_conf()
+        rand_node = RRT_Node(q_rand)
+
+        # 2) extend Ta toward q_rand
+        near_a = find_nearest(rand_node, Ta)
+        new_a = steer_to_until(rand_node, near_a)
+
+        if new_a is not None:
+            new_a.set_parent(near_a)
+            near_a.add_child(new_a)
+            Ta.append(new_a)
+
+            # 3) try to connect Tb to new_a
+            near_b = find_nearest(new_a, Tb)
+            new_b = steer_to_until(new_a, near_b)
+
+            if new_b is not None:
+                new_b.set_parent(near_b)
+                near_b.add_child(new_b)
+                Tb.append(new_b)
+
+                # 4) did we connect the trees?
+                if np.allclose(new_b.conf, new_a.conf):
+                    # reconstruct path
+                    path_a = []
+                    cur = new_a
+                    while cur is not None:
+                        path_a.append(cur.conf)
+                        cur = cur.parent
+
+                    path_b = []
+                    cur = new_b.parent
+                    while cur is not None:
+                        path_b.append(cur.conf)
+                        cur = cur.parent
+
+                    path_a.reverse()
+                    return path_a + path_b
+
+        # 5) swap roles
+        Ta, Tb = Tb, Ta
 
 def BiRRT_smoothing():
     ################################################################
@@ -205,23 +275,25 @@ if __name__ == "__main__":
                                        attachments=[], self_collisions=True,
                                        disabled_collisions=set())
 
-    if args.birrt:
-        if args.smoothing:
-            # using birrt with smoothing
-            path_conf = BiRRT_smoothing()
+    while True:
+        if args.birrt:
+            if args.smoothing:
+                # using birrt with smoothing
+                path_conf = BiRRT_smoothing()
+            else:
+                # using birrt without smoothing
+                path_conf = BiRRT()
         else:
-            # using birrt without smoothing
-            path_conf = BiRRT()
-    else:
-        # using rrt
-        path_conf = RRT()
+            # using rrt
+            path_conf = RRT()
 
-    if path_conf is None:
-        # pause here
-        input("no collision-free path is found within the time budget, finish?")
-    else:
-        # execute the path
-        while True:
-            for q in path_conf:
-                set_joint_positions(ur5, UR5_JOINT_INDICES, q)
-                time.sleep(0.5)
+        if path_conf is None:
+            # pause here
+            input("no collision-free path is found within the time budget, finish?")
+        else:
+            # execute the path
+            while True:
+                for q in path_conf:
+                    set_joint_positions(ur5, UR5_JOINT_INDICES, q)
+                    time.sleep(0.5)
+            break
