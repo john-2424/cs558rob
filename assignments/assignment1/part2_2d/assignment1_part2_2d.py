@@ -1,4 +1,4 @@
-"""
+﻿"""
 Path Planning Sample Code with RRT*
 
 author: Ahmed Qureshi, code adapted from AtsushiSakai(@Atsushi_twi)
@@ -124,8 +124,25 @@ class RRT():
 
         Returns: index of the new parent selected
         """
-        # your code here
-        return None
+        if not nearinds:
+            return None
+
+        min_cost = float('inf')
+        best_parent = None
+
+        for i in nearinds:
+            nearNode = self.nodeList[i]
+
+            valid, edge_cost = self.steerTo(newNode, nearNode)
+            if not valid:
+                continue
+
+            cost = nearNode.cost + edge_cost
+            if cost < min_cost:
+                min_cost = cost
+                best_parent = i
+
+        return best_parent
 
     def steerTo(self, dest, source):
         """
@@ -253,8 +270,27 @@ class RRT():
         # Use this value of gamma
         GAMMA = 50
 
-        # your code here
-        return []
+        n = len(self.nodeList)
+        d = self.dof
+
+        if n == 0:
+            return []
+
+        r = GAMMA * (math.log(n) / n) ** (1.0 / d)
+
+        nearinds = []
+        for i, node in enumerate(self.nodeList):
+            if dist(node.state, newNode.state) <= r:
+                nearinds.append(i)
+
+        return nearinds
+
+    def _update_descendant_costs(self, parentIndex):
+        parentNode = self.nodeList[parentIndex]
+        for childIndex in parentNode.children:
+            childNode = self.nodeList[childIndex]
+            childNode.cost = parentNode.cost + dist(parentNode.state, childNode.state)
+            self._update_descendant_costs(childIndex)
 
     def rewire(self, newNode, newNodeIndex, nearinds):
         """
@@ -265,8 +301,29 @@ class RRT():
         newNodeIndex: the index of newNode
         nearinds: list of indices of nodes near newNode
         """
-        # your code here
-        pass
+        for i in nearinds:
+            nearNode = self.nodeList[i]
+
+            if i == newNode.parent:
+                continue
+
+            valid, edge_cost = self.steerTo(nearNode, newNode)
+            if not valid:
+                continue
+
+            new_cost = newNode.cost + edge_cost
+            if new_cost < nearNode.cost:
+                # remove old parent-child relationship
+                if nearNode.parent is not None:
+                    self.nodeList[nearNode.parent].children.remove(i)
+
+                # rewire
+                nearNode.parent = newNodeIndex
+                newNode.children.add(i)
+                nearNode.cost = new_cost
+
+                # update subtree costs
+                self._update_descendant_costs(i)
 
     def GetNearestListIndex(self, nodeList, rnd):
         """

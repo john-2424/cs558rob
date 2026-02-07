@@ -227,7 +227,6 @@ def BiRRT_smoothing():
     ################################################################
     # TODO your code to implement the birrt algorithm with smoothing
     ################################################################
-    # Get a path from BiRRT
     path = BiRRT()
 
     if path is None or len(path) < 3:
@@ -241,7 +240,6 @@ def BiRRT_smoothing():
         if L < 3:
             break
 
-        # Pick two non-adjacent indices
         i = np.random.randint(0, L - 2)
         j = np.random.randint(i + 2, L)
 
@@ -257,7 +255,6 @@ def BiRRT_smoothing():
         num_steps = int(np.ceil(dist / step_size))
         collision = False
 
-        # Check straight-line interpolation
         for k in range(1, num_steps + 1):
             t = k / num_steps
             q = q_start + t * direction
@@ -266,8 +263,7 @@ def BiRRT_smoothing():
             if collision_fn(q_tuple):
                 collision = True
                 break
-
-        # If collision-free, remove intermediate points
+        
         if not collision:
             path = path[:i+1] + path[j:]
 
