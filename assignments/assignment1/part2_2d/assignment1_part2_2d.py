@@ -16,6 +16,70 @@ import matplotlib.patches as mpatches
 import time
 
 CIRCLE_RADIUS = 1.0
+RECT_L = 1.5  # length
+RECT_W = 3.0  # width
+
+def rect_corners(cx, cy, theta, hx, hy):
+    """
+    Returns 4 corners of an oriented rectangle centered at (cx,cy)
+    with half-extents hx, hy and rotation theta (radians).
+    """
+    c = math.cos(theta)
+    s = math.sin(theta)
+
+    # Local axes
+    ux = np.array([c, s])      # local x axis
+    uy = np.array([-s, c])     # local y axis
+
+    corners = []
+    for sx in (-1.0, 1.0):
+        for sy in (-1.0, 1.0):
+            p = np.array([cx, cy]) + sx * hx * ux + sy * hy * uy
+            corners.append(p)
+    return corners  # list of np.array([x,y]) length 4
+
+def project_points(points, axis):
+    """Project a set of points onto an axis; returns (min,max)."""
+    vals = [np.dot(p, axis) for p in points]
+    return min(vals), max(vals)
+
+def sat_overlap(obb_pts, aabb_min, aabb_max):
+    """
+    SAT test between OBB (given by 4 points) and AABB (min,max).
+    Returns True if overlapping, False if separated.
+    """
+    # AABB corners
+    ax0, ay0 = aabb_min
+    ax1, ay1 = aabb_max
+    aabb_pts = [
+        np.array([ax0, ay0]),
+        np.array([ax1, ay0]),
+        np.array([ax1, ay1]),
+        np.array([ax0, ay1]),
+    ]
+
+    # Axes: AABB axes + OBB edge normals (2 unique axes for rectangle)
+    axes = [
+        np.array([1.0, 0.0]),
+        np.array([0.0, 1.0]),
+    ]
+
+    # OBB axes from edges (p1-p0) and (p3-p0)
+    e0 = obb_pts[1] - obb_pts[0]
+    e1 = obb_pts[3] - obb_pts[0]
+    for e in (e0, e1):
+        norm = np.linalg.norm(e)
+        if norm > 1e-12:
+            axis = e / norm
+            # Use perpendicular axis (normal) for SAT
+            axes.append(np.array([-axis[1], axis[0]]))
+
+    for axis in axes:
+        o_min, o_max = project_points(obb_pts, axis)
+        a_min, a_max = project_points(aabb_pts, axis)
+        if o_max < a_min or a_max < o_min:
+            return False  # separated
+    return True  # overlap
 
 def diff(v1, v2):
     """
@@ -200,7 +264,7 @@ class RRT():
         else:
             return (False, None)
 
-    def generatesample(self):
+    '''def generatesample(self):
         """
         Randomly generates a sample, to be used as a new node.
         This sample may be invalid - if so, call generatesample() again.
@@ -214,6 +278,23 @@ class RRT():
             for j in range(0,self.dof):
                 sample.append(random.uniform(self.minrand, self.maxrand))
             rnd=Node(sample)
+        else:
+            rnd = self.end
+        return rnd'''
+
+    def generatesample(self):
+        if random.randint(0, 100) > self.goalSampleRate:
+            sample = []
+            if self.geom == 'rectangle':
+                # (x, y, theta)
+                sample.append(random.uniform(self.minrand, self.maxrand))
+                sample.append(random.uniform(self.minrand, self.maxrand))
+                sample.append(random.uniform(-math.pi, math.pi))
+            else:
+                # (x, y) for point/circle
+                for j in range(0, self.dof):
+                    sample.append(random.uniform(self.minrand, self.maxrand))
+            rnd = Node(sample)
         else:
             rnd = self.end
         return rnd
@@ -367,7 +448,7 @@ class RRT():
 
         return True  # safe'''
 
-    def __CollisionCheck(self, node):
+    '''def __CollisionCheck(self, node):
         """
         Collision check for point or circular robot.
         Circle radius = 1.0
@@ -389,7 +470,46 @@ class RRT():
             if abs(x - cx) <= hx and abs(y - cy) <= hy:
                 return False
 
-        return True  # safe
+        return True  # safe'''
+
+    def __CollisionCheck(self, node):
+        """
+        Collision checking for:
+        - point: original AABB check
+        - circle: obstacle inflation (Q5)
+        - rectangle: OBB(robot) vs AABB(obstacles) using SAT (Q6)
+        """
+
+        if self.geom == 'rectangle':
+            x, y, theta = node.state[0], node.state[1], node.state[2]
+            hx = RECT_L / 2.0
+            hy = RECT_W / 2.0
+            obb_pts = rect_corners(x, y, theta, hx, hy)
+
+            for (ox, oy, sizex, sizey) in self.obstacleList:
+                aabb_min = (ox, oy)
+                aabb_max = (ox + sizex, oy + sizey)
+
+                if sat_overlap(obb_pts, aabb_min, aabb_max):
+                    return False
+            return True
+
+        # point/circle behavior (AABB with optional inflation)
+        x = node.state[0]
+        y = node.state[1]
+
+        for (ox, oy, sizex, sizey) in self.obstacleList:
+            cx = ox + sizex / 2.0
+            cy = oy + sizey / 2.0
+
+            inflate = (CIRCLE_RADIUS if self.geom == 'circle' else 0.0)
+            hx = sizex / 2.0 + inflate
+            hy = sizey / 2.0 + inflate
+
+            if abs(x - cx) <= hx and abs(y - cy) <= hy:
+                return False
+
+        return True
 
     def get_path_to_goal(self):
         """
@@ -491,9 +611,18 @@ def main():
     (5,-5, 5.0, 5.0),
     ]
 
-    start = [-10, -17]
+    '''start = [-10, -17]
     goal = [10, 10]
-    dof=2
+    dof=2'''
+
+    if args.geom == 'rectangle':
+        dof = 3
+        start = [-10, -17, 0.0]
+        goal = [10, 10, 0.0]
+    else:
+        dof = 2
+        start = [-10, -17]
+        goal = [10, 10]
 
     rrt = RRT(start=start, goal=goal, randArea=[-20, 20], obstacleList=obstacleList, dof=dof, alg=args.alg, geom=args.geom, maxIter=args.iter)
     path = rrt.planning(animation=show_animation)
