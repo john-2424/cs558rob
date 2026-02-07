@@ -448,30 +448,6 @@ class RRT():
 
         return True  # safe'''
 
-    '''def __CollisionCheck(self, node):
-        """
-        Collision check for point or circular robot.
-        Circle radius = 1.0
-        """
-
-        x = node.state[0]
-        y = node.state[1]
-
-        for (ox, oy, sizex, sizey) in self.obstacleList:
-            # Obstacle center
-            cx = ox + sizex / 2.0
-            cy = oy + sizey / 2.0
-
-            # Expand obstacle by circle radius
-            hx = sizex / 2.0 + (CIRCLE_RADIUS if self.geom == 'circle' else 0.0)
-            hy = sizey / 2.0 + (CIRCLE_RADIUS if self.geom == 'circle' else 0.0)
-
-            # Axis-aligned box collision test
-            if abs(x - cx) <= hx and abs(y - cy) <= hy:
-                return False
-
-        return True  # safe'''
-
     def __CollisionCheck(self, node):
         """
         Collision checking for:
