@@ -62,7 +62,10 @@ def main(args):
         mpNet.encoder.cuda()
     if args.epoch > 0:
         load_opt_state(mpNet, os.path.join(args.model_path, model_path))
-
+    if args.disable_dropout:
+        mpNet.eval()   # disables nn.Dropout during inference
+    else:
+        mpNet.train()  # keeps nn.Dropout active
 
     # load test data
     print('loading...')
@@ -115,7 +118,9 @@ def main(args):
             for t in range(MAX_NEURAL_REPLAN):
                 path = neural_plan(mpNet, path, obc[i], obs[i], IsInCollision, \
                                     normalize_func, unnormalize_func, t==0, step_sz=step_sz)
-                path = lvc(path, obc[i], IsInCollision, step_sz=step_sz)
+                # path = lvc(path, obc[i], IsInCollision, step_sz=step_sz)
+                if not args.disable_lvc:
+                    path = lvc(path, obc[i], IsInCollision, step_sz=step_sz)
                 if feasibility_check(path, obc[i], IsInCollision, step_sz=step_sz):
                     found_path = True
                     n_successful_cur += 1
@@ -174,7 +179,10 @@ if __name__ == '__main__':
     parser.add_argument('--env-type', type=str, default='s2d', help='s2d for simple 2d')
     parser.add_argument('--world-size', nargs='+', type=float, default=20., help='boundary of world')
     parser.add_argument('--reproducible', default=False, action='store_true', help='use seed bundled with trained model')
-
+    
+    parser.add_argument('--disable-dropout', action='store_true', help='disable dropout during inference')
+    parser.add_argument('--disable-lvc', action='store_true', help='disable lazy vertex contraction')
+    
     args = parser.parse_args()
     print(args)
     main(args)
