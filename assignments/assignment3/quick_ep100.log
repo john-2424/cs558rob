@@ -1,0 +1,72 @@
+planning: env=0, path=- || (  0% complete) success rate = ---- planning time = ----sec
+planning: env=0, path=2000 || (  0% complete) success rate =  1.0 planning time = 1.47sec
+planning: env=0, path=2001 || (  5% complete) success rate =  1.0 planning time = 0.0954sec
+planning: env=0, path=2002 || ( 10% complete) success rate =  1.0 planning time = 1.55sec
+planning: env=0, path=2003 || ( 15% complete) success rate =  1.0 planning time = 0.328sec
+planning: env=0, path=2004 || ( 20% complete) success rate =  1.0 planning time = 3.67sec
+planning: env=0, path=2005 || ( 25% complete) success rate =  1.0 planning time = 0.545sec
+planning: env=0, path=2006 || ( 30% complete) success rate =  1.0 planning time = 0.491sec
+planning: env=0, path=2007 || ( 35% complete) success rate =  1.0 planning time = 0.352sec
+planning: env=0, path=2008 || ( 40% complete) success rate =  1.0 planning time = 0.757sec
+planning: env=0, path=2009 || ( 45% complete) success rate =  1.0 planning time = 0.303sec
+planning: env=0, path=2010 || ( 50% complete) success rate =  1.0 planning time = 0.337sec
+planning: env=0, path=2011 || ( 55% complete) success rate =  1.0 planning time = 0.979sec
+planning: env=0, path=2012 || ( 60% complete) success rate =  1.0 planning time = 0.767sec
+planning: env=0, path=2013 || ( 65% complete) success rate =  1.0 planning time = 0.196sec
+planning: env=0, path=2014 || ( 70% complete) success rate =  1.0 planning time = 3.05sec
+planning: env=0, path=2015 || ( 75% complete) success rate =  1.0 planning time = 0.641sec
+planning: env=0, path=2016 || ( 80% complete) success rate =  1.0 planning time = 0.486sec
+planning: env=0, path=2017 || ( 85% complete) success rate =  1.0 planning time = 0.382sec
+planning: env=0, path=2018 || ( 90% complete) success rate =  1.0 planning time = 0.226sec
+planning: env=0, path=2019 || ( 95% complete) success rate =  1.0 planning time = 0.554sec
+planning: env=0, path=2019 || (100% complete) success rate =  1.0 planning time = 0.554sec
+planning: env=1, path=- || (  0% complete) success rate = ---- planning time = ----sec
+planning: env=1, path=2000 || (  0% complete) success rate =  1.0 planning time = 0.661sec
+planning: env=1, path=2001 || (  5% complete) success rate =  1.0 planning time = 0.608sec
+planning: env=1, path=2002 || ( 10% complete) success rate =  1.0 planning time = 0.482sec
+planning: env=1, path=2003 || ( 15% complete) success rate =  1.0 planning time = 0.226sec
+planning: env=1, path=2004 || ( 20% complete) success rate =  1.0 planning time = 0.492sec
+planning: env=1, path=2005 || ( 25% complete) success rate =  1.0 planning time = 0.235sec
+planning: env=1, path=2006 || ( 30% complete) success rate =  1.0 planning time = 1.58sec
+planning: env=1, path=2007 || ( 35% complete) success rate =  1.0 planning time =  8.1sec
+planning: env=1, path=2008 || ( 40% complete) success rate =  1.0 planning time = 0.672sec
+planning: env=1, path=2009 || ( 45% complete) success rate =  1.0 planning time = 0.714sec
+planning: env=1, path=2010 || ( 50% complete) success rate =  1.0 planning time = 0.354sec
+planning: env=1, path=2011 || ( 55% complete) success rate =  1.0 planning time = 0.656sec
+planning: env=1, path=2012 || ( 60% complete) success rate =  1.0 planning time = 0.326sec
+planning: env=1, path=2013 || ( 65% complete) success rate =  1.0 planning time = 0.532sec
+planning: env=1, path=2014 || ( 70% complete) success rate =  1.0 planning time = 0.256sec
+planning: env=1, path=2015 || ( 75% complete) success rate =  1.0 planning time = 0.833sec
+planning: env=1, path=2016 || ( 80% complete) success rate =  1.0 planning time = 1.84sec
+planning: env=1, path=2017 || ( 85% complete) success rate =  1.0 planning time = 2.18sec
+planning: env=1, path=2018 || ( 90% complete) success rate =  1.0 planning time = 0.544sec
+planning: env=1, path=2019 || ( 95% complete) success rate =  1.0 planning time = 0.346sec
+planning: env=1, path=2019 || (100% complete) success rate =  1.0 planning time = 0.346sec
+planning: env=2, path=- || (  0% complete) success rate = ---- planning time = ----sec
+planning: env=2, path=2000 || (  0% complete) success rate =  1.0 planning time = 0.383sec
+planning: env=2, path=2001 || (  5% complete) success rate =  1.0 planning time = 0.415sec
+planning: env=2, path=2002 || ( 10% complete) success rate =  1.0 planning time = 3.26sec
+planning: env=2, path=2003 || ( 15% complete) success rate =  1.0 planning time = 0.363sec
+planning: env=2, path=2004 || ( 20% complete) success rate =  1.0 planning time = 1.22sec
+planning: env=2, path=2005 || ( 25% complete) success rate =  1.0 planning time = 0.845sec
+planning: env=2, path=2006 || ( 30% complete) success rate =  1.0 planning time = 0.55sec
+planning: env=2, path=2007 || ( 35% complete) success rate =  1.0 planning time = 2.99sec
+planning: env=2, path=2008 || ( 40% complete) success rate =  1.0 planning time = 0.363sec
+planning: env=2, path=2009 || ( 45% complete) success rate =  1.0 planning time = 0.572sec
+planning: env=2, path=2010 || ( 50% complete) success rate =  1.0 planning time = 0.435sec
+planning: env=2, path=2011 || ( 55% complete) success rate =  1.0 planning time = 0.447sec
+planning: env=2, path=2012 || ( 60% complete) success rate =  1.0 planning time = 2.92sec
+planning: env=2, path=2013 || ( 65% complete) success rate =  1.0 planning time = 0.437sec
+planning: env=2, path=2014 || ( 70% complete) success rate =  1.0 planning time = 0.545sec
+planning: env=2, path=2015 || ( 75% complete) success rate =  1.0 planning time = 0.149sec
+planning: env=2, path=2016 || ( 80% complete) success rate =  1.0 planning time = 0.287sec
+planning: env=2, path=2017 || ( 85% complete) success rate =  1.0 planning time = 0.179sec
+planning: env=2, path=2018 || ( 90% complete) success rate =  1.0 planning time = 0.321sec
+planning: env=2, path=2019 || ( 95% complete) success rate =  1.0 planning time = 0.455sec
+planning: env=2, path=2019 || (100% complete) success rate =  1.0 planning time = 0.455sec
+Namespace(N=3, NP=20, data_path='./data/complex/', device=0, disable_dropout=False, disable_lvc=False, env_type='c3d', epoch=100, model_path='./models_3d/', reproducible=False, result_path='./quick_ep100/', s=0, sp=2000, world_size=[20.0])
+using deep encoder, input_size=6000
+loading...
+cumulative: success rate=1.00, runtime (min/avg/max/stdev) = 0.10/0.86/3.67/0.94s
+cumulative: success rate=1.00, runtime (min/avg/max/stdev) = 0.10/0.97/8.10/1.38s
+cumulative: success rate=1.00, runtime (min/avg/max/stdev) = 0.10/0.93/8.10/1.26s
