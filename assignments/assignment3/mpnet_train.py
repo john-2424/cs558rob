@@ -59,7 +59,7 @@ def main(args):
     mpNet = End2EndMPNet(total_input_size, AE_input_size, mlp_input_size, \
                         output_size, CAE, MLP)
     # setup loss
-    if args.env_type == ['s2d', 'c3d']:
+    if args.env_type in ['s2d', 'c3d']:
         loss_f = mpNet.loss
 
     if not os.path.exists(args.model_path):
