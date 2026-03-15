@@ -1,7 +1,7 @@
 from __future__ import print_function
 from Model.end2end_model import End2EndMPNet
 import Model.model as model
-import Model.AE.CAE as CAE_2d
+import Model.AE.CAE as CAE_d
 import numpy as np
 import argparse
 import os
@@ -16,6 +16,9 @@ import random
 from utility import *
 import utility_s2d
 import progressbar
+import plan_c3d
+import data_loader_r3d
+import utility_c3d
 
 def main(args):
     # set seed
@@ -39,7 +42,21 @@ def main(args):
         load_test_dataset = data_loader_2d.load_test_dataset
         normalize = utility_s2d.normalize
         unnormalize = utility_s2d.unnormalize
-        CAE = CAE_2d
+        CAE = CAE_d
+        MLP = model.MLP
+    elif args.env_type == 'c3d':
+        sample_obs = np.fromfile(os.path.join(args.data_path, 'obs_cloud', 'obc0.dat')).astype(np.float32)
+        AE_input_size = sample_obs.shape[0]
+
+        total_input_size = AE_input_size + 6   # start(3) + goal(3)
+        mlp_input_size = 28 + 6                # latent(28) + start/goal(6)
+        output_size = 3
+
+        IsInCollision = plan_c3d.IsInCollision
+        load_test_dataset = data_loader_r3d.load_test_dataset
+        normalize = utility_c3d.normalize
+        unnormalize = utility_c3d.unnormalize
+        CAE = CAE_d
         MLP = model.MLP
 
     mpNet = End2EndMPNet(total_input_size, AE_input_size, mlp_input_size, \
@@ -176,7 +193,7 @@ if __name__ == '__main__':
     parser.add_argument('--data-path', type=str, default='./data/', help='path to dataset')
     parser.add_argument('--result-path', type=str, default='./results/', help='folder to save paths computed')
     parser.add_argument('--epoch', type=int, default=100, help='epoch of trained model to use')
-    parser.add_argument('--env-type', type=str, default='s2d', help='s2d for simple 2d')
+    parser.add_argument('--env-type', type=str, default='s2d', help='s2d for simple 2d, c3d for complex 3d')
     parser.add_argument('--world-size', nargs='+', type=float, default=20., help='boundary of world')
     parser.add_argument('--reproducible', default=False, action='store_true', help='use seed bundled with trained model')
     

@@ -1,7 +1,7 @@
 from __future__ import print_function
 from Model.end2end_model import End2EndMPNet
 import Model.model as model
-import Model.AE.CAE as CAE_2d
+import Model.AE.CAE as CAE_d
 import numpy as np
 import argparse
 import os
@@ -14,6 +14,9 @@ import random
 from utility import *
 import utility_s2d
 import progressbar
+import data_loader_r3d
+import plan_c3d
+import utility_c3d
 
 from tensorboardX import SummaryWriter
 
@@ -37,13 +40,26 @@ def main(args):
         load_train_dataset = data_loader_2d.load_train_dataset
         normalize = utility_s2d.normalize
         unnormalize = utility_s2d.unnormalize
-        CAE = CAE_2d
+        CAE = CAE_d
+        MLP = model.MLP
+    elif args.env_type == 'c3d':
+        sample_obs = np.fromfile(os.path.join(args.data_path, 'obs_cloud', 'obc0.dat')).astype(np.float32)
+        AE_input_size = sample_obs.shape[0]
+
+        total_input_size = AE_input_size + 6   # current state(3) + goal(3)
+        mlp_input_size = 28 + 6
+        output_size = 3
+
+        load_train_dataset = data_loader_r3d.load_train_dataset
+        normalize = utility_c3d.normalize
+        unnormalize = utility_c3d.unnormalize
+        CAE = CAE_d
         MLP = model.MLP
 
     mpNet = End2EndMPNet(total_input_size, AE_input_size, mlp_input_size, \
                         output_size, CAE, MLP)
     # setup loss
-    if args.env_type == 's2d':
+    if args.env_type == ['s2d', 'r3d']:
         loss_f = mpNet.loss
 
     if not os.path.exists(args.model_path):
@@ -171,7 +187,7 @@ parser.add_argument('--epochs', type=int, default=500)
 parser.add_argument('--start-epoch', type=int, default=0)
 parser.add_argument('--device', type=int, default=0, help='cuda device')
 
-parser.add_argument('--env-type', type=str, default='s2d', help='s2d for simple 2d')
+parser.add_argument('--env-type', type=str, default='s2d', help='s2d for simple 2d, c3d for complex 3d')
 parser.add_argument('--world-size', nargs='+', type=float, default=20., help='boundary of world')
 parser.add_argument('--opt', type=str, default='Adagrad')
 args = parser.parse_args()
