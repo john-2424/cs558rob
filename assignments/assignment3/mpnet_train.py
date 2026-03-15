@@ -93,10 +93,32 @@ def main(args):
     # load train and test data
     print('loading...')
     obstacles, dataset, targets, env_indices = load_train_dataset(N=args.N, NP=args.NP, folder=args.data_path)
-    val_size = 1000
-    val_dataset = dataset[:-val_size]
-    val_targets = targets[:-val_size]
-    val_env_indices = env_indices[:-val_size]
+    # val_size = 1000
+    # val_dataset = dataset[:-val_size]
+    # val_targets = targets[:-val_size]
+    # val_env_indices = env_indices[:-val_size]
+
+    num_samples = len(dataset)
+
+    # choose a validation size that makes sense for both tiny smoke tests and full training
+    val_size = min(1000, max(1, num_samples // 10))
+
+    # use the LAST val_size samples for validation
+    val_dataset = dataset[-val_size:]
+    val_targets = targets[-val_size:]
+    val_env_indices = env_indices[-val_size:]
+
+    # use the remaining samples for training
+    dataset = dataset[:-val_size]
+    targets = targets[:-val_size]
+    env_indices = env_indices[:-val_size]
+
+    # fallback for extremely tiny datasets
+    if len(dataset) == 0:
+        dataset = val_dataset
+        targets = val_targets
+        env_indices = val_env_indices
+    
     # Train the Models
     print('training...')
     writer_fname = '%s_%f_%s' % (args.env_type, args.learning_rate, args.opt)
@@ -123,7 +145,8 @@ def main(args):
             #bi = np.concatenate( (obstacles[env_indices[i:i+100]], dataset[i:i+100]), axis=1).astype(np.float32)
             bi = np.array(dataset[i:i+args.batch_size]).astype(np.float32)
             bobs = np.array(obstacles[env_indices[i:i+args.batch_size]]).astype(np.float32)
-            bt = targets[i:i+args.batch_size]
+            # bt = targets[i:i+args.batch_size]
+            bt = np.array(targets[i:i+args.batch_size]).astype(np.float32)
             bi = torch.FloatTensor(bi)
             bobs = torch.FloatTensor(bobs)
             bt = torch.FloatTensor(bt)
@@ -143,10 +166,22 @@ def main(args):
 
             ######################################
             # loss on validation set
+            
+            # idx = i % val_size
+            # bi = np.array(val_dataset[idx:idx+100]).astype(np.float32)
+            # bobs = np.array(obstacles[val_env_indices[idx:idx+100]]).astype(np.float32)
+            # bt = val_targets[idx:idx+100]
+
             idx = i % val_size
-            bi = np.array(val_dataset[idx:idx+100]).astype(np.float32)
-            bobs = np.array(obstacles[val_env_indices[idx:idx+100]]).astype(np.float32)
-            bt = val_targets[idx:idx+100]
+            val_end = min(idx + args.batch_size, val_size)
+
+            bi = np.array(val_dataset[idx:val_end]).astype(np.float32)
+            bobs = np.array(obstacles[val_env_indices[idx:val_end]]).astype(np.float32)
+            bt = np.array(val_targets[idx:val_end]).astype(np.float32)
+            
+            if len(bi) == 0:
+                continue
+
             bi = torch.FloatTensor(bi)
             bobs = torch.FloatTensor(bobs)
             bt = torch.FloatTensor(bt)
