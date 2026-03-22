@@ -1,0 +1,140 @@
+Draft content for Milestone 1 report
+1. Introduction
+
+This project investigates a hybrid manipulation framework that combines structured motion planning with learning-based adaptation for robust robotic manipulation. The proposed system uses the Franka Emika Panda 7-DoF manipulator in the PyBullet simulator and is motivated by the complementary strengths of classical planning and reinforcement learning. In particular, sampling-based motion planning methods such as RRT* can generate collision-free trajectories efficiently in high-dimensional spaces, while residual reinforcement learning can improve robustness under uncertainty and execution error. The overall goal of the project is to study whether planner-guided residual reinforcement learning improves robustness and sample efficiency for manipulation tasks compared to purely classical or purely learning-based approaches.
+
+Milestone 1 focuses on establishing the planning and control foundation of the project. Specifically, this milestone targets: loading the Franka Panda model in PyBullet, constructing the simulation scene, obtaining robot and environment state information, and building the execution pipeline needed for later implementation of configuration-space RRT*, time-parameterized trajectories, and PD-based tracking control. The proposal defines the nominal task as pick-and-place, which serves as the initial manipulation scenario before introducing perturbations and residual reinforcement learning in later milestones.
+
+To support this goal, the initial implementation emphasized building a clean and reusable software structure around simulation, robot state access, scene setup, and controller/planner modules. This creates a stable base for the later addition of joint-space planning, trajectory generation, and residual learning.
+
+2. Methods
+2.1 Simulation environment setup
+
+The simulation environment was implemented in PyBullet using a fixed-base Franka Emika Panda manipulator. The PyBullet simulator was selected because it provides native URDF support, rigid-body dynamics, collision checking, and a convenient interface for both classical control and future reinforcement learning experiments. This is also consistent with the simulator and robot platform proposed for the project.
+
+The initial scene consists of:
+
+a ground plane,
+a rectangular table,
+a cube object used as the manipulation target,
+and the Panda robot positioned beside the table.
+
+The scene layout was refined iteratively to obtain a physically meaningful and visually consistent manipulation workspace. In particular, the table was grounded using geometry-based placement derived from the PyBullet axis-aligned bounding box (AABB), and the cube was placed on the tabletop using the measured table top height. The Panda manipulator was positioned beside the table and rotated to face the table centerline, resulting in a more realistic pick-and-place setup.
+
+2.2 Software organization
+
+The codebase was organized into separate modules for simulation, planning, control, trajectory handling, tasks, learning, perturbations, and evaluation. For Milestone 1, the most relevant modules were:
+
+sim/ for environment and robot setup,
+controller/ for PD control scaffolding,
+planner/ for future RRT* implementation,
+trajectory/ for path-to-motion conversion,
+and main.py for integration and execution.
+
+This modular structure was chosen early so that later milestones can extend the same framework with residual PPO, robustness evaluation, and additional tasks without major restructuring.
+
+2.3 Robot loading and state extraction
+
+The Panda URDF was loaded with a fixed base, and all joint information was queried through PyBullet APIs. The implementation extracted:
+
+joint indices,
+joint names,
+joint limits,
+joint positions,
+joint velocities,
+gripper joint indices,
+and end-effector pose.
+
+The end-effector state was obtained from link-state queries, while the cube pose was obtained from base-position and base-orientation queries. This step satisfies the milestone requirement of obtaining both robot and environment state information. At the current stage, the system successfully reports the seven arm joint states, gripper joints, and end-effector pose in both quaternion and Euler-angle representations.
+
+2.4 Geometry-based scene placement
+
+AABB-based reasoning was used to improve placement consistency in the environment. The table’s bounding box was measured after loading, and its vertical placement was corrected so that the bottom of the table body aligned with the plane. Similarly, the cube was placed using the table top height computed from the table AABB, ensuring that the cube rested on the support surface rather than being assigned a manually guessed height.
+
+This geometry-based placement was preferred over hardcoded height values because it makes the setup more reproducible and reduces issues caused by mesh-origin offsets or scene-specific trial-and-error tuning.
+
+2.5 Stable robot initialization
+
+After loading, the Panda arm was reset to a nominal home joint configuration. Position control was then applied continuously to hold this home configuration. This eliminated the instability observed in earlier scene configurations, where the robot could jitter or drift after initialization. Maintaining a stable home pose is important because the next stages of the milestone will rely on repeatable trajectory execution from a known initial state.
+
+3. Preliminary Results
+
+The current implementation successfully establishes the simulation and state-estimation foundation for the project. The PyBullet environment launches correctly, the Franka Panda loads with the expected seven controllable arm joints and two gripper joints, and the scene contains a grounded table and a cube placed on the tabletop. The robot is positioned beside the table and oriented toward the task workspace, producing a more realistic manipulation configuration than the initial default setup.
+
+From the latest execution logs, the extracted robot state is consistent with the commanded home pose. The reported arm joint positions are very close to the target nominal values, and the measured joint velocities are near zero, indicating that the robot is being held stably. The end-effector pose is also computed successfully, showing that forward kinematic state access is functioning correctly. Similarly, the cube pose is read correctly from the simulator, and the table AABB confirms a grounded scene setup with a bottom height of approximately 0.0 and a tabletop height of approximately 0.052 m.
+
+Qualitatively, the latest scene image shows that:
+
+the table is correctly grounded on the plane,
+the cube is resting on the tabletop,
+the Panda robot is placed beside the table,
+and the robot is facing toward the table surface.
+
+These results demonstrate that the system now supports the core setup needed for the next implementation stage: visible joint motion execution, trajectory interpolation, and classical planning/control integration.
+
+At the same time, the current implementation should still be viewed as a foundation rather than a complete Milestone 1 result. The classical motion generation and tracking components proposed for this milestone—namely RRT*, time-parameterized trajectory generation, and explicit PD-based trajectory tracking—are scaffolded in the project structure but are not yet fully demonstrated in execution.
+
+4. Future Work
+
+The immediate next step is to make the robot execute visible motion between nominal joint-space targets. This will validate the actuation pipeline and serve as a bridge between static initialization and full planned motion execution. Once this is working reliably, the next milestone tasks will be implemented in sequence.
+
+First, a joint/configuration-space RRT* planner with collision checking will be added to generate feasible motion plans for the Panda arm. Second, the resulting waypoint paths will be converted into time-parameterized trajectories suitable for execution. Third, a PD-based tracking controller will be implemented to follow these trajectories robustly in simulation. Finally, these components will be integrated into a nominal pick-and-place demonstration, completing the classical foundation required by Milestone 1. These steps are fully aligned with the original milestone plan described in the project proposal.
+
+Beyond Milestone 1, the environment and modular code structure developed so far will support the introduction of pose perturbations, residual PPO control, and robustness evaluation in Milestones 2 and 3.
+
+
+
+
+Good figure caption for your latest screenshot
+
+You can use this under the image:
+
+Figure 1. Initial PyBullet manipulation scene used in Milestone 1. The Franka Panda manipulator is placed beside the table and oriented toward the tabletop workspace. A cube target object is placed on the table surface. This scene is used to validate robot loading, environment construction, state extraction, and stable initialization before implementing motion planning and trajectory tracking.
+
+Good table/log sentence for the results section
+
+You can add something like:
+
+The simulator successfully reported the Panda joint configuration, joint velocities, end-effector pose, cube pose, and table AABB. In the latest run, the table AABB indicated a grounded table with bottom height 0.0 and top height 0.052 m, while the arm joint velocities remained near zero, indicating stable initialization under position holding.
+
+
+What I recommend next for the report
+
+You can now build the report in this order:
+
+Put the latest screenshot as Figure 1.
+Use the text above for the first draft of the report body.
+Later, once we implement motion, RRT*, and PD tracking, we will update:
+Methods with planner/controller details
+Results with motion plots and execution screenshots
+Future Work to reflect only what remains
+Memory hook for the report
+
+Think of the Milestone 1 report as:
+
+Scene → State → Stability → Next Steps
+
+Scene = simulation environment
+State = robot/object pose extraction
+Stability = reliable initialization
+Next Steps = planner + trajectory + controller
+
+If you want, next I can turn this into an IEEE LaTeX-ready section block for your report/ folder.
+
+
+9. Immediate next step after this works
+
+Once this runs, the next logical step is:
+
+make the Panda move to a target joint configuration using PyBullet position control before writing your own PD controller
+
+That gives you a controlled stepping stone:
+
+load and inspect
+simple motion
+trajectory interpolation
+custom PD
+planner integration
+pick-and-place demo
+
+Paste your terminal output or any error you get after running python -m src.main, and I’ll help you fix it line by line.

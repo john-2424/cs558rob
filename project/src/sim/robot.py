@@ -1,0 +1,141 @@
+from dataclasses import dataclass
+from typing import List, Tuple
+
+import numpy as np
+import pybullet as p
+import pybullet_data
+
+from src import config
+
+
+@dataclass
+class JointInfo:
+    joint_index: int
+    joint_name: str
+    joint_type: int
+    lower_limit: float
+    upper_limit: float
+    max_force: float
+    max_velocity: float
+
+
+class PandaRobot:
+    def __init__(self):
+        self.robot_id = None
+        self.arm_joint_indices: List[int] = []
+        self.gripper_joint_indices: List[int] = []
+        self.joint_infos: List[JointInfo] = []
+        self.ee_link_index = 11
+        self.home_joints = np.array(config.PANDA_HOME_JOINTS, dtype=float)
+
+    def load(self, base_position=None, base_orientation_euler=None) -> int:
+        if base_position is None:
+            base_position = config.PANDA_BASE_POS
+        if base_orientation_euler is None:
+            base_orientation_euler = config.PANDA_BASE_ORN_EULER
+
+        p.setAdditionalSearchPath(pybullet_data.getDataPath())
+
+        base_orientation = p.getQuaternionFromEuler(base_orientation_euler)
+        self.robot_id = p.loadURDF(
+            "franka_panda/panda.urdf",
+            basePosition=base_position,
+            baseOrientation=base_orientation,
+            useFixedBase=True,
+        )
+
+        self._extract_joint_info()
+        self.reset_home()
+        self.hold_home_pose()
+        return self.robot_id
+
+    def _extract_joint_info(self) -> None:
+        self.arm_joint_indices.clear()
+        self.gripper_joint_indices.clear()
+        self.joint_infos.clear()
+
+        num_joints = p.getNumJoints(self.robot_id)
+
+        for joint_idx in range(num_joints):
+            info = p.getJointInfo(self.robot_id, joint_idx)
+
+            joint_name = info[1].decode("utf-8")
+            joint_type = info[2]
+            lower_limit = info[8]
+            upper_limit = info[9]
+            max_force = info[10]
+            max_velocity = info[11]
+
+            self.joint_infos.append(
+                JointInfo(
+                    joint_index=joint_idx,
+                    joint_name=joint_name,
+                    joint_type=joint_type,
+                    lower_limit=lower_limit,
+                    upper_limit=upper_limit,
+                    max_force=max_force,
+                    max_velocity=max_velocity,
+                )
+            )
+
+            if joint_name.startswith("panda_joint") and joint_idx <= 6:
+                self.arm_joint_indices.append(joint_idx)
+
+            if "finger" in joint_name:
+                self.gripper_joint_indices.append(joint_idx)
+
+    def reset_home(self) -> None:
+        for joint_idx, joint_val in zip(self.arm_joint_indices, self.home_joints):
+            p.resetJointState(self.robot_id, joint_idx, joint_val)
+
+        for joint_idx in self.gripper_joint_indices:
+            p.resetJointState(self.robot_id, joint_idx, 0.04)
+
+    def hold_home_pose(self) -> None:
+        p.setJointMotorControlArray(
+            bodyUniqueId=self.robot_id,
+            jointIndices=self.arm_joint_indices,
+            controlMode=p.POSITION_CONTROL,
+            targetPositions=self.home_joints.tolist(),
+            targetVelocities=[0.0] * len(self.arm_joint_indices),
+            forces=[200.0] * len(self.arm_joint_indices),
+            positionGains=[0.05] * len(self.arm_joint_indices),
+            velocityGains=[1.0] * len(self.arm_joint_indices),
+        )
+
+        if len(self.gripper_joint_indices) == 2:
+            p.setJointMotorControlArray(
+                bodyUniqueId=self.robot_id,
+                jointIndices=self.gripper_joint_indices,
+                controlMode=p.POSITION_CONTROL,
+                targetPositions=[0.04, 0.04],
+                targetVelocities=[0.0, 0.0],
+                forces=[50.0, 50.0],
+                positionGains=[0.2, 0.2],
+                velocityGains=[1.0, 1.0],
+            )
+
+    def get_joint_positions(self) -> np.ndarray:
+        joint_states = p.getJointStates(self.robot_id, self.arm_joint_indices)
+        return np.array([state[0] for state in joint_states], dtype=float)
+
+    def get_joint_velocities(self) -> np.ndarray:
+        joint_states = p.getJointStates(self.robot_id, self.arm_joint_indices)
+        return np.array([state[1] for state in joint_states], dtype=float)
+
+    def get_ee_pose(self) -> Tuple[np.ndarray, np.ndarray]:
+        link_state = p.getLinkState(self.robot_id, self.ee_link_index, computeForwardKinematics=True)
+        return np.array(link_state[4], dtype=float), np.array(link_state[5], dtype=float)
+
+    def print_joint_summary(self) -> None:
+        print("\n=== Panda Joint Summary ===")
+        for info in self.joint_infos:
+            print(
+                f"idx={info.joint_index:2d} | "
+                f"name={info.joint_name:20s} | "
+                f"type={info.joint_type} | "
+                f"limits=({info.lower_limit:.3f}, {info.upper_limit:.3f})"
+            )
+        print(f"\nArm joint indices: {self.arm_joint_indices}")
+        print(f"Gripper joint indices: {self.gripper_joint_indices}")
+        print(f"EE link index: {self.ee_link_index}")
