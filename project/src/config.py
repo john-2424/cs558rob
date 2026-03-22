@@ -52,12 +52,11 @@ PANDA_TEST_TARGET_JOINTS = [
 # =========================
 # Motion execution
 # =========================
-JOINT_TARGET_TOL = 0.03
 MAX_MOTION_STEPS = 1200
 SETTLE_STEPS = 120
 
 TRAJ_NUM_WAYPOINTS = 25
-WAYPOINT_TOL = 0.035
+WAYPOINT_TOL = 0.03
 WAYPOINT_MAX_STEPS = 240
 
 # =========================
@@ -72,3 +71,10 @@ PRINT_WAYPOINT_EVERY = 1
 
 PLOT_DIR = "results/m1/plots"
 TRAJECTORY_SUMMARY_PATH = "results/m1/trajectory_summary.txt"
+
+# =========================
+# Custom PD controller
+# =========================
+PD_KP = [3.2, 3.2, 3.2, 3.5, 2.6, 2.6, 2.3]
+PD_KD = [0.35, 0.35, 0.35, 0.40, 0.28, 0.28, 0.24]
+PD_MAX_JOINT_VEL = [1.0, 1.0, 1.0, 1.0, 1.2, 1.2, 1.2]

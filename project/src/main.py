@@ -12,7 +12,7 @@ from src.sim.state import (
     quat_to_euler,
 )
 from src.trajectory.joint_trajectory import interpolate_joint_trajectory
-from project.src.utils.logger import TrajectoryLogger
+from src.utils.logger import TrajectoryLogger
 
 
 def move_body_delta_z(body_id: int, delta_z: float):
@@ -92,8 +92,8 @@ def execute_waypoint_trajectory(
     env,
     robot,
     waypoints,
-    tol=0.035,
-    max_steps_per_waypoint=240,
+    tol=config.WAYPOINT_TOL,
+    max_steps_per_waypoint=config.WAYPOINT_MAX_STEPS,
     label="trajectory",
     logger=None,
 ):
@@ -109,6 +109,7 @@ def execute_waypoint_trajectory(
             robot.command_arm_and_gripper(q_target)
             env.step()
             total_steps += 1
+
             current_q = robot.get_joint_positions()
             q_error = np.asarray(q_target) - current_q
             ee_pos, ee_orn = robot.get_ee_pose()
@@ -126,16 +127,24 @@ def execute_waypoint_trajectory(
                     ee_euler=ee_euler,
                 )
 
-            if robot.is_at_joint_target(q_target, tol=tol):
+            debug = robot.get_pd_debug_info(q_target)
+            step_err = debug["pos_err"]
+            step_max_err = float(np.max(np.abs(step_err)))
+            step_max_vel_cmd = float(np.max(np.abs(debug["qd_cmd"])))
+
+            if step_max_err < tol:
                 reached = True
                 break
-
-        err = robot.get_joint_position_error(q_target)
+        
+        final_err = robot.get_joint_position_error(q_target)
+        final_max_err = float(np.max(np.abs(final_err)))
         if (i % config.PRINT_WAYPOINT_EVERY == 0) or (i == len(waypoints) - 1) or (not reached):
             print(
                 f"waypoint={i:02d}/{len(waypoints)-1:02d} | "
                 f"reached={reached} | "
-                f"max_err={float(np.max(np.abs(err))):.5f}"
+                f"final_err={final_err} | "
+                f"final_max_err={final_max_err:.6f} | "
+                f"last_max_vel_cmd={step_max_vel_cmd:.5f}"
             )
 
         if not reached:
@@ -205,7 +214,7 @@ def main():
 
     logger = TrajectoryLogger() if config.ENABLE_TRAJECTORY_LOGGING else None
 
-    execute_waypoint_trajectory(
+    forward_ok = execute_waypoint_trajectory(
         env=env,
         robot=robot,
         waypoints=forward_waypoints,
@@ -214,12 +223,13 @@ def main():
         label="home_to_target",
         logger=logger,
     )
+    print(f"Forward success: {forward_ok}")
 
     for _ in range(config.SETTLE_STEPS):
         robot.command_arm_and_gripper(target_joints)
         env.step()
 
-    execute_waypoint_trajectory(
+    return_ok = execute_waypoint_trajectory(
         env=env,
         robot=robot,
         waypoints=return_waypoints,
@@ -228,6 +238,7 @@ def main():
         label="target_to_home",
         logger=logger,
     )
+    print(f"Return success: {return_ok}")
 
     # Print final error after round trip.
     final_error = robot.get_joint_position_error(robot.home_joints)

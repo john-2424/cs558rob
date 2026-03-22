@@ -6,6 +6,7 @@ import pybullet as p
 import pybullet_data
 
 from src import config
+from src.controller.pd import JointSpacePDController, PDControllerConfig
 
 
 @dataclass
@@ -28,6 +29,12 @@ class PandaRobot:
         self.ee_link_index = 11
         self.home_joints = np.array(config.PANDA_HOME_JOINTS, dtype=float)
 
+        # Custom PD controller (initialized after arm joint extraction / load)
+        self.pd_controller = None
+
+        # Default arm motor force used for velocity-control mode
+        self.arm_max_forces = None
+
     def load(self, base_position=None, base_orientation_euler=None) -> int:
         if base_position is None:
             base_position = config.PANDA_BASE_POS
@@ -45,6 +52,7 @@ class PandaRobot:
         )
 
         self._extract_joint_info()
+        self._init_pd_controller()
         self.reset_home()
         self.hold_home_pose()
         return self.robot_id
@@ -84,6 +92,42 @@ class PandaRobot:
             if "finger" in joint_name:
                 self.gripper_joint_indices.append(joint_idx)
 
+    def _init_pd_controller(self) -> None:
+        num_arm_joints = len(self.arm_joint_indices)
+
+        kp = np.asarray(config.PD_KP, dtype=float)
+        kd = np.asarray(config.PD_KD, dtype=float)
+        max_vel = np.asarray(config.PD_MAX_JOINT_VEL, dtype=float)
+
+        if kp.shape != (num_arm_joints,):
+            raise ValueError(
+                f"PD_KP must have shape {(num_arm_joints,)}, got {kp.shape}"
+            )
+        if kd.shape != (num_arm_joints,):
+            raise ValueError(
+                f"PD_KD must have shape {(num_arm_joints,)}, got {kd.shape}"
+            )
+        if max_vel.shape != (num_arm_joints,):
+            raise ValueError(
+                f"PD_MAX_JOINT_VEL must have shape {(num_arm_joints,)}, got {max_vel.shape}"
+            )
+
+        self.pd_controller = JointSpacePDController(
+            PDControllerConfig(
+                kp=kp,
+                kd=kd,
+                max_velocity=max_vel,
+            )
+        )
+
+        # Pull joint force limits from URDF metadata when available.
+        # Fall back to a safe default if needed.
+        self.arm_max_forces = []
+        for joint_idx in self.arm_joint_indices:
+            info = next(j for j in self.joint_infos if j.joint_index == joint_idx)
+            force = float(info.max_force) if info.max_force > 0 else 200.0
+            self.arm_max_forces.append(force)
+    
     def reset_home(self) -> None:
         for joint_idx, joint_val in zip(self.arm_joint_indices, self.home_joints):
             p.resetJointState(self.robot_id, joint_idx, joint_val)
@@ -92,7 +136,7 @@ class PandaRobot:
             p.resetJointState(self.robot_id, joint_idx, 0.04)
 
     def hold_home_pose(self) -> None:
-        self.command_joint_positions(self.home_joints)
+        self.command_joint_positions_pd(self.home_joints)
         self.hold_gripper_open()
 
     def get_joint_positions(self) -> np.ndarray:
@@ -151,6 +195,57 @@ class PandaRobot:
             positionGains=position_gains,
             velocityGains=velocity_gains,
         )
+    
+    def command_joint_positions_pd(
+        self,
+        target_joints,
+        target_joint_velocities=None,
+        forces=None,
+    ) -> None:
+        """
+        Custom PD control path.
+
+        Computes a desired joint velocity from:
+            qd_cmd = Kp (q_des - q) + Kd (qd_des - qd)
+
+        Then sends that velocity command through PyBullet VELOCITY_CONTROL.
+        """
+        if self.pd_controller is None:
+            raise RuntimeError("PD controller is not initialized")
+
+        target_joints = np.asarray(target_joints, dtype=float)
+
+        if target_joints.shape != (len(self.arm_joint_indices),):
+            raise ValueError(
+                f"Expected target_joints shape {(len(self.arm_joint_indices),)}, "
+                f"got {target_joints.shape}"
+            )
+
+        current_q = self.get_joint_positions()
+        current_qd = self.get_joint_velocities()
+
+        if target_joint_velocities is None:
+            target_joint_velocities = np.zeros_like(target_joints, dtype=float)
+        else:
+            target_joint_velocities = np.asarray(target_joint_velocities, dtype=float)
+
+        qd_cmd = self.pd_controller.compute_velocity_command(
+            q_des=target_joints,
+            q=current_q,
+            qd_des=target_joint_velocities,
+            qd=current_qd,
+        )
+
+        if forces is None:
+            forces = self.arm_max_forces
+
+        p.setJointMotorControlArray(
+            bodyUniqueId=self.robot_id,
+            jointIndices=self.arm_joint_indices,
+            controlMode=p.VELOCITY_CONTROL,
+            targetVelocities=qd_cmd.tolist(),
+            forces=forces,
+        )
 
     def hold_gripper_open(self) -> None:
         if len(self.gripper_joint_indices) == 2:
@@ -165,14 +260,49 @@ class PandaRobot:
                 velocityGains=[1.0, 1.0],
             )
 
-    def command_arm_and_gripper(self, target_joints) -> None:
-        self.command_joint_positions(target_joints)
+    def command_arm_and_gripper(self, target_joints, target_joint_velocities=None) -> None:
+        self.command_joint_positions_pd(
+            target_joints=target_joints,
+            target_joint_velocities=target_joint_velocities,
+        )
         self.hold_gripper_open()
 
     def get_joint_position_error(self, target_joints) -> np.ndarray:
         target_joints = np.asarray(target_joints, dtype=float)
         return target_joints - self.get_joint_positions()
 
+    def get_pd_debug_info(self, target_joints, target_joint_velocities=None):
+        if self.pd_controller is None:
+            raise RuntimeError("PD controller is not initialized")
+
+        target_joints = np.asarray(target_joints, dtype=float)
+        current_q = self.get_joint_positions()
+        current_qd = self.get_joint_velocities()
+
+        if target_joint_velocities is None:
+            target_joint_velocities = np.zeros_like(target_joints, dtype=float)
+        else:
+            target_joint_velocities = np.asarray(target_joint_velocities, dtype=float)
+
+        pos_err = self.pd_controller.compute_position_error(target_joints, current_q)
+        vel_err = self.pd_controller.compute_velocity_error(target_joint_velocities, current_qd)
+        qd_cmd = self.pd_controller.compute_velocity_command(
+            q_des=target_joints,
+            q=current_q,
+            qd_des=target_joint_velocities,
+            qd=current_qd,
+        )
+
+        return {
+            "q": current_q,
+            "qd": current_qd,
+            "q_des": target_joints,
+            "qd_des": target_joint_velocities,
+            "pos_err": pos_err,
+            "vel_err": vel_err,
+            "qd_cmd": qd_cmd,
+        }
+    
     def is_at_joint_target(self, target_joints, tol: float = 0.03) -> bool:
         err = self.get_joint_position_error(target_joints)
         return bool(np.max(np.abs(err)) < tol)
