@@ -1,3 +1,4 @@
+import numpy as np
 import pybullet as p
 
 from src import config
@@ -10,6 +11,8 @@ from src.sim.state import (
     get_body_top_z,
     quat_to_euler,
 )
+from src.trajectory.joint_trajectory import interpolate_joint_trajectory
+from project.src.utils.logger import TrajectoryLogger
 
 
 def move_body_delta_z(body_id: int, delta_z: float):
@@ -54,53 +57,7 @@ def print_body_link_aabbs(body_id: int):
         )
 
 
-def main():
-    env = BulletEnv(gui=True)
-    env.connect()
-
-    objects = env.load_scene()
-
-    print_body_link_aabbs(objects.table_id)
-
-    # 1) Correct table so its lowest point sits exactly on the plane (z = 0).
-    table_bottom_z_before = get_body_bottom_z(objects.table_id)
-    move_body_delta_z(
-        body_id=objects.table_id,
-        delta_z=(0.0 - table_bottom_z_before + config.TABLE_PLANE_CLEARANCE),
-    )
-
-    # 2) Load robot and place it on the plane beside the table.
-    robot = PandaRobot()
-    robot.load(
-        base_position=config.PANDA_BASE_POS,
-        base_orientation_euler=config.PANDA_BASE_ORN_EULER,
-    )
-
-    # place_body_bottom_at_z(
-    #     body_id=robot.robot_id,
-    #     target_xy=config.PANDA_BASE_POS[:2],
-    #     target_bottom_z=0.0,
-    #     clearance=config.ROBOT_PLANE_CLEARANCE,
-    # )
-
-    # 3) Place cube on top of the table.
-    table_top_z = get_body_top_z(objects.table_id)
-    place_body_bottom_at_z(
-        body_id=objects.cube_id,
-        target_xy=config.CUBE_BASE_POS[:2],
-        target_bottom_z=table_top_z,
-        clearance=config.CUBE_TABLE_CLEARANCE,
-    )
-
-    # Re-apply home pose holding after repositioning.
-    robot.reset_home()
-    robot.hold_home_pose()
-
-    # Let the scene settle.
-    for _ in range(120):
-        robot.hold_home_pose()
-        env.step()
-
+def print_scene_diagnostics(robot, objects):
     # Print diagnostics.
     robot.print_joint_summary()
 
@@ -129,6 +86,158 @@ def main():
     print("Table top z:", table_aabb_max[2])
 
     print("\nSimulation running. Close GUI window or Ctrl+C to stop.")
+
+
+def execute_waypoint_trajectory(
+    env,
+    robot,
+    waypoints,
+    tol=0.035,
+    max_steps_per_waypoint=240,
+    label="trajectory",
+    logger=None,
+):
+    print(f"\n=== Executing {label} ===")
+    print(f"Num waypoints: {len(waypoints)}")
+
+    total_steps = 0
+
+    for i, q_target in enumerate(waypoints):
+        reached = False
+
+        for step in range(max_steps_per_waypoint):
+            robot.command_arm_and_gripper(q_target)
+            env.step()
+            total_steps += 1
+            current_q = robot.get_joint_positions()
+            q_error = np.asarray(q_target) - current_q
+            ee_pos, ee_orn = robot.get_ee_pose()
+            ee_euler = quat_to_euler(ee_orn)
+
+            if logger is not None:
+                logger.log(
+                    phase=label,
+                    waypoint_index=i,
+                    sim_step=total_steps,
+                    q_target=q_target,
+                    q_actual=current_q,
+                    q_error=q_error,
+                    ee_pos=ee_pos,
+                    ee_euler=ee_euler,
+                )
+
+            if robot.is_at_joint_target(q_target, tol=tol):
+                reached = True
+                break
+
+        err = robot.get_joint_position_error(q_target)
+        if (i % config.PRINT_WAYPOINT_EVERY == 0) or (i == len(waypoints) - 1) or (not reached):
+            print(
+                f"waypoint={i:02d}/{len(waypoints)-1:02d} | "
+                f"reached={reached} | "
+                f"max_err={float(np.max(np.abs(err))):.5f}"
+            )
+
+        if not reached:
+            print(f"Stopped early at waypoint {i} because target was not reached in time.")
+            return False
+
+    print(f"Completed {label} in {total_steps} simulation steps.")
+    return True
+
+
+def main():
+    env = BulletEnv(gui=config.GUI)
+    env.connect()
+
+    objects = env.load_scene()
+
+    print_body_link_aabbs(objects.table_id)
+
+    # 1) Correct table so its lowest point sits exactly on the plane (z = 0).
+    table_bottom_z_before = get_body_bottom_z(objects.table_id)
+    move_body_delta_z(
+        body_id=objects.table_id,
+        delta_z=(0.0 - table_bottom_z_before + config.TABLE_PLANE_CLEARANCE),
+    )
+
+    # 2) Load robot and place it on the plane beside the table.
+    robot = PandaRobot()
+    robot.load(
+        base_position=config.PANDA_BASE_POS,
+        base_orientation_euler=config.PANDA_BASE_ORN_EULER,
+    )
+
+    # 3) Place cube on top of the table.
+    table_top_z = get_body_top_z(objects.table_id)
+    place_body_bottom_at_z(
+        body_id=objects.cube_id,
+        target_xy=config.CUBE_BASE_POS[:2],
+        target_bottom_z=table_top_z,
+        clearance=config.CUBE_TABLE_CLEARANCE,
+    )
+
+    # Re-apply home pose holding after repositioning.
+    robot.reset_home()
+    robot.hold_home_pose()
+
+    # Let the scene settle.
+    for _ in range(config.SETTLE_STEPS):
+        robot.hold_home_pose()
+        env.step()
+
+    print_scene_diagnostics(robot, objects)
+
+    home_joints = robot.home_joints
+    target_joints = np.array(config.PANDA_TEST_TARGET_JOINTS, dtype=float)
+
+    forward_waypoints = interpolate_joint_trajectory(
+        q_start=home_joints,
+        q_goal=target_joints,
+        num_waypoints=config.TRAJ_NUM_WAYPOINTS,
+    )
+
+    return_waypoints = interpolate_joint_trajectory(
+        q_start=target_joints,
+        q_goal=home_joints,
+        num_waypoints=config.TRAJ_NUM_WAYPOINTS,
+    )
+
+    logger = TrajectoryLogger() if config.ENABLE_TRAJECTORY_LOGGING else None
+
+    execute_waypoint_trajectory(
+        env=env,
+        robot=robot,
+        waypoints=forward_waypoints,
+        tol=config.WAYPOINT_TOL,
+        max_steps_per_waypoint=config.WAYPOINT_MAX_STEPS,
+        label="home_to_target",
+        logger=logger,
+    )
+
+    for _ in range(config.SETTLE_STEPS):
+        robot.command_arm_and_gripper(target_joints)
+        env.step()
+
+    execute_waypoint_trajectory(
+        env=env,
+        robot=robot,
+        waypoints=return_waypoints,
+        tol=config.WAYPOINT_TOL,
+        max_steps_per_waypoint=config.WAYPOINT_MAX_STEPS,
+        label="target_to_home",
+        logger=logger,
+    )
+
+    # Print final error after round trip.
+    final_error = robot.get_joint_position_error(robot.home_joints)
+    print("\n=== Final Home Return Error ===")
+    print("Final joint error:", final_error)
+    print("Max abs error:", float(abs(final_error).max()))
+
+    if logger is not None:
+        logger.save_json(config.TRAJECTORY_LOG_PATH)
+        print(f"Saved trajectory log to {config.TRAJECTORY_LOG_PATH}")
 
     try:
         while True:

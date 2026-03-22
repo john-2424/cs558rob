@@ -92,28 +92,8 @@ class PandaRobot:
             p.resetJointState(self.robot_id, joint_idx, 0.04)
 
     def hold_home_pose(self) -> None:
-        p.setJointMotorControlArray(
-            bodyUniqueId=self.robot_id,
-            jointIndices=self.arm_joint_indices,
-            controlMode=p.POSITION_CONTROL,
-            targetPositions=self.home_joints.tolist(),
-            targetVelocities=[0.0] * len(self.arm_joint_indices),
-            forces=[200.0] * len(self.arm_joint_indices),
-            positionGains=[0.05] * len(self.arm_joint_indices),
-            velocityGains=[1.0] * len(self.arm_joint_indices),
-        )
-
-        if len(self.gripper_joint_indices) == 2:
-            p.setJointMotorControlArray(
-                bodyUniqueId=self.robot_id,
-                jointIndices=self.gripper_joint_indices,
-                controlMode=p.POSITION_CONTROL,
-                targetPositions=[0.04, 0.04],
-                targetVelocities=[0.0, 0.0],
-                forces=[50.0, 50.0],
-                positionGains=[0.2, 0.2],
-                velocityGains=[1.0, 1.0],
-            )
+        self.command_joint_positions(self.home_joints)
+        self.hold_gripper_open()
 
     def get_joint_positions(self) -> np.ndarray:
         joint_states = p.getJointStates(self.robot_id, self.arm_joint_indices)
@@ -139,3 +119,60 @@ class PandaRobot:
         print(f"\nArm joint indices: {self.arm_joint_indices}")
         print(f"Gripper joint indices: {self.gripper_joint_indices}")
         print(f"EE link index: {self.ee_link_index}")
+    
+    def command_joint_positions(
+        self,
+        target_joints,
+        forces=None,
+        position_gains=None,
+        velocity_gains=None,
+    ) -> None:
+        target_joints = np.asarray(target_joints, dtype=float)
+
+        if target_joints.shape[0] != len(self.arm_joint_indices):
+            raise ValueError(
+                f"Expected {len(self.arm_joint_indices)} arm joints, got {target_joints.shape[0]}"
+            )
+
+        if forces is None:
+            forces = [200.0] * len(self.arm_joint_indices)
+        if position_gains is None:
+            position_gains = [0.08] * len(self.arm_joint_indices)
+        if velocity_gains is None:
+            velocity_gains = [1.0] * len(self.arm_joint_indices)
+
+        p.setJointMotorControlArray(
+            bodyUniqueId=self.robot_id,
+            jointIndices=self.arm_joint_indices,
+            controlMode=p.POSITION_CONTROL,
+            targetPositions=target_joints.tolist(),
+            targetVelocities=[0.0] * len(self.arm_joint_indices),
+            forces=forces,
+            positionGains=position_gains,
+            velocityGains=velocity_gains,
+        )
+
+    def hold_gripper_open(self) -> None:
+        if len(self.gripper_joint_indices) == 2:
+            p.setJointMotorControlArray(
+                bodyUniqueId=self.robot_id,
+                jointIndices=self.gripper_joint_indices,
+                controlMode=p.POSITION_CONTROL,
+                targetPositions=[0.04, 0.04],
+                targetVelocities=[0.0, 0.0],
+                forces=[50.0, 50.0],
+                positionGains=[0.2, 0.2],
+                velocityGains=[1.0, 1.0],
+            )
+
+    def command_arm_and_gripper(self, target_joints) -> None:
+        self.command_joint_positions(target_joints)
+        self.hold_gripper_open()
+
+    def get_joint_position_error(self, target_joints) -> np.ndarray:
+        target_joints = np.asarray(target_joints, dtype=float)
+        return target_joints - self.get_joint_positions()
+
+    def is_at_joint_target(self, target_joints, tol: float = 0.03) -> bool:
+        err = self.get_joint_position_error(target_joints)
+        return bool(np.max(np.abs(err)) < tol)

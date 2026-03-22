@@ -1,126 +1,104 @@
-Draft content for Milestone 1 report
+Updated Milestone 1 Report Draft
 1. Introduction
 
-This project investigates a hybrid manipulation framework that combines structured motion planning with learning-based adaptation for robust robotic manipulation. The proposed system uses the Franka Emika Panda 7-DoF manipulator in the PyBullet simulator and is motivated by the complementary strengths of classical planning and reinforcement learning. In particular, sampling-based motion planning methods such as RRT* can generate collision-free trajectories efficiently in high-dimensional spaces, while residual reinforcement learning can improve robustness under uncertainty and execution error. The overall goal of the project is to study whether planner-guided residual reinforcement learning improves robustness and sample efficiency for manipulation tasks compared to purely classical or purely learning-based approaches.
+This project investigates a hybrid robotic manipulation framework that combines classical motion planning with learning-based adaptation for robust task execution. The system uses the Franka Emika Panda 7-DoF manipulator in the PyBullet simulator and is motivated by the complementary strengths of structured planning and machine learning. In the intended final system, sampling-based planning will provide feasible nominal motion, while learning-based residual policies will improve robustness to uncertainty, disturbance, and execution mismatch. The long-term goal is to study whether planner-guided residual reinforcement learning can improve robustness and sample efficiency compared with purely classical or purely learning-based approaches.
 
-Milestone 1 focuses on establishing the planning and control foundation of the project. Specifically, this milestone targets: loading the Franka Panda model in PyBullet, constructing the simulation scene, obtaining robot and environment state information, and building the execution pipeline needed for later implementation of configuration-space RRT*, time-parameterized trajectories, and PD-based tracking control. The proposal defines the nominal task as pick-and-place, which serves as the initial manipulation scenario before introducing perturbations and residual reinforcement learning in later milestones.
+Milestone 1 focuses on establishing the classical simulation and execution foundation of the project. The required components for this milestone are: loading the robot system in simulation, constructing the environment, extracting robot and scene state information, and implementing an initial classical motion component. In this work, the classical component is realized as waypoint-based joint-space trajectory execution using interpolated joint targets and PyBullet position control. This provides a concrete motion-execution baseline that can later be extended with configuration-space planning, explicit PD tracking control, and task-level pick-and-place behavior.
 
-To support this goal, the initial implementation emphasized building a clean and reusable software structure around simulation, robot state access, scene setup, and controller/planner modules. This creates a stable base for the later addition of joint-space planning, trajectory generation, and residual learning.
+The nominal task context for the overall project is tabletop manipulation with a cube object, using a pick-and-place style setup. Accordingly, the first milestone emphasizes a stable and reusable software framework around scene setup, robot state access, joint-space execution, logging, and evaluation, so that future milestones can build on the same architecture without major restructuring.
 
 2. Methods
 2.1 Simulation environment setup
 
-The simulation environment was implemented in PyBullet using a fixed-base Franka Emika Panda manipulator. The PyBullet simulator was selected because it provides native URDF support, rigid-body dynamics, collision checking, and a convenient interface for both classical control and future reinforcement learning experiments. This is also consistent with the simulator and robot platform proposed for the project.
+The simulation environment was implemented in PyBullet using a fixed-base Franka Emika Panda manipulator. PyBullet was selected because it provides URDF-based robot loading, rigid-body simulation, collision geometry, and a convenient API for both control and later reinforcement learning experiments. The initial scene consists of a ground plane, a rectangular table, a cube manipulation object, and the Panda robot positioned beside the table.
 
-The initial scene consists of:
-
-a ground plane,
-a rectangular table,
-a cube object used as the manipulation target,
-and the Panda robot positioned beside the table.
-
-The scene layout was refined iteratively to obtain a physically meaningful and visually consistent manipulation workspace. In particular, the table was grounded using geometry-based placement derived from the PyBullet axis-aligned bounding box (AABB), and the cube was placed on the tabletop using the measured table top height. The Panda manipulator was positioned beside the table and rotated to face the table centerline, resulting in a more realistic pick-and-place setup.
+The robot base was positioned at the side of the table and rotated to face the tabletop workspace. The cube was placed on top of the table, producing a realistic tabletop manipulation configuration. This scene was refined iteratively to ensure that the robot, table, and cube were placed in a visually and physically meaningful arrangement before motion execution was added.
 
 2.2 Software organization
 
-The codebase was organized into separate modules for simulation, planning, control, trajectory handling, tasks, learning, perturbations, and evaluation. For Milestone 1, the most relevant modules were:
+The codebase was organized into modular components for simulation, planning, control, trajectories, tasks, learning, perturbations, and evaluation. For Milestone 1, the most important modules were sim/ for environment and robot setup, trajectory/ for joint-space interpolation, evaluations/ for logging and post-processing, and main.py for experiment orchestration. The execution pipeline in main.py loads the environment, corrects object placement, initializes the robot, generates interpolated waypoints, executes forward and return trajectories, and saves trajectory logs for later analysis.
 
-sim/ for environment and robot setup,
-controller/ for PD control scaffolding,
-planner/ for future RRT* implementation,
-trajectory/ for path-to-motion conversion,
-and main.py for integration and execution.
-
-This modular structure was chosen early so that later milestones can extend the same framework with residual PPO, robustness evaluation, and additional tasks without major restructuring.
+This modular structure was chosen early so that later milestones can add RRT* planning, explicit PD tracking, perturbation injection, and residual reinforcement learning without requiring major code reorganization.
 
 2.3 Robot loading and state extraction
 
-The Panda URDF was loaded with a fixed base, and all joint information was queried through PyBullet APIs. The implementation extracted:
+The Panda URDF was loaded with a fixed base, and the simulator was queried to extract joint indices, joint names, joint limits, joint positions, joint velocities, gripper joints, and the end-effector link index. During execution, the system successfully reported seven arm joints and two gripper joints, together with end-effector position and orientation, cube pose, and the table axis-aligned bounding box (AABB). In the latest run, the terminal output confirmed the arm joint indices [0,1,2,3,4,5,6], gripper joint indices [9,10], and end-effector link index 11.
 
-joint indices,
-joint names,
-joint limits,
-joint positions,
-joint velocities,
-gripper joint indices,
-and end-effector pose.
-
-The end-effector state was obtained from link-state queries, while the cube pose was obtained from base-position and base-orientation queries. This step satisfies the milestone requirement of obtaining both robot and environment state information. At the current stage, the system successfully reports the seven arm joint states, gripper joints, and end-effector pose in both quaternion and Euler-angle representations.
+State extraction was performed using PyBullet APIs. End-effector pose was obtained through link-state queries, while cube pose and table geometry were obtained through base-state and AABB queries. This satisfies the milestone requirement of obtaining both robot and environment state information.
 
 2.4 Geometry-based scene placement
 
-AABB-based reasoning was used to improve placement consistency in the environment. The table’s bounding box was measured after loading, and its vertical placement was corrected so that the bottom of the table body aligned with the plane. Similarly, the cube was placed using the table top height computed from the table AABB, ensuring that the cube rested on the support surface rather than being assigned a manually guessed height.
+AABB-based reasoning was used to improve the consistency of scene placement. After loading the scene, the table’s bounding box was measured and its vertical position was corrected so that the bottom of the table aligned with the ground plane. The cube was then repositioned so that its bottom surface rested on the tabletop height computed from the table AABB rather than using a manually guessed z-value. The implementation in main.py explicitly computes the table bottom height, shifts the table to plane level, computes the tabletop height, and places the cube at that support height with a small clearance.
 
-This geometry-based placement was preferred over hardcoded height values because it makes the setup more reproducible and reduces issues caused by mesh-origin offsets or scene-specific trial-and-error tuning.
+This geometry-based placement makes the setup more reproducible and reduces sensitivity to mesh-origin offsets and hand-tuned placement values. The latest execution log confirms that the table bottom was at z = 0.0 and the tabletop height was approximately z = 0.052 m.
 
 2.5 Stable robot initialization
 
-After loading, the Panda arm was reset to a nominal home joint configuration. Position control was then applied continuously to hold this home configuration. This eliminated the instability observed in earlier scene configurations, where the robot could jitter or drift after initialization. Maintaining a stable home pose is important because the next stages of the milestone will rely on repeatable trajectory execution from a known initial state.
+After loading, the Panda arm was reset to a nominal home joint configuration and continuously commanded to hold that pose using PyBullet position control. This step was necessary to eliminate the instability observed in earlier scene configurations and to ensure repeatable execution from a known state. In the latest run, the measured joint velocities at initialization were near zero, indicating stable pose holding. The end-effector pose at home was also reported successfully, confirming correct forward-kinematic access.
+
+A stable home configuration is especially important because all trajectory execution in this milestone begins from the same nominal initial pose.
+
+2.6 Joint-space trajectory generation and execution
+
+The main classical component implemented in this milestone is waypoint-based joint-space trajectory execution. A target arm configuration was defined in joint space, and linear interpolation was used to generate a sequence of intermediate waypoints between the home configuration and the target configuration. A matching return trajectory from target to home was generated in the same manner. The current implementation uses 25 waypoints for each direction.
+
+Each waypoint was executed sequentially using PyBullet position control. For each target waypoint, the controller repeatedly commanded the desired arm joint positions while stepping the simulator until the maximum joint error dropped below a waypoint tolerance. Once the waypoint was reached, execution advanced to the next waypoint. This same procedure was applied for both the forward and return trajectories.
+
+This trajectory-execution layer serves as a stepping stone between static initialization and future planner-driven motion execution. Although RRT* and explicit PD tracking are not yet implemented, the current waypoint-execution pipeline already demonstrates a meaningful classical motion component for Milestone 1.
+
+2.7 Logging and post-processing
+
+To make the trajectory execution measurable and reportable, a logger was added to record phase labels, waypoint indices, simulation steps, target joints, actual joints, joint errors, and end-effector pose during execution. The experiment saved a trajectory log to results/m1/trajectory_log.json, which was then post-processed to generate summary metrics and visualization plots.
+
+The post-processing pipeline computed total logged samples, phase-wise sample counts, waypoint coverage, joint tracking error statistics, and end-effector workspace ranges. It also produced trajectory figures such as end-effector position versus global sample index, end-effector XZ path, and maximum joint tracking error versus global sample index. These plots provide quantitative evidence that the execution is smooth, repeatable, and bounded.
 
 3. Preliminary Results
 
-The current implementation successfully establishes the simulation and state-estimation foundation for the project. The PyBullet environment launches correctly, the Franka Panda loads with the expected seven controllable arm joints and two gripper joints, and the scene contains a grounded table and a cube placed on the tabletop. The robot is positioned beside the table and oriented toward the task workspace, producing a more realistic manipulation configuration than the initial default setup.
+The current implementation successfully establishes the simulation and classical motion-execution foundation for the project. The PyBullet environment launches correctly, the Franka Panda loads with the expected seven controllable arm joints and two gripper joints, and the scene contains a grounded table and a cube placed on the tabletop. The robot is positioned beside the table and oriented toward the task workspace, producing a realistic tabletop manipulation arrangement. In the latest run, the table AABB confirmed a grounded scene with table bottom z = 0.0 and tabletop height approximately z = 0.052 m.
 
-From the latest execution logs, the extracted robot state is consistent with the commanded home pose. The reported arm joint positions are very close to the target nominal values, and the measured joint velocities are near zero, indicating that the robot is being held stably. The end-effector pose is also computed successfully, showing that forward kinematic state access is functioning correctly. Similarly, the cube pose is read correctly from the simulator, and the table AABB confirms a grounded scene setup with a bottom height of approximately 0.0 and a tabletop height of approximately 0.052 m.
+The extracted robot state is consistent with the commanded home pose. The reported arm joint positions were very close to the nominal home configuration, and the measured joint velocities were near zero, showing that initialization was stable. The simulator also correctly reported end-effector position and orientation, cube pose, and table geometry, indicating that robot and environment state access are functioning correctly.
 
-Qualitatively, the latest scene image shows that:
+Beyond static initialization, the system now executes visible joint-space motion through interpolated waypoint trajectories. In the latest experiment, the arm executed a home-to-target trajectory and a target-to-home trajectory, each with 25 waypoints. All 25 waypoints were reached successfully in both directions, and each phase completed in 112 simulation steps. The final home-return maximum joint error was approximately 0.0327 rad, indicating good round-trip repeatability.
 
-the table is correctly grounded on the plane,
-the cube is resting on the tabletop,
-the Panda robot is placed beside the table,
-and the robot is facing toward the table surface.
+The saved trajectory summary provides additional quantitative support. Across both phases, 224 logged samples were recorded, with 112 samples in each phase. The global maximum absolute joint error was 0.046407 rad and the global mean maximum absolute joint error was 0.038330 rad. For the home-to-target phase, the end-effector moved over workspace ranges x ∈ [0.5325, 0.6500] m, y ∈ [-0.5930, -0.4849] m, and z ∈ [0.4853, 0.6265] m. For the target-to-home phase, the corresponding ranges were x ∈ [0.5197, 0.6423] m, y ∈ [-0.5813, -0.4787] m, and z ∈ [0.4969, 0.6395] m. These nearly symmetric workspace ranges indicate repeatable execution in both directions.
 
-These results demonstrate that the system now supports the core setup needed for the next implementation stage: visible joint motion execution, trajectory interpolation, and classical planning/control integration.
+The visualization results are also consistent with stable waypoint tracking. The maximum-joint-error plot shows a repeating sawtooth pattern, which is expected for sequential waypoint execution: the error increases when a new waypoint is commanded and decreases as the controller converges toward that waypoint. The end-effector position and XZ-path plots show smooth outbound and return motion with strong overlap between phases, providing qualitative evidence of repeatability. These results demonstrate that the system now supports not only scene construction and state extraction, but also a functioning classical motion-execution baseline suitable for later planner and learning integration.
 
-At the same time, the current implementation should still be viewed as a foundation rather than a complete Milestone 1 result. The classical motion generation and tracking components proposed for this milestone—namely RRT*, time-parameterized trajectory generation, and explicit PD-based trajectory tracking—are scaffolded in the project structure but are not yet fully demonstrated in execution.
+At the same time, the current implementation should still be viewed as an intermediate classical baseline rather than a complete final manipulation stack. The project structure includes scaffolding for planning and controller extensions, but configuration-space RRT*, explicit PD trajectory tracking, and full pick-and-place execution are not yet completed in this milestone.
 
 4. Future Work
 
-The immediate next step is to make the robot execute visible motion between nominal joint-space targets. This will validate the actuation pipeline and serve as a bridge between static initialization and full planned motion execution. Once this is working reliably, the next milestone tasks will be implemented in sequence.
+The next step is to replace the manually specified joint-space target trajectory with a planner-generated trajectory. A configuration-space RRT* planner with collision checking will be added to generate feasible arm motions automatically in the tabletop environment. The planner output will then be converted into executable waypoint or time-parameterized trajectories.
 
-First, a joint/configuration-space RRT* planner with collision checking will be added to generate feasible motion plans for the Panda arm. Second, the resulting waypoint paths will be converted into time-parameterized trajectories suitable for execution. Third, a PD-based tracking controller will be implemented to follow these trajectories robustly in simulation. Finally, these components will be integrated into a nominal pick-and-place demonstration, completing the classical foundation required by Milestone 1. These steps are fully aligned with the original milestone plan described in the project proposal.
+After planner integration, the current reliance on PyBullet position control will be extended with a more explicit tracking-control layer. A PD-based trajectory tracking controller will be implemented so that commanded joint trajectories can be followed with clearer control logic and gain tuning. This will provide a stronger classical baseline for later comparison against residual reinforcement learning.
 
-Beyond Milestone 1, the environment and modular code structure developed so far will support the introduction of pose perturbations, residual PPO control, and robustness evaluation in Milestones 2 and 3.
+Finally, the trajectory execution pipeline will be integrated into a nominal pick-and-place demonstration with the cube object, after which perturbations, residual PPO control, and robustness evaluation will be introduced in later milestones. The current Milestone 1 implementation therefore provides the essential base on which planning, control, and learning components can be layered incrementally.
 
+Figures to include
 
+Use these in the report:
 
+Figure 1. Screenshot of the PyBullet scene showing the Panda arm beside the table and the cube on the tabletop.
 
-Good figure caption for your latest screenshot
+Figure 2. End-effector position vs global sample index.
 
-You can use this under the image:
+Figure 3. End-effector XZ path for home-to-target and target-to-home execution.
 
-Figure 1. Initial PyBullet manipulation scene used in Milestone 1. The Franka Panda manipulator is placed beside the table and oriented toward the tabletop workspace. A cube target object is placed on the table surface. This scene is used to validate robot loading, environment construction, state extraction, and stable initialization before implementing motion planning and trajectory tracking.
+Figure 4. Maximum joint tracking error vs global sample index.
 
-Good table/log sentence for the results section
+Suggested captions
 
-You can add something like:
+Figure 1. Initial PyBullet tabletop manipulation scene used in Milestone 1. The Franka Panda manipulator is placed beside the table and oriented toward the tabletop workspace. A cube target object is placed on the table surface. This scene is used to validate robot loading, environment construction, state extraction, and trajectory execution.
 
-The simulator successfully reported the Panda joint configuration, joint velocities, end-effector pose, cube pose, and table AABB. In the latest run, the table AABB indicated a grounded table with bottom height 0.0 and top height 0.052 m, while the arm joint velocities remained near zero, indicating stable initialization under position holding.
+Figure 2. End-effector Cartesian position during interpolated trajectory execution. The phase transition between home-to-target and target-to-home occurs at the midpoint of the global sample index. The traces show smooth outbound and return motion across the tabletop workspace.
 
+Figure 3. End-effector path in the XZ plane for the forward and return trajectories. The near-overlap of the two curves indicates repeatable execution and smooth workspace motion during waypoint tracking.
 
-What I recommend next for the report
+Figure 4. Maximum absolute joint tracking error during trajectory execution. The repeating sawtooth pattern reflects sequential waypoint tracking: error increases when a new waypoint is commanded and decreases as the controller converges to that waypoint. The error remains bounded below approximately 0.0465 rad throughout the experiment.
 
-You can now build the report in this order:
+Small correction before submission
 
-Put the latest screenshot as Figure 1.
-Use the text above for the first draft of the report body.
-Later, once we implement motion, RRT*, and PD tracking, we will update:
-Methods with planner/controller details
-Results with motion plots and execution screenshots
-Future Work to reflect only what remains
-Memory hook for the report
-
-Think of the Milestone 1 report as:
-
-Scene → State → Stability → Next Steps
-
-Scene = simulation environment
-State = robot/object pose extraction
-Stability = reliable initialization
-Next Steps = planner + trajectory + controller
-
-If you want, next I can turn this into an IEEE LaTeX-ready section block for your report/ folder.
-
+One thing to keep in mind: the report should not claim that RRT* and PD tracking were already implemented and demonstrated, because the current evidence shows that the completed classical component for this milestone is interpolated waypoint execution with PyBullet position control, while RRT* and explicit PD tracking remain next steps. That distinction keeps the report accurate and stronger.
 
 9. Immediate next step after this works
 

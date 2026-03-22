@@ -1,0 +1,23 @@
+Trajectory Execution Summary
+================================
+Total logged samples: 224
+Global max abs joint error: 0.046407 rad
+Global mean max abs joint error: 0.038330 rad
+
+Phase: home_to_target
+  Logged samples: 112
+  Unique waypoints visited: 25
+  Max abs joint error: 0.046407 rad
+  Mean max abs joint error: 0.038330 rad
+  EE x-range: [0.5325, 0.6500] m
+  EE y-range: [-0.5930, -0.4849] m
+  EE z-range: [0.4853, 0.6265] m
+
+Phase: target_to_home
+  Logged samples: 112
+  Unique waypoints visited: 25
+  Max abs joint error: 0.046406 rad
+  Mean max abs joint error: 0.038330 rad
+  EE x-range: [0.5197, 0.6423] m
+  EE y-range: [-0.5813, -0.4787] m
+  EE z-range: [0.4969, 0.6395] m
