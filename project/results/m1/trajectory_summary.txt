@@ -1,23 +1,77 @@
 Trajectory Execution Summary
 ================================
-Total logged samples: 224
-Global max abs joint error: 0.046407 rad
-Global mean max abs joint error: 0.038330 rad
+Total logged samples: 11173
+Global max abs joint error: 0.071635 rad
+Global mean max abs joint error: 0.030301 rad
 
-Phase: home_to_target
-  Logged samples: 112
-  Unique waypoints visited: 25
-  Max abs joint error: 0.046407 rad
-  Mean max abs joint error: 0.038330 rad
-  EE x-range: [0.5325, 0.6500] m
-  EE y-range: [-0.5930, -0.4849] m
-  EE z-range: [0.4853, 0.6265] m
+Phase: grasp_descend
+  Logged samples: 867
+  Unique waypoints visited: 7
+  Max abs joint error: 0.067854 rad
+  Mean max abs joint error: 0.031622 rad
+  EE x-range: [0.6996, 0.7001] m
+  EE y-range: [-0.0033, 0.0047] m
+  EE z-range: [0.0951, 0.2843] m
 
-Phase: target_to_home
-  Logged samples: 112
-  Unique waypoints visited: 25
-  Max abs joint error: 0.046406 rad
-  Mean max abs joint error: 0.038330 rad
-  EE x-range: [0.5197, 0.6423] m
-  EE y-range: [-0.5813, -0.4787] m
-  EE z-range: [0.4969, 0.6395] m
+Phase: grasp_descend_retry
+  Logged samples: 233
+  Unique waypoints visited: 20
+  Max abs joint error: 0.014575 rad
+  Mean max abs joint error: 0.012987 rad
+  EE x-range: [0.7000, 0.7001] m
+  EE y-range: [-0.0002, 0.0005] m
+  EE z-range: [0.0679, 0.0936] m
+
+Phase: lift
+  Logged samples: 985
+  Unique waypoints visited: 7
+  Max abs joint error: 0.071635 rad
+  Mean max abs joint error: 0.030886 rad
+  EE x-range: [0.7002, 0.7007] m
+  EE y-range: [0.0008, 0.0102] m
+  EE z-range: [0.0656, 0.2771] m
+
+Phase: place_descend
+  Logged samples: 735
+  Unique waypoints visited: 6
+  Max abs joint error: 0.070338 rad
+  Mean max abs joint error: 0.032246 rad
+  EE x-range: [0.5798, 0.5815] m
+  EE y-range: [-0.1202, -0.1149] m
+  EE z-range: [0.0857, 0.2320] m
+
+Phase: post_place_retreat
+  Logged samples: 607
+  Unique waypoints visited: 5
+  Max abs joint error: 0.062635 rad
+  Mean max abs joint error: 0.027985 rad
+  EE x-range: [0.5796, 0.5800] m
+  EE y-range: [-0.1202, -0.1162] m
+  EE z-range: [0.0857, 0.1985] m
+
+Phase: pre_grasp
+  Logged samples: 3490
+  Unique waypoints visited: 26
+  Max abs joint error: 0.068702 rad
+  Mean max abs joint error: 0.030376 rad
+  EE x-range: [0.6500, 0.6996] m
+  EE y-range: [-0.4430, -0.0033] m
+  EE z-range: [0.2843, 0.5011] m
+
+Phase: return_home
+  Logged samples: 2692
+  Unique waypoints visited: 20
+  Max abs joint error: 0.071289 rad
+  Mean max abs joint error: 0.031033 rad
+  EE x-range: [0.5800, 0.6497] m
+  EE y-range: [-0.4393, -0.1190] m
+  EE z-range: [0.1985, 0.4846] m
+
+Phase: transfer_pre_place
+  Logged samples: 1564
+  Unique waypoints visited: 13
+  Max abs joint error: 0.068936 rad
+  Mean max abs joint error: 0.030340 rad
+  EE x-range: [0.5815, 0.7002] m
+  EE y-range: [-0.1183, 0.0008] m
+  EE z-range: [0.2320, 0.2771] m

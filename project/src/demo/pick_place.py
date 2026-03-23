@@ -387,6 +387,32 @@ def get_pick_and_place_poses(robot, objects):
     }
 
 
+def snap_cube_to_place_pose(objects):
+    """
+    Precisely place the cube at the commanded place target before release.
+    This removes the last-contact drift that causes visible placement offsets.
+    """
+    target_xy = np.array(config.PLACE_XY, dtype=float)
+    table_top_z = get_body_top_z(objects.table_id)
+
+    current_pos, current_orn = p.getBasePositionAndOrientation(objects.cube_id)
+    body_bottom_z = get_body_bottom_z(objects.cube_id)
+
+    delta_z = table_top_z - body_bottom_z + config.PLACE_RELEASE_CLEARANCE
+
+    new_pos = [
+        float(target_xy[0]),
+        float(target_xy[1]),
+        float(current_pos[2] + delta_z),
+    ]
+
+    p.resetBasePositionAndOrientation(
+        objects.cube_id,
+        new_pos,
+        current_orn,
+    )
+
+
 def run_pick_place_demo():
     env = BulletEnv(gui=config.GUI)
     env.connect()
@@ -601,29 +627,3 @@ def run_pick_place_demo():
 
     finally:
         env.disconnect()
-
-
-def snap_cube_to_place_pose(objects):
-    """
-    Precisely place the cube at the commanded place target before release.
-    This removes the last-contact drift that causes visible placement offsets.
-    """
-    target_xy = np.array(config.PLACE_XY, dtype=float)
-    table_top_z = get_body_top_z(objects.table_id)
-
-    current_pos, current_orn = p.getBasePositionAndOrientation(objects.cube_id)
-    body_bottom_z = get_body_bottom_z(objects.cube_id)
-
-    delta_z = table_top_z - body_bottom_z + config.PLACE_RELEASE_CLEARANCE
-
-    new_pos = [
-        float(target_xy[0]),
-        float(target_xy[1]),
-        float(current_pos[2] + delta_z),
-    ]
-
-    p.resetBasePositionAndOrientation(
-        objects.cube_id,
-        new_pos,
-        current_orn,
-    )
