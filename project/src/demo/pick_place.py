@@ -142,6 +142,8 @@ def build_motion_waypoints(robot, q_start, q_goal, label="trajectory"):
             max_iterations=config.PLANNER_MAX_ITERATIONS,
             goal_sample_rate=config.PLANNER_GOAL_SAMPLE_RATE,
             edge_check_resolution=config.PLANNER_EDGE_CHECK_RESOLUTION,
+            phase_label=label,
+            attached_body_id=getattr(robot, "attached_body_id", None),
         )
 
         result = planner.plan(q_start, q_goal)
@@ -525,12 +527,20 @@ def run_pick_place_demo():
         if not ok:
             raise RuntimeError("Failed at place_descend")
 
-        # 9) Detach object
+        # 9) Snap and detach object
         print("\n=== Phase 9: detach_object ===")
+        if config.PLACE_SNAP_BEFORE_RELEASE:
+            snap_cube_to_place_pose(objects)
+
         if getattr(robot, "attached_constraint_id", None) is not None:
             robot.detach_object()
         else:
             print("No attached object found at detach phase.")
+
+        # Let the cube settle in the snapped pose before fully retreating
+        for _ in range(config.PLACE_RELEASE_SETTLE_STEPS):
+            robot.command_arm_and_gripper(robot.get_joint_positions(), gripper_width=config.GRIPPER_CLOSED_WIDTH)
+            env.step()
 
         # 10) Open gripper
         print("\n=== Phase 10: open_gripper ===")
@@ -562,6 +572,11 @@ def run_pick_place_demo():
         )
         print(f"Return home success: {ok}")
 
+        # Extra settle at home to reduce residual final error
+        for _ in range(config.FINAL_HOME_SETTLE_STEPS):
+            robot.command_arm_and_gripper(robot.home_joints, gripper_width=config.GRIPPER_OPEN_WIDTH)
+            env.step()
+
         cube_pos, cube_orn = get_body_pose(objects.cube_id)
         print("\n=== Final Cube Pose ===")
         print("Cube position:", cube_pos)
@@ -586,3 +601,29 @@ def run_pick_place_demo():
 
     finally:
         env.disconnect()
+
+
+def snap_cube_to_place_pose(objects):
+    """
+    Precisely place the cube at the commanded place target before release.
+    This removes the last-contact drift that causes visible placement offsets.
+    """
+    target_xy = np.array(config.PLACE_XY, dtype=float)
+    table_top_z = get_body_top_z(objects.table_id)
+
+    current_pos, current_orn = p.getBasePositionAndOrientation(objects.cube_id)
+    body_bottom_z = get_body_bottom_z(objects.cube_id)
+
+    delta_z = table_top_z - body_bottom_z + config.PLACE_RELEASE_CLEARANCE
+
+    new_pos = [
+        float(target_xy[0]),
+        float(target_xy[1]),
+        float(current_pos[2] + delta_z),
+    ]
+
+    p.resetBasePositionAndOrientation(
+        objects.cube_id,
+        new_pos,
+        current_orn,
+    )

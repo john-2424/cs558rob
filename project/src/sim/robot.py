@@ -867,3 +867,6 @@ class PandaRobotDemo:
         print("right_finger_pos:", right_pos)
         print("finger_midpoint:", finger_mid)
         print("pinch_offset (finger_mid - ee_pos):", pinch_offset)
+
+    def has_attached_object(self) -> bool:
+        return self.attached_body_id is not None

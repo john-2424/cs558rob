@@ -48,6 +48,8 @@ class JointSpaceRRTStarPlanner:
         max_iterations: int = 1000,
         goal_sample_rate: float = 0.10,
         edge_check_resolution: float = 0.03,
+        phase_label: str = "",
+        attached_body_id: Optional[int] = None,
     ):
         self.robot_id = robot_id
         self.arm_joint_indices = arm_joint_indices
@@ -62,6 +64,9 @@ class JointSpaceRRTStarPlanner:
         self.lower_limits, self.upper_limits = self._get_joint_limits()
 
         self.rng = np.random.default_rng(config.PLANNER_RANDOM_SEED)
+
+        self.phase_label = phase_label
+        self.attached_body_id = attached_body_id
 
     # ------------------------------------------------------------------
     # Joint-space utilities
@@ -186,14 +191,48 @@ class JointSpaceRRTStarPlanner:
             p.performCollisionDetection()
     
     def collision_free_configuration(self, q: np.ndarray) -> bool:
-        return (not self.in_collision(q)) and self.in_joint_limits(q)
+        q = np.asarray(q, dtype=float)
+
+        if not self.in_joint_limits(q):
+            return False
+
+        current_q = self.get_current_joint_state()
+        self.set_joint_state(q)
+
+        try:
+            p.performCollisionDetection()
+
+            contacts = p.getContactPoints(bodyA=self.robot_id)
+            for c in contacts:
+                if self._is_allowed_contact(c):
+                    continue
+
+                contact_distance = c[8] if len(c) > 8 else -1.0
+                if contact_distance < 0.0:
+                    return False
+
+            # Self collision
+            self_contacts = p.getContactPoints(bodyA=self.robot_id, bodyB=self.robot_id)
+            for c in self_contacts:
+                if self._is_allowed_contact(c):
+                    continue
+
+                contact_distance = c[8] if len(c) > 8 else -1.0
+                if contact_distance < 0.0:
+                    return False
+
+            return True
+
+        finally:
+            self.set_joint_state(current_q)
 
     def edge_in_collision(self, q_from: np.ndarray, q_to: np.ndarray) -> bool:
         """
         State-safe edge collision check.
 
         Interpolates from q_from to q_to and checks whether any sampled
-        intermediate configuration is in collision.
+        intermediate configuration is in collision, while respecting
+        allowed contacts for attached-motion phases.
         """
         q_from = np.asarray(q_from, dtype=float)
         q_to = np.asarray(q_to, dtype=float)
@@ -212,8 +251,22 @@ class JointSpaceRRTStarPlanner:
                 p.performCollisionDetection()
 
                 contacts = p.getContactPoints(bodyA=self.robot_id)
-                if len(contacts) > 0:
-                    return True
+                for c in contacts:
+                    if self._is_allowed_contact(c):
+                        continue
+
+                    contact_distance = c[8] if len(c) > 8 else -1.0
+                    if contact_distance < 0.0:
+                        return True
+
+                self_contacts = p.getContactPoints(bodyA=self.robot_id, bodyB=self.robot_id)
+                for c in self_contacts:
+                    if self._is_allowed_contact(c):
+                        continue
+
+                    contact_distance = c[8] if len(c) > 8 else -1.0
+                    if contact_distance < 0.0:
+                        return True
 
             return False
         finally:
@@ -569,3 +622,33 @@ class JointSpaceRRTStarPlanner:
         finally:
             self.restore_joint_state(q_saved)
             p.performCollisionDetection()
+
+    def _is_allowed_contact(self, contact) -> bool:
+        body_a = contact[1]
+        body_b = contact[2]
+        link_a = contact[3]
+        link_b = contact[4]
+
+        # Ignore contacts involving the attached object during attached-motion phases
+        if (
+            config.PLANNER_IGNORE_ATTACHED_OBJECT_COLLISIONS
+            and self.attached_body_id is not None
+            and self.phase_label in config.PLANNER_ATTACHED_MOTION_LABELS
+        ):
+            if body_a == self.attached_body_id or body_b == self.attached_body_id:
+                return True
+
+        # During attached motion, allow gentle robot/table contact checks to be skipped.
+        # This prevents near-table placement starts from being labeled invalid too aggressively.
+        if (
+            config.PLANNER_ALLOW_CONTACT_DURING_ATTACHED_MOTION
+            and self.phase_label in config.PLANNER_ATTACHED_MOTION_LABELS
+        ):
+            # body 0 is often the plane/table/cube depending on scene ordering,
+            # so we only skip if one body is the robot and the other is NOT another robot link.
+            if body_a == self.robot_id or body_b == self.robot_id:
+                other_body = body_b if body_a == self.robot_id else body_a
+                if other_body != self.robot_id:
+                    return True
+
+        return False
