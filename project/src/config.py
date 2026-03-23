@@ -15,7 +15,7 @@ TABLE_BASE_POS = [0.65, 0.0, 0.0]
 TABLE_BASE_ORN_EULER = [0.0, 0.0, 0.0]
 
 # Robot is beside the table on the plane.
-PANDA_BASE_POS = [0.65, -0.90, 0.0]
+PANDA_BASE_POS = [0.65, -0.75, 0.0]
 PANDA_BASE_ORN_EULER = [0.0, 0.0, 1.5708]
 
 # Cube should sit on the table.
@@ -53,12 +53,12 @@ PANDA_TEST_TARGET_JOINTS = [
 # Motion execution
 # =========================
 MAX_MOTION_STEPS = 1200
-SETTLE_STEPS = 120
-POST_MOTION_SETTLE_STEPS = 120
+SETTLE_STEPS = 60
+POST_MOTION_SETTLE_STEPS = 40
 
-TRAJ_NUM_WAYPOINTS = 25
-WAYPOINT_TOL = 0.03
-WAYPOINT_MAX_STEPS = 240
+TRAJ_NUM_WAYPOINTS = 12
+WAYPOINT_TOL = 0.010
+WAYPOINT_MAX_STEPS = 220
 
 # =========================
 # Logging / results
@@ -76,9 +76,12 @@ TRAJECTORY_SUMMARY_PATH = "results/m1/trajectory_summary.txt"
 # =========================
 # Custom PD controller
 # =========================
-PD_KP = [3.2, 3.2, 3.2, 3.5, 2.6, 2.6, 2.3]
-PD_KD = [0.35, 0.35, 0.35, 0.40, 0.28, 0.28, 0.24]
-PD_MAX_JOINT_VEL = [1.0, 1.0, 1.0, 1.0, 1.2, 1.2, 1.2]
+PD_KP = [5.0, 5.0, 5.0, 5.5, 4.0, 4.0, 3.5]
+PD_KD = [0.50, 0.50, 0.50, 0.55, 0.40, 0.40, 0.35]
+PD_MAX_JOINT_VEL = [2.5, 2.5, 2.5, 2.5, 3.0, 3.0, 3.0]
+# PD_KP = [5.0, 5.0, 5.0, 5.5, 4.0, 4.0, 3.5]
+# PD_KD = [0.50, 0.50, 0.50, 0.55, 0.40, 0.40, 0.35]
+# PD_MAX_JOINT_VEL = [2.0, 2.0, 2.0, 2.0, 2.5, 2.5, 2.5]
 
 # =========================
 # Planner scaffold / RRT*
@@ -89,7 +92,7 @@ PLANNER_GOAL_THRESHOLD = 0.10
 PLANNER_MAX_ITERATIONS = 3000
 PLANNER_GOAL_SAMPLE_RATE = 0.20
 PLANNER_EDGE_CHECK_RESOLUTION = 0.03
-PLANNER_INTERP_RESOLUTION = 0.05
+PLANNER_INTERP_RESOLUTION = 0.080
 USE_PLANNER = True
 PLANNER_FALLBACK_TO_INTERPOLATION = True
 PLANNER_DEBUG_PRINT_EVERY = 100
@@ -103,7 +106,7 @@ RRT_STAR_MAX_NEIGHBORS = 80
 # =========================
 # Planner validation targets
 # =========================
-USE_BLOCKED_PATH_TEST = True
+USE_BLOCKED_PATH_TEST = False
 PLANNER_BLOCKED_SEARCH_MAX_SAMPLES = 300
 PLANNER_BLOCKED_SEARCH_SEED = 7
 PLANNER_BLOCKED_TEST_TARGETS = [
@@ -113,3 +116,74 @@ PLANNER_BLOCKED_TEST_TARGETS = [
     [0.70, -0.60, -0.20, -1.80, 0.45, 2.00, 1.40],
     [-0.45, -0.20, 0.55, -2.25, 0.20, 1.75, -0.10],
 ]
+
+# =========================
+# Pick-and-place demo
+# =========================
+RUN_PICK_PLACE_DEMO = True
+
+# Gripper
+GRIPPER_OPEN_WIDTH = 0.04
+GRIPPER_CLOSED_WIDTH = 0.0
+GRIPPER_FORCE = 80.0
+GRIPPER_SETTLE_STEPS = 40
+
+# Cartesian task geometry
+PICK_HOVER_Z_OFFSET = 0.18
+
+# Lower than before so the hand comes closer to the cube before grasp.
+PICK_DESCEND_Z_OFFSET = -0.010
+
+PLACE_HOVER_Z_OFFSET = 0.18
+PLACE_DESCEND_Z_OFFSET = 0.040
+POST_PLACE_RETREAT_Z_OFFSET = 0.15
+
+# Optional retry if the first descend is still too high
+GRASP_DESCEND_RETRY_DELTA_Z = 0.030
+
+# Place target on the same table
+PLACE_XY = [0.52, 0.22]
+
+# End-effector top-down grasp orientation
+GRASP_EE_EULER = [3.14159, 0.0, 1.5708]
+
+# IK / grasp helpers
+IK_MAX_ITERATIONS = 200
+IK_RESIDUAL_THRESHOLD = 1e-4
+ATTACH_PARENT_LINK_INDEX = 11
+
+# Grasp validation
+ENABLE_GRASP_VALIDATION = True
+GRASP_MAX_EE_TO_CUBE_CENTER_DIST = 0.110
+GRASP_REQUIRE_CONTACT = True
+GRASP_MIN_TOTAL_CONTACTS = 1
+GRASP_MIN_FINGER_CONTACTS = 1
+GRASP_MAX_FINGER_TO_CUBE_DIST = 0.030
+GRASP_USE_FINGER_DISTANCE = True
+
+GRASP_DESCEND_WAYPOINT_TOL = 0.012
+GRASP_DESCEND_WAYPOINT_MAX_STEPS = 260
+
+# Finger links on Panda
+LEFT_FINGER_LINK_INDEX = 9
+RIGHT_FINGER_LINK_INDEX = 10
+
+# Results / phase naming
+PICK_PLACE_PHASE_PREFIX = "pick_place"
+
+# Pinch-point targeting
+USE_PINCH_POINT_TARGETING = False
+
+# Optional manual fallback if you ever want to override automatically computed offset.
+MANUAL_PINCH_OFFSET_X = 0.0
+MANUAL_PINCH_OFFSET_Y = 0.0
+MANUAL_PINCH_OFFSET_Z = 0.0
+USE_MANUAL_PINCH_OFFSET = False
+
+# Manual Cartesian grasp bias to compensate for wrist-frame / visual contact offset
+GRASP_TARGET_BIAS_X = 0.0
+GRASP_TARGET_BIAS_Y = 0.0
+GRASP_TARGET_BIAS_Z = 0.0
+
+# Apply the same XY bias to lift as well
+APPLY_GRASP_BIAS_TO_LIFT = True

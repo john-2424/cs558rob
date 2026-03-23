@@ -100,6 +100,374 @@ Small correction before submission
 
 One thing to keep in mind: the report should not claim that RRT* and PD tracking were already implemented and demonstrated, because the current evidence shows that the completed classical component for this milestone is interpolated waypoint execution with PyBullet position control, while RRT* and explicit PD tracking remain next steps. That distinction keeps the report accurate and stronger.
 
+
+
+
+
+
+
+
+
+Updated Project Report Draft
+1. Introduction
+
+This project studies a hybrid robotic manipulation framework that combines classical motion planning with learning-based adaptation for robust tabletop task execution. The experimental platform is a Franka Emika Panda 7-DoF manipulator simulated in PyBullet. The long-term goal is to combine structured planner-generated motion with learning-based residual correction so that the system retains the feasibility and interpretability of classical planning while gaining robustness to modeling error, disturbance, and execution mismatch.
+
+The project began from a Milestone 1 baseline focused on simulation setup, scene construction, robot/environment state extraction, and simple waypoint-based joint-space execution. That earlier baseline provided a stable software foundation but relied on interpolated joint targets and simulator position control.
+
+The current implementation extends that baseline substantially. The system now includes:
+
+a custom joint-space PD controller,
+robot API support for explicit PD-based tracking,
+a planner module with collision-aware joint-space search,
+blocked-direct-path testing for nontrivial planning validation,
+RRT and RRT* planning modes,
+shortcut smoothing of sparse planner paths,
+replanning of return motion from the robot’s actual reached state, and
+seeded planner randomness for reproducible experiments.
+
+The nominal task context remains tabletop manipulation with a cube object on a table. While a full pick-and-place routine and learning-based residual policy are left for future milestones, the present system already establishes a strong classical manipulation stack: scene setup, geometry-aware placement, state extraction, custom control, planning, logging, and reproducible blocked-case motion execution.
+
+2. Methods
+2.1 Simulation environment setup
+
+The simulation environment is implemented in PyBullet using a fixed-base Franka Emika Panda manipulator. PyBullet was chosen because it supports URDF-based robot loading, rigid-body dynamics, collision detection, state queries, and convenient control interfaces suitable for both classical robotics experiments and later reinforcement learning extensions.
+
+The scene contains:
+
+a ground plane,
+a rectangular table,
+a cube placed on the tabletop, and
+the Panda robot placed beside the table and oriented toward the workspace.
+
+Geometry-aware placement is used to make the scene reproducible. After loading the table, the code measures its axis-aligned bounding box (AABB), shifts the table so that its lowest point lies on the ground plane, computes the tabletop height, and then places the cube so that its bottom rests on the table surface with a small clearance. In the validated setup, the table bottom is at 
+𝑧
+=
+0.0
+z=0.0 m and the tabletop height is approximately 
+𝑧
+=
+0.052
+z=0.052 m. The cube is then placed at the corresponding support height on the table.
+
+2.2 Software organization
+
+The codebase was organized early into modular components so that planning, control, learning, and evaluation could be added incrementally without restructuring the project. The core modules are:
+
+sim/ for environment loading and robot state/control interfaces,
+controller/ for the custom PD implementation,
+planner/ for direct-path planning, RRT, and RRT*,
+trajectory/ for path interpolation into executable waypoints,
+utils/ / logging utilities for experiment recording, and
+main.py for experiment orchestration.
+
+This modular organization enabled the project to evolve from a simple interpolated-trajectory baseline into a planner-driven, PD-tracked motion-execution pipeline without major code reorganization.
+
+2.3 Robot loading and state extraction
+
+The Panda URDF is loaded with a fixed base. Joint information is queried from the simulator to extract arm joint indices, gripper joint indices, joint limits, and the end-effector link index. In the validated runs, the simulator reports:
+
+7 controllable arm joints with indices [0,1,2,3,4,5,6],
+2 gripper joints with indices [9,10], and
+end-effector link index 11.
+
+The simulator is also queried for:
+
+current joint positions,
+current joint velocities,
+end-effector pose,
+cube pose, and
+table AABB geometry. At initialization, the measured joint positions match the home configuration closely and the joint velocities are near zero, confirming stable pose holding at startup.
+2.4 Stable home configuration and geometry-based initialization
+
+A nominal home configuration is used as the default starting state for all motion experiments. After scene placement, the robot is reset to this home joint vector and commanded to hold that pose, ensuring repeatable initial conditions. This was important because early experiments showed that seemingly small scene-placement inconsistencies could affect perceived stability and tracking repeatability. The latest validated startup logs show near-zero joint velocities, a consistent end-effector pose, and a grounded scene with correctly positioned table and cube.
+
+2.5 Custom joint-space PD control
+
+A major update beyond the original baseline is the implementation of a custom joint-space PD controller. Instead of relying only on PyBullet’s built-in position servo logic, the controller explicitly computes a desired joint velocity command from joint position and velocity error:
+
+𝑞
+˙
+𝑐
+𝑚
+𝑑
+=
+𝐾
+𝑝
+(
+𝑞
+𝑑
+𝑒
+𝑠
+−
+𝑞
+)
++
+𝐾
+𝑑
+(
+𝑞
+˙
+𝑑
+𝑒
+𝑠
+−
+𝑞
+˙
+)
+.
+q
+˙
+	​
+
+cmd
+	​
+
+=K
+p
+	​
+
+(q
+des
+	​
+
+−q)+K
+d
+	​
+
+(
+q
+˙
+	​
+
+des
+	​
+
+−
+q
+˙
+	​
+
+).
+
+The resulting command is then applied through PyBullet joint velocity control. This creates a clear separation between:
+
+path generation,
+tracking control law, and
+simulator actuation interface.
+
+The execution loop logs both final waypoint error and controller effort (last_max_vel_cmd) so that tracking behavior can be monitored quantitatively. In the validated runs, waypoint errors settle repeatedly near the chosen tolerance band of approximately 
+0.03
+0.03 rad, demonstrating stable tracking under the custom controller.
+
+2.6 Waypoint execution and logging
+
+Motion execution is carried out waypoint-by-waypoint. For each desired joint target:
+
+the controller commands the arm,
+the simulator steps forward,
+the robot state is queried,
+the maximum absolute joint error is evaluated, and
+execution advances only when the waypoint is reached within a specified tolerance.
+
+The execution code logs:
+
+phase label,
+waypoint index,
+global simulation step,
+target joints,
+actual joints,
+joint error,
+end-effector position, and
+end-effector orientation.
+
+This produces a detailed trajectory log saved to results/m1/trajectory_log.json for later visualization and comparison. The current loop also prints per-waypoint final error and controller effort to help diagnose tracking difficulty and verify successful convergence.
+
+2.7 Planner scaffold and direct-path validation
+
+The first planner stage implemented a direct-path validator in joint space. Given a start and goal joint vector, the planner:
+
+checks joint-limit validity,
+checks collision-free validity of start and goal,
+checks whether the straight joint-space edge is collision-free, and
+if valid, returns a sparse path 
+[
+𝑞
+𝑠
+𝑡
+𝑎
+𝑟
+𝑡
+,
+𝑞
+𝑔
+𝑜
+𝑎
+𝑙
+]
+[q
+start
+	​
+
+,q
+goal
+	​
+
+].
+
+The planner performs state-safe collision checking by temporarily resetting the robot into sampled joint states, invoking collision detection, and then restoring the original simulator state afterward. This avoids polluting the live execution state during planning. The direct-path mode was successfully validated on easy cases, where the planner reported num_nodes: 2 and Direct path found. for both forward and return motion.
+
+2.8 Blocked-direct-path target selection
+
+To move beyond trivial direct-path cases, a blocked-path validation harness was added. The system first evaluates a small fixed candidate bank of joint targets, and if none produce a blocked straight edge, it performs a seeded randomized search over joint-space samples. A candidate is accepted only if:
+
+the start state is collision-free,
+the goal state is collision-free, and
+the direct joint-space edge from start to goal is not collision-free.
+
+This mechanism ensures that the planner is tested on a genuinely nontrivial problem rather than a case where straight-line interpolation is sufficient. In the final seeded configuration, the blocked target is reproducibly selected at random sample 114.
+
+2.9 RRT and RRT* planning
+
+The planner was then extended from direct-path checking into a true sampling-based search. The first version was an RRT-style planner that:
+
+samples random joint configurations,
+finds the nearest existing tree node,
+steers toward the sample by a limited step size,
+rejects invalid or colliding configurations/edges,
+attempts direct connection to the goal when possible, and
+reconstructs a sparse path from the goal back to the root.
+
+This baseline was then upgraded to RRT* by adding:
+
+local neighbor search,
+best-parent selection based on path cost,
+rewiring of nearby nodes when a cheaper connection is found, and
+tracking of the best goal node found over the full iteration budget.
+
+This means the planner now improves path quality over time instead of simply returning the first feasible solution. The best-goal cost is printed periodically during planning, alongside the number of nodes and cumulative rewires, so that optimization behavior can be observed directly.
+
+2.10 Path shortcut smoothing
+
+After the planner returns a sparse path, an optional shortcut smoother attempts to remove unnecessary intermediate nodes. For any pair of sparse path nodes 
+𝑞
+𝑖
+q
+i
+	​
+
+ and 
+𝑞
+𝑗
+q
+j
+	​
+
+, if the direct edge is collision-free, the intervening nodes are removed. This produces a shorter sparse path before dense interpolation into execution waypoints.
+
+In the final seeded runs, shortcut smoothing reduced the forward sparse path from 12 nodes to 3 and reduced sparse path length from 4.8478 to 4.3043. It also reduced the return sparse path from 4 nodes to 3 and reduced sparse path length from 3.9192 to 3.8935. This directly reduced the number of dense execution waypoints and improved total execution efficiency.
+
+2.11 Replanning return motion from actual reached state
+
+An important robustness fix was added after observing that return execution could fail if the forward motion stopped early and the return plan still assumed the ideal target state as its start. The pipeline was updated so that return planning always starts from the robot’s actual measured joint configuration after the forward segment, rather than the nominal goal configuration alone.
+
+This change eliminated severe return-start mismatches and allowed safe recovery when forward tracking or planning did not exactly end at the intended goal. In the final seeded blocked-case runs, both directions succeed, but this change remains important for robustness and is part of the current planning/execution architecture.
+
+2.12 Reproducibility through seeded planning
+
+Because sampling-based planning is stochastic, a planner random seed was introduced so that blocked-target selection, tree growth, and final planner outputs are reproducible. In the seeded validation, repeated runs selected the same blocked target (sample 114), produced the same best goal costs, same sparse-path reductions, same waypoint counts, same simulation-step counts, and the same final home-return error. This reproducibility is essential for fair comparison between planner variants and for report-quality evaluation.
+
+3. Preliminary Results
+
+The current implementation establishes a substantially stronger classical robotics baseline than the earlier milestone-only system. The environment launches correctly, the Panda is loaded with the expected 7 arm joints and 2 gripper joints, and the scene geometry is placed consistently with the table grounded at 
+𝑧
+=
+0
+z=0 and the cube placed on the tabletop at the measured support height. Robot and environment state extraction are functioning correctly, including joint state, end-effector pose, cube pose, and table AABB access.
+
+The custom PD-controlled waypoint executor also behaves stably. Across the current runs, waypoint errors repeatedly converge near the chosen tolerance threshold of approximately 
+0.03
+0.03 rad rather than diverging or oscillating. This is visible in both direct-path and planner-generated motion, where final per-waypoint errors remain bounded and the final home-return error stays within tolerance. In the strongest seeded run, the final home-return maximum absolute joint error is 
+0.0298286
+0.0298286 rad.
+
+The planner pipeline progressed through several meaningful stages. First, a direct-path planner successfully solved simple cases, producing 15-waypoint forward and return trajectories from a direct joint-space edge. In those easy cases, the planner reported num_nodes: 2 and Direct path found. in both directions, verifying that the planner/execution interface was correct before harder testing was introduced.
+
+The blocked-case validation harness then demonstrated that nontrivial planning behavior was truly needed. Using seeded randomized target search, the system reproducibly selected a goal for which the start and goal were individually valid but the direct joint-space edge was blocked. This forced the planner to rely on tree expansion rather than the direct shortcut. That same seeded blocked target is selected consistently at random sample 114 in repeated runs.
+
+A first successful RRT baseline on the blocked case showed that a collision-free route could be found, but the resulting paths were long and expensive to execute. One early blocked-case RRT* run before final tuning required 2490 nodes, produced a sparse path of 17 nodes, generated 139 execution waypoints, and required 10918 simulation steps for the forward segment. Although successful, this result showed that feasible path finding alone was not sufficient; path quality also mattered for control effort and runtime.
+
+After neighbor-radius tuning, shortcut smoothing, and seeded reproducibility were added, path quality improved substantially. In the final seeded blocked-case run:
+
+the forward planner used 2504 nodes,
+returned an RRT* path with best cost 4.8478 after 3000 iterations,
+reduced the sparse path from 12 nodes to 3 through shortcut smoothing,
+reduced sparse path length from 4.8478 to 4.3043,
+generated 88 dense execution waypoints, and
+completed the forward segment in 6309 simulation steps.
+
+The return segment in the same seeded run also succeeded robustly:
+
+4708 nodes were explored,
+the planner returned an RRT* path with best cost 3.9192 after 3000 iterations,
+sparse nodes were reduced from 4 to 3,
+sparse path length was reduced from 3.9192 to 3.8935,
+80 dense execution waypoints were generated, and
+the return execution completed in 6137 simulation steps. The final home-return maximum joint error was 
+0.0298286
+0.0298286 rad.
+
+These repeated seeded runs were effectively identical, confirming that the planner is now reproducible for this experiment configuration. The same blocked target was selected, the same planner costs were found, the same path simplifications were applied, the same waypoint counts were generated, and the same simulation-step counts and final home error were observed. This is strong evidence that the current planning-and-control stack is no longer just working accidentally, but has become a repeatable experimental system.
+
+Taken together, the current system now demonstrates:
+
+correct simulation and state-access infrastructure,
+explicit custom PD trajectory tracking,
+nontrivial blocked-case sampling-based planning,
+path-quality improvement through RRT* and shortcut smoothing, and
+stable round-trip execution under a reproducible seeded setup.
+4. Future Work
+
+The most important next step is to move from joint-space motion generation toward a full manipulation task pipeline. The current system already plans and executes arm motions in a tabletop scene, but the next milestone should integrate these motions into a nominal pick-and-place routine for the cube, including grasp approach, lift, transfer, and placement phases.
+
+A second important next direction is to strengthen evaluation. The seeded planner now makes it possible to run controlled ablations comparing:
+
+RRT,
+RRT*,
+RRT* with shortcut smoothing, and
+possibly different controller gains or waypoint densities.
+
+These comparisons can quantify the benefits of optimization and smoothing in terms of planner cost, sparse path length, dense waypoint count, simulation-step count, and final tracking error.
+
+The longer-term learning objective of the project remains unchanged: use the planner/controller stack as a nominal classical backbone and then add residual learning on top of it. Once the manipulation pipeline is complete, future work will introduce disturbance injection, task-level reward design, and residual reinforcement learning to compensate for execution mismatch and improve robustness relative to purely classical planning and control. This would allow the project to study the interaction between planner-guided structure and learned adaptation in a controlled tabletop manipulation setting.
+
+Finally, the current collision model is still conservative and the planner remains relatively expensive on hard blocked cases. Future improvements can refine collision filtering, improve planner efficiency, and introduce richer post-processing or time-parameterization of paths. However, the present implementation already provides a strong classical foundation upon which those future planning and learning extensions can be layered.
+
+Suggested Figures to Include
+
+Figure 1. PyBullet scene showing the Panda arm beside the table and the cube on the tabletop.
+Figure 2. Forward and return planner statistics for the seeded blocked-case experiment.
+Figure 3. End-effector position or path during the seeded blocked-case execution.
+Figure 4. Maximum joint tracking error versus global sample index for the seeded blocked-case run.
+Figure 5. Comparison of sparse path nodes / dense waypoints before and after shortcut smoothing.
+
+Suggested Captions
+
+Figure 1. PyBullet tabletop manipulation scene used for planning and control evaluation. The Franka Panda manipulator is placed beside the table and oriented toward the workspace. A cube object is positioned on the tabletop after geometry-based placement using the measured table AABB.
+
+Figure 2. Planner statistics for the seeded blocked-direct-path experiment. The direct joint-space edge between start and goal is infeasible, so the motion must be solved through tree-based exploration. The RRT* planner reports node count, best-goal cost, and final path statistics for both forward and return motion.
+
+Figure 3. Executed end-effector motion during the blocked-case experiment. The trajectory reflects planner-generated motion tracked by the custom joint-space PD controller rather than simple direct interpolation alone.
+
+Figure 4. Maximum absolute joint tracking error versus sample index during planner-generated motion execution. Errors rise when a new waypoint is commanded and then decay as the custom PD controller converges toward the target.
+
+Figure 5. Sparse planner path before and after shortcut smoothing. Smoothing reduces unnecessary intermediate nodes when direct collision-free shortcuts exist, leading to fewer dense execution waypoints and lower simulation-step cost.
+
+
+
+
+
+
 9. Immediate next step after this works
 
 Once this runs, the next logical step is:

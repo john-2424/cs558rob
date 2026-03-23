@@ -14,7 +14,7 @@ from src.sim.state import (
 from src.trajectory.joint_trajectory import interpolate_joint_trajectory
 from src.utils.logger import TrajectoryLogger
 from src.planner.rrtstar import JointSpaceRRTStarPlanner
-
+from src.demo.pick_place import run_pick_place_demo
 
 def move_body_delta_z(body_id: int, delta_z: float):
     """Shift a body's base position along z by delta_z."""
@@ -414,4 +414,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    if config.RUN_PICK_PLACE_DEMO:
+        run_pick_place_demo()
+    else:
+        main()
