@@ -13,6 +13,7 @@ from src.sim.state import (
 )
 from src.trajectory.joint_trajectory import interpolate_joint_trajectory
 from src.utils.logger import TrajectoryLogger
+from src.planner.rrtstar import JointSpaceRRTStarPlanner
 
 
 def move_body_delta_z(body_id: int, delta_z: float):
@@ -155,6 +156,144 @@ def execute_waypoint_trajectory(
     return True
 
 
+def build_motion_waypoints(robot, q_start, q_goal, label="trajectory"):
+    q_start = np.asarray(q_start, dtype=float)
+    q_goal = np.asarray(q_goal, dtype=float)
+
+    if config.USE_PLANNER:
+        planner = JointSpaceRRTStarPlanner(
+            robot_id=robot.robot_id,
+            arm_joint_indices=robot.arm_joint_indices,
+            step_size=config.PLANNER_STEP_SIZE,
+            goal_threshold=config.PLANNER_GOAL_THRESHOLD,
+            max_iterations=config.PLANNER_MAX_ITERATIONS,
+            goal_sample_rate=config.PLANNER_GOAL_SAMPLE_RATE,
+            edge_check_resolution=config.PLANNER_EDGE_CHECK_RESOLUTION,
+        )
+
+        result = planner.plan(q_start, q_goal)
+
+        print(f"\n=== Planner result: {label} ===")
+        print(f"success: {result.success}")
+        print(f"num_nodes: {result.num_nodes}")
+        print(f"message: {result.message}")
+
+        if result.success:
+            sparse_path = result.path
+            sparse_nodes_before = len(sparse_path)
+            sparse_length_before = planner.path_length(sparse_path)
+
+            if config.ENABLE_PATH_SHORTCUT_SMOOTHING:
+                sparse_path = planner.shortcut_path(
+                    sparse_path,
+                    max_passes=config.PATH_SHORTCUT_MAX_PASSES,
+                )
+
+            sparse_nodes_after = len(sparse_path)
+            sparse_length_after = planner.path_length(sparse_path)
+
+            path = planner.interpolate_path(
+                sparse_path,
+                max_segment_length=config.PLANNER_INTERP_RESOLUTION,
+            )
+
+            print(f"Sparse path nodes before smoothing: {sparse_nodes_before}")
+            print(f"Sparse path nodes after smoothing:  {sparse_nodes_after}")
+            print(f"Sparse path length before smoothing: {sparse_length_before:.4f}")
+            print(f"Sparse path length after smoothing:  {sparse_length_after:.4f}")
+            print(f"Planner path waypoints: {len(path)}")
+
+            return path
+
+        if config.PLANNER_FALLBACK_TO_INTERPOLATION:
+            print("Planner failed. Falling back to interpolated joint trajectory.")
+
+        else:
+            raise RuntimeError(f"Planner failed for {label}: {result.message}")
+
+    fallback_path = interpolate_joint_trajectory(
+        q_start=q_start,
+        q_goal=q_goal,
+        num_waypoints=config.TRAJ_NUM_WAYPOINTS,
+    )
+    print(f"Fallback interpolated waypoints: {len(fallback_path)}")
+    return fallback_path
+
+
+def select_blocked_direct_path_goal(robot, q_start):
+    """
+    Search for a goal such that:
+    - start is collision-free
+    - goal is collision-free
+    - direct edge start->goal is in collision
+
+    First checks configured candidates, then falls back to randomized search.
+    """
+    planner = JointSpaceRRTStarPlanner(
+        robot_id=robot.robot_id,
+        arm_joint_indices=robot.arm_joint_indices,
+        step_size=config.PLANNER_STEP_SIZE,
+        goal_threshold=config.PLANNER_GOAL_THRESHOLD,
+        max_iterations=config.PLANNER_MAX_ITERATIONS,
+        goal_sample_rate=config.PLANNER_GOAL_SAMPLE_RATE,
+        edge_check_resolution=config.PLANNER_EDGE_CHECK_RESOLUTION,
+    )
+
+    q_start = np.asarray(q_start, dtype=float)
+
+    print("\n=== Searching for blocked direct-path target ===")
+
+    # 1) Try configured candidates first
+    for idx, q_goal in enumerate(config.PLANNER_BLOCKED_TEST_TARGETS):
+        q_goal = np.asarray(q_goal, dtype=float)
+
+        start_ok = planner.collision_free_configuration(q_start)
+        goal_ok = planner.collision_free_configuration(q_goal)
+        direct_ok = planner.collision_free_edge(q_start, q_goal)
+
+        print(
+            f"candidate={idx} | "
+            f"start_ok={start_ok} | "
+            f"goal_ok={goal_ok} | "
+            f"direct_ok={direct_ok}"
+        )
+
+        if start_ok and goal_ok and (not direct_ok):
+            print(f"Selected blocked-path candidate index {idx}: {q_goal}")
+            return q_goal
+
+    # 2) Randomized search fallback
+    rng = np.random.default_rng(config.PLANNER_BLOCKED_SEARCH_SEED)
+    print("\nNo blocked candidate in fixed bank. Starting randomized blocked-path search...")
+
+    lower = planner.lower_limits
+    upper = planner.upper_limits
+
+    for sample_idx in range(config.PLANNER_BLOCKED_SEARCH_MAX_SAMPLES):
+        q_goal = rng.uniform(lower, upper)
+
+        start_ok = planner.collision_free_configuration(q_start)
+        goal_ok = planner.collision_free_configuration(q_goal)
+
+        if not start_ok or not goal_ok:
+            continue
+
+        direct_ok = planner.collision_free_edge(q_start, q_goal)
+
+        if (sample_idx + 1) % 25 == 0:
+            print(
+                f"random_sample={sample_idx+1} | "
+                f"goal_ok={goal_ok} | direct_ok={direct_ok}"
+            )
+
+        if not direct_ok:
+            print(f"Selected randomized blocked-path goal at sample {sample_idx+1}: {q_goal}")
+            return q_goal
+
+    print("No blocked-direct-path goal found. Falling back to PANDA_TEST_TARGET_JOINTS.")
+    return np.array(config.PANDA_TEST_TARGET_JOINTS, dtype=float)
+
+
 def main():
     env = BulletEnv(gui=config.GUI)
     env.connect()
@@ -198,21 +337,21 @@ def main():
     print_scene_diagnostics(robot, objects)
 
     home_joints = robot.home_joints
-    target_joints = np.array(config.PANDA_TEST_TARGET_JOINTS, dtype=float)
-
-    forward_waypoints = interpolate_joint_trajectory(
-        q_start=home_joints,
-        q_goal=target_joints,
-        num_waypoints=config.TRAJ_NUM_WAYPOINTS,
-    )
-
-    return_waypoints = interpolate_joint_trajectory(
-        q_start=target_joints,
-        q_goal=home_joints,
-        num_waypoints=config.TRAJ_NUM_WAYPOINTS,
-    )
+    if config.USE_BLOCKED_PATH_TEST:
+        target_joints = select_blocked_direct_path_goal(robot, robot.home_joints)
+    else:
+        target_joints = np.array(config.PANDA_TEST_TARGET_JOINTS, dtype=float)
 
     logger = TrajectoryLogger() if config.ENABLE_TRAJECTORY_LOGGING else None
+
+    forward_waypoints = build_motion_waypoints(
+        robot=robot,
+        q_start=home_joints,
+        q_goal=target_joints,
+        label="home_to_target",
+    )
+
+    print(f"Forward waypoint count: {len(forward_waypoints)}")
 
     forward_ok = execute_waypoint_trajectory(
         env=env,
@@ -223,11 +362,25 @@ def main():
         label="home_to_target",
         logger=logger,
     )
-    print(f"Forward success: {forward_ok}")
 
-    for _ in range(config.SETTLE_STEPS):
-        robot.command_arm_and_gripper(target_joints)
+    for _ in range(config.POST_MOTION_SETTLE_STEPS):
+        robot.hold_gripper_open()
         env.step()
+
+    if not forward_ok:
+        print("Forward motion did not fully succeed. Replanning return from actual current state.")
+
+    actual_return_start = robot.get_joint_positions().copy()
+    print(f"Actual return start joints: {actual_return_start}")
+
+    return_waypoints = build_motion_waypoints(
+        robot=robot,
+        q_start=actual_return_start,
+        q_goal=home_joints,
+        label="target_to_home",
+    )
+
+    print(f"Return waypoint count: {len(return_waypoints)}")
 
     return_ok = execute_waypoint_trajectory(
         env=env,
