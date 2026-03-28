@@ -208,8 +208,8 @@ __marimo__/
 
 
 .vs/
-pybullet-gym/
-modified-gym-env/
+# pybullet-gym/
+# modified-gym-env/
 RaceCar/
 github-pat.txt
 **/data/**
