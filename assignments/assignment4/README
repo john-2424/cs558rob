@@ -1,0 +1,10 @@
+Please follow the instructions below to build the environment:
+
+Use python==3.8
+
+1. cd pybullet-gym/
+2. pip install -e .
+3. cd ../modified-gym-env/
+4. python -m pip install "pip<24.1"
+5. pip install -e .
+
