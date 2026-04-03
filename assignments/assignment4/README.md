@@ -18,11 +18,11 @@ conda activate cs558_ass4
 ```
 Please follow the instructions below to build the environment:
 
-Use python==3.8
-
+0. Add pybullet-gym/ and /modified-gym-env/ to the root of the codebase
 1. cd pybullet-gym/
 2. pip install -e .
-3. cd ../modified-gym-env/
+4. Update modified-gym-env/setup.py - install_requires parameter's value list with ['gym==0.21.0', 'pybullet>=3.2.1,<3.3']
+3. cd /modified-gym-env/
 4. python -m pip install "pip<24.1"
 5. pip install -e .
 6. pip install ../requirements.txt
