@@ -108,7 +108,7 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
         critic_network=critic,
         clip_epsilon=config.PPO_CLIP_EPSILON,
         entropy_coef=config.PPO_ENT_COEF,
-        critic_coef=0.5,
+        critic_coeff=0.5,
         loss_critic_type="l2",
     )
 
