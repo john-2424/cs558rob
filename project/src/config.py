@@ -242,7 +242,7 @@ PPO_GAE_LAMBDA = 0.95
 PPO_ENT_COEFF = 0.01
 
 # Parallel env workers for data collection (set to 1 to disable multiprocessing)
-PPO_NUM_COLLECTOR_WORKERS = 1
+PPO_NUM_COLLECTOR_WORKERS = 8
 
 # Evaluation
 EVAL_EPISODES_PER_LEVEL = 50
