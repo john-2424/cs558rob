@@ -185,9 +185,11 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
         replay_buffer.extend(batch_data.reshape(-1))
 
         # PPO update epochs
+        num_mini_batches = max(1, config.PPO_FRAMES_PER_BATCH // config.PPO_MINI_BATCH_SIZE)
         epoch_losses = []
         for _ in range(config.PPO_EPOCHS):
-            for minibatch in replay_buffer:
+            for _ in range(num_mini_batches):
+                minibatch = replay_buffer.sample()
                 loss_td = loss_module(minibatch)
 
                 loss = (
