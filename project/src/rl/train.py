@@ -157,7 +157,7 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
     total_frames = 0
     batch_idx = 0
     episode_rewards = []
-    episode_successes = []
+    ep_reward_acc = None  # per-env running episode-reward accumulator (lazy init)
     start_time = time.time()
 
     print(f"Starting PPO training: mode={mode}, total_timesteps={total_timesteps}")
@@ -208,31 +208,53 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
         # Logging
         mean_loss = np.mean(epoch_losses) if epoch_losses else 0.0
 
-        # Extract episode-level info from batch
-        done_mask = batch_data["done"].squeeze(-1) if batch_data["done"].dim() > 1 else batch_data["done"]
-        if done_mask.any():
-            done_rewards = batch_data["episode_reward"][done_mask]
-            if done_rewards.numel() > 0:
-                for r in done_rewards.flatten().tolist():
-                    episode_rewards.append(r)
+        # --- Episode tracking using TorchRL's nested "next" keys ---
+        # Rewards and dones live under ("next", "reward") and ("next", "done").
+        step_rewards_t = batch_data.get(("next", "reward"))
+        done_t = batch_data.get(("next", "done"))
+
+        mean_step_reward = float(step_rewards_t.mean().item()) if step_rewards_t is not None else 0.0
+        num_dones = int(done_t.sum().item()) if done_t is not None else 0
+
+        # Per-env accumulation so episode returns can span batches.
+        if step_rewards_t is not None and done_t is not None:
+            r = step_rewards_t.squeeze(-1) if step_rewards_t.shape[-1] == 1 else step_rewards_t
+            d = done_t.squeeze(-1) if done_t.shape[-1] == 1 else done_t
+            if r.dim() == 1:
+                r = r.unsqueeze(0)
+                d = d.unsqueeze(0)
+            num_envs, T = r.shape[0], r.shape[1]
+            if ep_reward_acc is None or len(ep_reward_acc) != num_envs:
+                ep_reward_acc = [0.0] * num_envs
+            r_list = r.tolist()
+            d_list = d.bool().tolist()
+            for w in range(num_envs):
+                for t in range(T):
+                    ep_reward_acc[w] += r_list[w][t]
+                    if d_list[w][t]:
+                        episode_rewards.append(ep_reward_acc[w])
+                        ep_reward_acc[w] = 0.0
 
         elapsed = time.time() - start_time
         fps = total_frames / elapsed if elapsed > 0 else 0
 
         writer.add_scalar("train/loss", mean_loss, total_frames)
         writer.add_scalar("train/fps", fps, total_frames)
+        writer.add_scalar("train/mean_step_reward", mean_step_reward, total_frames)
+        writer.add_scalar("train/episodes_completed", len(episode_rewards), total_frames)
 
+        mean_ep_reward = float(np.mean(episode_rewards[-20:])) if episode_rewards else float("nan")
         if episode_rewards:
-            recent_rewards = episode_rewards[-20:]
-            mean_reward = np.mean(recent_rewards)
-            writer.add_scalar("train/mean_episode_reward", mean_reward, total_frames)
+            writer.add_scalar("train/mean_episode_reward", mean_ep_reward, total_frames)
 
         print(
             f"batch={batch_idx:4d} | "
             f"frames={total_frames:8d}/{total_timesteps} | "
             f"loss={mean_loss:.4f} | "
-            f"fps={fps:.0f} | "
-            f"episodes={len(episode_rewards)}"
+            f"step_r={mean_step_reward:+.3f} | "
+            f"ep_r={mean_ep_reward:+.2f} | "
+            f"eps={len(episode_rewards)} (+{num_dones}) | "
+            f"fps={fps:.0f}"
         )
 
         # Periodic checkpoint
