@@ -208,7 +208,8 @@ def _eval_one_method(label, mode, model_path, perturb_level, num_episodes, num_w
     return result
 
 
-def run_evaluation(model_path=None, rl_only_model_path=None, log_file_path=None):
+def run_evaluation(model_path=None, rl_only_model_path=None, log_file_path=None,
+                   verbose_episodes=False):
     model_path = model_path or os.path.join(config.M2_MODEL_DIR, "final_model.pt")
     log_file_path = log_file_path or os.path.join(config.M2_RESULTS_DIR, "eval_log.txt")
     os.makedirs(config.M2_RESULTS_DIR, exist_ok=True)
@@ -250,6 +251,7 @@ def run_evaluation(model_path=None, rl_only_model_path=None, log_file_path=None)
                 perturb_level=perturb_level,
                 num_episodes=num_episodes,
                 num_workers=num_workers,
+                verbose_episodes=verbose_episodes,
             )
 
             if hybrid_available:
@@ -260,6 +262,7 @@ def run_evaluation(model_path=None, rl_only_model_path=None, log_file_path=None)
                     perturb_level=perturb_level,
                     num_episodes=num_episodes,
                     num_workers=num_workers,
+                    verbose_episodes=verbose_episodes,
                 )
 
             if rl_only_available:
@@ -270,6 +273,7 @@ def run_evaluation(model_path=None, rl_only_model_path=None, log_file_path=None)
                     perturb_level=perturb_level,
                     num_episodes=num_episodes,
                     num_workers=num_workers,
+                    verbose_episodes=verbose_episodes,
                 )
 
         total_elapsed = time.time() - run_start

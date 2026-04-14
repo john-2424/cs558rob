@@ -7,7 +7,7 @@ def main():
         train()
     elif config.RUN_M2_EVALUATION:
         from src.rl.evaluate import run_evaluation
-        run_evaluation()
+        run_evaluation(verbose_episodes=getattr(config, "EVAL_VERBOSE_EPISODES", False))
     elif config.RUN_M2_RESIDUAL_DEMO:
         from src.demo.pick_place_residual import run_pick_place_with_residual
         run_pick_place_with_residual()
