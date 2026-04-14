@@ -225,12 +225,14 @@ class PandaGraspEnv(gymnasium.Env):
         q_start, q_goal = self._phase_targets[self._phase]
         self._waypoints = self._build_phase_waypoints(q_start, q_goal)
         self._waypoint_idx = 0
+        self._waypoint_step_count = 0
         self._step_count = 0
         self._grasp_bonus_given = False
 
         # Episode diagnostics
         self._max_phase_reached = self._phase
         self._max_waypoint_per_phase = {PHASE_PRE_GRASP: 0, PHASE_GRASP_DESCEND: 0, PHASE_LIFT: 0}
+        self._forced_waypoint_advances = 0
         self._grasp_attempted = False
         self._grasp_attached = False
         self._summary_printed = False
@@ -285,6 +287,7 @@ class PandaGraspEnv(gymnasium.Env):
             _, q_goal = self._phase_targets[PHASE_GRASP_DESCEND]
             self._waypoints = self._build_phase_waypoints(q_start, q_goal)
             self._waypoint_idx = 0
+            self._waypoint_step_count = 0
             return False
 
         elif self._phase == PHASE_GRASP_DESCEND:
@@ -298,6 +301,7 @@ class PandaGraspEnv(gymnasium.Env):
             _, q_goal = self._phase_targets[PHASE_LIFT]
             self._waypoints = self._build_phase_waypoints(q_start, q_goal)
             self._waypoint_idx = 0
+            self._waypoint_step_count = 0
             return False
 
         elif self._phase == PHASE_LIFT:
@@ -402,13 +406,19 @@ class PandaGraspEnv(gymnasium.Env):
         for _ in range(config.RL_SIM_SUBSTEPS):
             p.stepSimulation()
 
-        # Check waypoint convergence
+        # Check waypoint convergence (or force-advance on timeout)
         if self._waypoint_idx < len(self._waypoints):
             tol = config.WAYPOINT_TOL
             if self._phase == PHASE_GRASP_DESCEND:
                 tol = config.GRASP_DESCEND_WAYPOINT_TOL
-            if self._robot.is_at_joint_target(q_target, tol=tol):
+            self._waypoint_step_count += 1
+            converged = self._robot.is_at_joint_target(q_target, tol=tol)
+            timed_out = self._waypoint_step_count >= config.RL_MAX_STEPS_PER_WAYPOINT
+            if converged or timed_out:
+                if timed_out and not converged:
+                    self._forced_waypoint_advances += 1
                 self._waypoint_idx += 1
+                self._waypoint_step_count = 0
 
         # Track per-phase max waypoint progress (diagnostic)
         self._max_waypoint_per_phase[self._phase] = max(
@@ -477,6 +487,7 @@ class PandaGraspEnv(gymnasium.Env):
                 "ep_wp_graspdescend": int(self._max_waypoint_per_phase[PHASE_GRASP_DESCEND]),
                 "ep_wp_lift": int(self._max_waypoint_per_phase[PHASE_LIFT]),
                 "ep_wp_total": int(num_wp),
+                "ep_forced_wp_advances": int(self._forced_waypoint_advances),
                 "ep_grasp_attempted": bool(self._grasp_attempted),
                 "ep_grasp_attached": bool(self._grasp_attached),
                 "ep_cube_dz": cube_dz,
@@ -498,6 +509,7 @@ class PandaGraspEnv(gymnasium.Env):
                     f"| wp(p/g/l)={self._max_waypoint_per_phase[PHASE_PRE_GRASP]:d}/"
                     f"{self._max_waypoint_per_phase[PHASE_GRASP_DESCEND]:d}/"
                     f"{self._max_waypoint_per_phase[PHASE_LIFT]:d} of {num_wp:d} "
+                    f"| forced_wp={self._forced_waypoint_advances:d} "
                     f"| grasp(try/attach)={int(self._grasp_attempted)}/{int(self._grasp_attached)} "
                     f"| cube_dz={cube_dz:+.3f} | ee_cube={ee_cube_dist:.3f} "
                     f"| steps={self._step_count:d}"

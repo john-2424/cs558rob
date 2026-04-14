@@ -216,6 +216,11 @@ RESIDUAL_MAX = 0.5
 # RL simulation
 RL_SIM_SUBSTEPS = 4
 RL_MAX_EPISODE_STEPS = 2000
+# Per-waypoint timeout (sim steps). Forces _waypoint_idx to advance even if
+# WAYPOINT_TOL never converges, mirroring classical demo's WAYPOINT_MAX_STEPS.
+# Without this a small constant residual can stall the policy on a single
+# waypoint until RL_MAX_EPISODE_STEPS truncation.
+RL_MAX_STEPS_PER_WAYPOINT = 150
 
 # Perturbation
 PERTURB_XY_RANGE = 0.10

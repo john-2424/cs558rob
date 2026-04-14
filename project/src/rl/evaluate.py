@@ -48,6 +48,7 @@ def run_episode(env, actor=None, mode="hybrid", deterministic=True):
     diag_keys = (
         "ep_max_phase", "ep_end_phase",
         "ep_wp_pregrasp", "ep_wp_graspdescend", "ep_wp_lift", "ep_wp_total",
+        "ep_forced_wp_advances",
         "ep_grasp_attempted", "ep_grasp_attached",
         "ep_cube_dz", "ep_ee_cube_dist",
         "ep_cube_fallen", "ep_cube_lifted",
@@ -185,6 +186,7 @@ def _eval_one_method(label, mode, model_path, perturb_level, num_episodes, num_w
         fallen_n = 0
         dz_vals = []
         dist_vals = []
+        forced_vals = []
         for r in ind:
             if "ep_max_phase" in r:
                 phase_counts[r["ep_max_phase"]] += 1
@@ -195,14 +197,17 @@ def _eval_one_method(label, mode, model_path, perturb_level, num_episodes, num_w
             if r.get("ep_cube_fallen"): fallen_n += 1
             if "ep_cube_dz" in r: dz_vals.append(r["ep_cube_dz"])
             if "ep_ee_cube_dist" in r: dist_vals.append(r["ep_ee_cube_dist"])
+            if "ep_forced_wp_advances" in r: forced_vals.append(r["ep_forced_wp_advances"])
         n = len(ind)
         phase_str = " ".join(f"{phase_names[k]}={v}" for k, v in phase_counts.items())
         mean_dz = float(np.mean(dz_vals)) if dz_vals else 0.0
         mean_dist = float(np.mean(dist_vals)) if dist_vals else 0.0
+        mean_forced = float(np.mean(forced_vals)) if forced_vals else 0.0
         print(
             f"      diag: max_phase_reached[{phase_str}] | "
             f"grasp_try={tried}/{n} attach={attached}/{n} | "
             f"trunc={truncated_n} term={terminated_n} fallen={fallen_n} | "
+            f"forced_wp/ep={mean_forced:.1f} | "
             f"final cube_dz={mean_dz:+.3f} ee_cube={mean_dist:.3f}"
         )
     return result
