@@ -80,10 +80,10 @@ def execute_residual_trajectory(
                 np.array([float(phase_id)], dtype=np.float32),
             ])
 
-            # Get action from policy (deterministic: use TanhNormal mean)
+            # Get action from policy (deterministic: TanhNormal has no analytical mode)
             obs_tensor = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
             td = TensorDict({"observation": obs_tensor}, batch_size=[1])
-            with torch.no_grad(), set_exploration_type(ExplorationType.MODE):
+            with torch.no_grad(), set_exploration_type(ExplorationType.DETERMINISTIC):
                 td = actor(td)
             raw_action = td["action"].squeeze(0).numpy()
 

@@ -20,8 +20,8 @@ def run_episode(env, actor=None, mode="hybrid", deterministic=True):
     step_count = 0
     residual_norms = []
 
-    # In deterministic eval we want the TanhNormal's mode (mean), not a sample.
-    exploration_type = ExplorationType.MODE if deterministic else ExplorationType.RANDOM
+    # TanhNormal has no analytical mode, so use DETERMINISTIC (tanh(loc)) for eval.
+    exploration_type = ExplorationType.DETERMINISTIC if deterministic else ExplorationType.RANDOM
 
     while True:
         if actor is not None and mode != "planner_only":
