@@ -1,4 +1,5 @@
 import os
+import time
 
 import numpy as np
 import pybullet as p
@@ -20,6 +21,7 @@ from src.rl.residual_policy import ResidualActionWrapper
 from src.rl.train import load_trained_actor
 from src.trajectory.joint_trajectory import interpolate_joint_trajectory
 from src.utils.logger import TrajectoryLogger
+from src.utils.run_log import open_tee_log, close_tee_log
 
 # Reuse classical pipeline helpers
 from src.demo.pick_place import (
@@ -222,15 +224,21 @@ def get_pick_and_place_poses_from_cube(robot, cube_id, table_id):
 
 
 def run_pick_place_with_residual(
-    model_path=None, perturb_xy_range=None, mode="hybrid",
+    model_path=None, perturb_xy_range=None, mode="hybrid", log_file_path=None,
 ):
     model_path = model_path or os.path.join(config.M2_MODEL_DIR, "final_model.pt")
     perturb_xy_range = perturb_xy_range if perturb_xy_range is not None else config.PERTURB_XY_RANGE
+    log_file_path = log_file_path or os.path.join(config.M2_RESULTS_DIR, "demo_log.txt")
+    os.makedirs(config.M2_RESULTS_DIR, exist_ok=True)
+
+    original_stdout, log_file = open_tee_log(log_file_path, banner="Residual demo run")
+    demo_start = time.time()
 
     # Load trained actor
     actor = load_trained_actor(model_path)
     action_wrapper = ResidualActionWrapper(mode=mode)
-    print(f"Loaded model from {model_path}, mode={mode}")
+    print(f"Log file: {log_file_path}")
+    print(f"Loaded model from {model_path}, mode={mode}, perturb_xy_range={perturb_xy_range}")
 
     env = BulletEnv(gui=config.GUI)
     env.connect()
@@ -426,3 +434,5 @@ def run_pick_place_with_residual(
 
     finally:
         env.disconnect()
+        print(f"\nDemo total time: {time.time() - demo_start:.1f}s")
+        close_tee_log(original_stdout, log_file)

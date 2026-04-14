@@ -1,10 +1,12 @@
 import json
 import os
+import time
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 from src import config
+from src.utils.run_log import open_tee_log, close_tee_log
 
 
 def load_results(path=None):
@@ -185,16 +187,35 @@ def plot_episode_length(results, save_dir):
     print(f"Saved {path}")
 
 
-def generate_all_plots(results_path=None, save_dir=None):
-    results = load_results(results_path)
+def generate_all_plots(results_path=None, save_dir=None, log_file_path=None):
     save_dir = save_dir or config.M2_PLOT_DIR
+    log_file_path = log_file_path or os.path.join(config.M2_RESULTS_DIR, "plots_log.txt")
     os.makedirs(save_dir, exist_ok=True)
+    os.makedirs(config.M2_RESULTS_DIR, exist_ok=True)
 
-    plot_success_rate(results, save_dir)
-    plot_mean_reward(results, save_dir)
-    plot_episode_length(results, save_dir)
+    original_stdout, log_file = open_tee_log(log_file_path, banner="Plot generation run")
+    try:
+        resolved_results_path = results_path or config.M2_EVAL_RESULTS_PATH
+        print(f"Log file: {log_file_path}")
+        print(f"Reading evaluation results from {resolved_results_path}")
+        print(f"Saving plots to {save_dir}")
 
-    print(f"\nAll M2 plots saved to {save_dir}")
+        results = load_results(results_path)
+
+        plots = [
+            ("success_rate", plot_success_rate),
+            ("mean_reward", plot_mean_reward),
+            ("episode_length", plot_episode_length),
+        ]
+        overall_start = time.time()
+        for name, fn in plots:
+            t0 = time.time()
+            fn(results, save_dir)
+            print(f"  [{name}] rendered in {time.time() - t0:.2f}s")
+
+        print(f"\nAll M2 plots saved to {save_dir} (total: {time.time() - overall_start:.2f}s)")
+    finally:
+        close_tee_log(original_stdout, log_file)
 
 
 if __name__ == "__main__":
