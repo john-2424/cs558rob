@@ -62,12 +62,14 @@ python -m pip install -r requirements.txt
 
 ## How to Run
 
+The entry point uses subcommands. Run `python -m src.main --help` to see all modes.
+
 ### M1: Nominal Pick-and-Place Demo
 
 From the project root:
 
 ```bash
-python -m src.main
+python -m src.main pick-place
 ```
 
 This launches the PyBullet GUI and executes the nominal pick-and-place pipeline.
@@ -88,10 +90,8 @@ The expected task sequence is:
 
 ### M2: Training the Residual PPO Policy
 
-Set `RUN_M2_TRAINING = True` in `src/config.py`, then:
-
 ```bash
-python -m src.main
+python -m src.main train
 ```
 
 Or run training directly:
@@ -108,10 +108,9 @@ tensorboard --logdir results/m2/tb_logs
 
 ### M2: Evaluation
 
-Set `RUN_M2_EVALUATION = True` in `src/config.py`, then:
-
 ```bash
-python -m src.main
+python -m src.main eval            # per-episode diagnostics on (config default)
+python -m src.main eval --quiet    # suppress per-episode lines
 ```
 
 Or run evaluation directly:
@@ -130,10 +129,8 @@ python -m src.evaluations.plot_m2_results
 
 ### M2: Full Pipeline Demo with Residual RL
 
-Set `RUN_M2_RESIDUAL_DEMO = True` in `src/config.py`, then:
-
 ```bash
-python -m src.main
+python -m src.main residual-demo
 ```
 
 This runs the full 12-phase pick-and-place with RL-augmented control during approach/grasp phases and classical control during transport/placement phases.

@@ -120,7 +120,6 @@ PLANNER_BLOCKED_TEST_TARGETS = [
 # =========================
 # Pick-and-place demo
 # =========================
-RUN_PICK_PLACE_DEMO = True
 
 # Gripper
 GRIPPER_OPEN_WIDTH = 0.04
@@ -206,9 +205,6 @@ PLANNER_ATTACHED_MOTION_LABELS = {
 # =========================
 # M2: Residual RL
 # =========================
-RUN_M2_TRAINING = True
-RUN_M2_EVALUATION = False
-RUN_M2_RESIDUAL_DEMO = False
 
 # Residual bounds
 # 0.1 rad/s ≈ 3-4% of PD_MAX_JOINT_VEL. Tight enough that residual physically
