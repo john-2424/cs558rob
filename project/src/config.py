@@ -206,8 +206,8 @@ PLANNER_ATTACHED_MOTION_LABELS = {
 # =========================
 # M2: Residual RL
 # =========================
-RUN_M2_TRAINING = True
-RUN_M2_EVALUATION = False
+RUN_M2_TRAINING = False
+RUN_M2_EVALUATION = True
 RUN_M2_RESIDUAL_DEMO = False
 
 # Residual bounds
