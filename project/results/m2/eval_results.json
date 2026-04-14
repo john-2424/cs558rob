@@ -1,73 +1,73 @@
 {
-  "perturb_0.000": {
-    "planner_only": {
-      "success_rate": 1.0,
-      "mean_reward": 155.97052539463704,
-      "std_reward": 0.14368652078633792,
-      "mean_steps": 1249.1,
-      "mean_residual": 0.0,
-      "num_episodes": 50
-    },
-    "hybrid": {
-      "success_rate": 0.0,
-      "mean_reward": -20.349446000904177,
-      "std_reward": 4.323891444501707,
-      "mean_steps": 2000.0,
-      "mean_residual": 0.009565050048586593,
-      "num_episodes": 50
-    }
-  },
-  "perturb_0.020": {
-    "planner_only": {
-      "success_rate": 1.0,
-      "mean_reward": 155.97085183341127,
-      "std_reward": 0.08487874794448262,
-      "mean_steps": 1247.64,
-      "mean_residual": 0.0,
-      "num_episodes": 50
-    },
-    "hybrid": {
-      "success_rate": 0.0,
-      "mean_reward": -20.263170434548798,
-      "std_reward": 4.5613513603633775,
-      "mean_steps": 2000.0,
-      "mean_residual": 0.009524084431044376,
-      "num_episodes": 50
-    }
-  },
-  "perturb_0.040": {
-    "planner_only": {
-      "success_rate": 1.0,
-      "mean_reward": 156.0000155683382,
-      "std_reward": 0.1542389442874228,
-      "mean_steps": 1253.22,
-      "mean_residual": 0.0,
-      "num_episodes": 50
-    },
-    "hybrid": {
-      "success_rate": 0.0,
-      "mean_reward": -21.5450213500219,
-      "std_reward": 4.40653498631822,
-      "mean_steps": 2000.0,
-      "mean_residual": 0.010089418632835488,
-      "num_episodes": 50
-    }
-  },
   "perturb_0.060": {
     "planner_only": {
-      "success_rate": 0.98,
-      "mean_reward": 152.97325977969552,
-      "std_reward": 20.970350029090206,
-      "mean_steps": 1246.66,
+      "success_rate": 0.7,
+      "mean_reward": 123.98086676785026,
+      "std_reward": 49.79877336040499,
+      "mean_steps": 1205.62,
       "mean_residual": 0.0,
       "num_episodes": 50
     },
     "hybrid": {
       "success_rate": 0.0,
-      "mean_reward": -22.03097900276267,
-      "std_reward": 4.203011355806846,
+      "mean_reward": -23.447155359644253,
+      "std_reward": 7.781300666977278,
       "mean_steps": 2000.0,
-      "mean_residual": 0.010304388642933465,
+      "mean_residual": 0.010873630861567585,
+      "num_episodes": 50
+    }
+  },
+  "perturb_0.080": {
+    "planner_only": {
+      "success_rate": 0.68,
+      "mean_reward": 119.95668436803666,
+      "std_reward": 53.78121814527259,
+      "mean_steps": 1201.06,
+      "mean_residual": 0.0,
+      "num_episodes": 50
+    },
+    "hybrid": {
+      "success_rate": 0.0,
+      "mean_reward": -20.332366111676613,
+      "std_reward": 7.7214176593924275,
+      "mean_steps": 2000.0,
+      "mean_residual": 0.009517107371023494,
+      "num_episodes": 50
+    }
+  },
+  "perturb_0.100": {
+    "planner_only": {
+      "success_rate": 0.58,
+      "mean_reward": 99.9248132000636,
+      "std_reward": 67.49396505124538,
+      "mean_steps": 1188.22,
+      "mean_residual": 0.0,
+      "num_episodes": 50
+    },
+    "hybrid": {
+      "success_rate": 0.0,
+      "mean_reward": -22.36293975478303,
+      "std_reward": 8.246846375316405,
+      "mean_steps": 2000.0,
+      "mean_residual": 0.010396787191883186,
+      "num_episodes": 50
+    }
+  },
+  "perturb_0.120": {
+    "planner_only": {
+      "success_rate": 0.54,
+      "mean_reward": 98.88695194625784,
+      "std_reward": 63.98397953223965,
+      "mean_steps": 1174.82,
+      "mean_residual": 0.0,
+      "num_episodes": 50
+    },
+    "hybrid": {
+      "success_rate": 0.0,
+      "mean_reward": -21.235990079536364,
+      "std_reward": 7.98732648547637,
+      "mean_steps": 2000.0,
+      "mean_residual": 0.009909466444971227,
       "num_episodes": 50
     }
   }

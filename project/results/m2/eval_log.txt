@@ -1,0 +1,103 @@
+
+================================================================================
+Evaluation run started: 2026-04-14T16:13:14
+================================================================================
+Log file: results/m2/eval_log.txt
+Results path: results/m2/eval_results.json
+Found hybrid model at results/m2/models/final_model.pt
+Using 8 parallel worker(s) per method-level
+
+=== Perturbation level: 0.000 m ===
+  Evaluating planner_only (50 episodes, 8 worker(s))...
+    planner_only  | succ=100.00% | reward=+156.02± 0.15 | steps=1254.0 | residual=0.000 | time=8.4s
+  Evaluating hybrid (50 episodes, 8 worker(s))...
+    hybrid        | succ= 0.00% | reward= -22.04± 3.40 | steps=2000.0 | residual=0.010 | time=22.0s
+
+=== Perturbation level: 0.020 m ===
+  Evaluating planner_only (50 episodes, 8 worker(s))...
+    planner_only  | succ=100.00% | reward=+155.99± 0.08 | steps=1250.3 | residual=0.000 | time=8.4s
+  Evaluating hybrid (50 episodes, 8 worker(s))...
+    hybrid        | succ= 0.00% | reward= -22.38± 4.42 | steps=2000.0 | residual=0.010 | time=21.5s
+
+=== Perturbation level: 0.040 m ===
+  Evaluating planner_only (50 episodes, 8 worker(s))...
+    planner_only  | succ=100.00% | reward=+155.98± 0.17 | steps=1250.5 | residual=0.000 | time=8.2s
+  Evaluating hybrid (50 episodes, 8 worker(s))...
+    hybrid        | succ= 0.00% | reward= -22.27± 4.44 | steps=2000.0 | residual=0.010 | time=21.9s
+
+=== Perturbation level: 0.060 m ===
+  Evaluating planner_only (50 episodes, 8 worker(s))...
+    planner_only  | succ=98.00% | reward=+152.99±20.99 | steps=1246.9 | residual=0.000 | time=8.3s
+  Evaluating hybrid (50 episodes, 8 worker(s))...
+    hybrid        | succ= 0.00% | reward= -22.18± 4.94 | steps=2000.0 | residual=0.010 | time=21.7s
+
+Total evaluation time: 120.5s
+
+Results saved to results/m2/eval_results.json
+
+============================================================
+Summary: success rate (%) by method x perturbation level
+============================================================
+method          |   perturb_0.000 |   perturb_0.020 |   perturb_0.040 |   perturb_0.060
+---------------------------------------------------------------------------------------
+hybrid          |          0.00% |          0.00% |          0.00% |          0.00%
+planner_only    |        100.00% |        100.00% |        100.00% |         98.00%
+============================================================
+
+================================================================================
+Evaluation run started: 2026-04-14T16:26:39
+================================================================================
+Log file: results/m2/eval_log.txt
+Results path: results/m2/eval_results.json
+Found hybrid model at results/m2/models/final_model.pt
+Using 8 parallel worker(s) per method-level
+
+=== Perturbation level: 0.060 m ===
+  Evaluating planner_only (50 episodes, 8 worker(s))...
+    planner_only  | succ=64.00% | reward=+117.99±51.53 | steps=1197.4 | residual=0.000 | time=8.9s
+  Evaluating hybrid (50 episodes, 8 worker(s))...
+
+================================================================================
+Evaluation run started: 2026-04-14T16:28:24
+================================================================================
+Log file: results/m2/eval_log.txt
+Results path: results/m2/eval_results.json
+Found hybrid model at results/m2/models/final_model.pt
+Using 8 parallel worker(s) per method-level
+
+=== Perturbation level: 0.060 m ===
+  Evaluating planner_only (50 episodes, 8 worker(s))...
+    planner_only  | succ=70.00% | reward=+123.98±49.80 | steps=1205.6 | residual=0.000 | time=8.8s
+  Evaluating hybrid (50 episodes, 8 worker(s))...
+    hybrid        | succ= 0.00% | reward= -23.45± 7.78 | steps=2000.0 | residual=0.011 | time=21.5s
+
+=== Perturbation level: 0.080 m ===
+  Evaluating planner_only (50 episodes, 8 worker(s))...
+    planner_only  | succ=68.00% | reward=+119.96±53.78 | steps=1201.1 | residual=0.000 | time=9.1s
+  Evaluating hybrid (50 episodes, 8 worker(s))...
+    hybrid        | succ= 0.00% | reward= -20.33± 7.72 | steps=2000.0 | residual=0.010 | time=21.7s
+
+=== Perturbation level: 0.100 m ===
+  Evaluating planner_only (50 episodes, 8 worker(s))...
+    planner_only  | succ=58.00% | reward= +99.92±67.49 | steps=1188.2 | residual=0.000 | time=9.4s
+  Evaluating hybrid (50 episodes, 8 worker(s))...
+    hybrid        | succ= 0.00% | reward= -22.36± 8.25 | steps=2000.0 | residual=0.010 | time=22.0s
+
+=== Perturbation level: 0.120 m ===
+  Evaluating planner_only (50 episodes, 8 worker(s))...
+    planner_only  | succ=54.00% | reward= +98.89±63.98 | steps=1174.8 | residual=0.000 | time=9.4s
+  Evaluating hybrid (50 episodes, 8 worker(s))...
+    hybrid        | succ= 0.00% | reward= -21.24± 7.99 | steps=2000.0 | residual=0.010 | time=21.3s
+
+Total evaluation time: 123.2s
+
+Results saved to results/m2/eval_results.json
+
+============================================================
+Summary: success rate (%) by method x perturbation level
+============================================================
+method          |   perturb_0.060 |   perturb_0.080 |   perturb_0.100 |   perturb_0.120
+---------------------------------------------------------------------------------------
+hybrid          |          0.00% |          0.00% |          0.00% |          0.00%
+planner_only    |         70.00% |         68.00% |         58.00% |         54.00%
+============================================================
