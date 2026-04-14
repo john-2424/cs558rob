@@ -313,11 +313,14 @@ class PandaGraspEnv(gymnasium.Env):
     def _auto_grasp_and_attach(self):
         self._grasp_attempted = True
 
+        # Inline sim steps below are NOT counted toward _step_count: that
+        # counter measures RL transitions for truncation budget. Counting
+        # inline steps here exhausted the episode budget before LIFT could run.
+
         # Close gripper
         for _ in range(config.GRIPPER_SETTLE_STEPS):
             self._robot.close_gripper()
             self._env.step(sleep=False)
-            self._step_count += 1
 
         # Validate grasp
         ready, _ = self._robot.is_grasp_ready(self._objects.cube_id)
@@ -337,14 +340,12 @@ class PandaGraspEnv(gymnasium.Env):
                         wp, gripper_width=config.GRIPPER_OPEN_WIDTH,
                     )
                     self._env.step(sleep=False)
-                    self._step_count += 1
                     if self._robot.is_at_joint_target(wp, tol=config.WAYPOINT_TOL):
                         break
 
             for _ in range(config.GRIPPER_SETTLE_STEPS):
                 self._robot.close_gripper()
                 self._env.step(sleep=False)
-                self._step_count += 1
 
             ready, _ = self._robot.is_grasp_ready(self._objects.cube_id)
 
