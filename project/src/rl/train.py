@@ -1,5 +1,6 @@
 import os
 import time
+from functools import partial
 
 import numpy as np
 import torch
@@ -8,7 +9,7 @@ from torch import nn, optim
 from tensordict.nn import TensorDictModule
 from tensordict.nn.distributions import NormalParamExtractor
 
-from torchrl.collectors import SyncDataCollector
+from torchrl.collectors import SyncDataCollector, MultiSyncDataCollector
 from torchrl.data import LazyTensorStorage, ReplayBuffer
 from torchrl.envs import GymWrapper, TransformedEnv, StepCounter
 from torchrl.envs.utils import set_exploration_type, ExplorationType
@@ -31,6 +32,14 @@ def make_env(gui=False, mode="hybrid", perturb_xy_range=None):
     env = GymWrapper(gym_env, device="cpu")
     env = TransformedEnv(env, StepCounter(max_steps=config.RL_MAX_EPISODE_STEPS))
     return env
+
+
+def _make_env_worker(mode, perturb_xy_range):
+    try:
+        torch.set_num_threads(1)
+    except Exception:
+        pass
+    return make_env(gui=False, mode=mode, perturb_xy_range=perturb_xy_range)
 
 
 def build_actor(obs_dim, act_dim, device="cpu"):
@@ -118,15 +127,28 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
     # Environment and collector
     env = make_env(gui=False, mode=mode, perturb_xy_range=perturb_xy_range)
 
-    collector = SyncDataCollector(
-        create_env_fn=lambda: make_env(gui=False, mode=mode,
-                                       perturb_xy_range=perturb_xy_range),
-        policy=actor,
-        frames_per_batch=config.PPO_FRAMES_PER_BATCH,
-        total_frames=total_timesteps,
-        device=device,
-        storing_device=device,
-    )
+    num_workers = max(1, int(config.PPO_NUM_COLLECTOR_WORKERS))
+    env_fn = partial(_make_env_worker, mode, perturb_xy_range)
+
+    if num_workers > 1:
+        print(f"Using MultiSyncDataCollector with {num_workers} workers")
+        collector = MultiSyncDataCollector(
+            create_env_fn=[env_fn] * num_workers,
+            policy=actor,
+            frames_per_batch=config.PPO_FRAMES_PER_BATCH,
+            total_frames=total_timesteps,
+            device=device,
+            storing_device=device,
+        )
+    else:
+        collector = SyncDataCollector(
+            create_env_fn=env_fn,
+            policy=actor,
+            frames_per_batch=config.PPO_FRAMES_PER_BATCH,
+            total_frames=total_timesteps,
+            device=device,
+            storing_device=device,
+        )
 
     replay_buffer = ReplayBuffer(
         storage=LazyTensorStorage(config.PPO_FRAMES_PER_BATCH),
