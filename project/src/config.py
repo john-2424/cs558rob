@@ -250,6 +250,7 @@ EP_SUCCESS_REWARD_THRESHOLD = 50.0
 
 # Evaluation
 EVAL_EPISODES_PER_LEVEL = 50
+EVAL_NUM_WORKERS = 8  # parallel workers for episode rollout; set to 1 for serial
 
 # M2 paths
 M2_RESULTS_DIR = "results/m2"

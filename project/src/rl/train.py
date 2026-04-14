@@ -1,7 +1,5 @@
 import os
-import sys
 import time
-from datetime import datetime
 from functools import partial
 
 import numpy as np
@@ -23,6 +21,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 from src import config
 from src.rl.gym_env import PandaGraspEnv
+from src.utils.run_log import open_tee_log, close_tee_log
 
 
 def make_env(gui=False, mode="hybrid", perturb_xy_range=None):
@@ -44,39 +43,6 @@ def _make_env_worker(mode, perturb_xy_range):
     return make_env(gui=False, mode=mode, perturb_xy_range=perturb_xy_range)
 
 
-class _Tee:
-    """Mirror stdout writes to both the original stream and a log file."""
-    def __init__(self, *streams):
-        self.streams = streams
-
-    def write(self, data):
-        for s in self.streams:
-            try:
-                s.write(data)
-                s.flush()
-            except Exception:
-                pass
-
-    def flush(self):
-        for s in self.streams:
-            try:
-                s.flush()
-            except Exception:
-                pass
-
-
-def _open_tee_log(log_path):
-    os.makedirs(os.path.dirname(log_path), exist_ok=True)
-    log_file = open(log_path, "a", buffering=1)  # line-buffered
-    header = (
-        f"\n{'=' * 80}\n"
-        f"Training run started: {datetime.now().isoformat(timespec='seconds')}\n"
-        f"{'=' * 80}\n"
-    )
-    log_file.write(header)
-    original_stdout = sys.stdout
-    sys.stdout = _Tee(original_stdout, log_file)
-    return original_stdout, log_file
 
 
 def build_actor(obs_dim, act_dim, device="cpu"):
@@ -134,7 +100,7 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
     os.makedirs(tb_log_dir, exist_ok=True)
 
     # Mirror stdout (all print() output) to a persistent log file.
-    original_stdout, log_file = _open_tee_log(log_file_path)
+    original_stdout, log_file = open_tee_log(log_file_path, banner="Training run")
 
     writer = SummaryWriter(log_dir=tb_log_dir)
 
@@ -358,13 +324,7 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
     writer.close()
 
     # Restore stdout and close the log file.
-    try:
-        sys.stdout = original_stdout
-    finally:
-        try:
-            log_file.close()
-        except Exception:
-            pass
+    close_tee_log(original_stdout, log_file)
 
     return final_path
 
