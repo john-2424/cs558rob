@@ -124,9 +124,7 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
     # Optimizer
     optimizer = optim.Adam(loss_module.parameters(), lr=config.PPO_LR)
 
-    # Environment and collector
-    env = make_env(gui=False, mode=mode, perturb_xy_range=perturb_xy_range)
-
+    # Collector (no main-process env -- workers each build their own PyBullet client)
     num_workers = max(1, int(config.PPO_NUM_COLLECTOR_WORKERS))
     env_fn = partial(_make_env_worker, mode, perturb_xy_range)
 
@@ -166,8 +164,12 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
     print(f"Frames per batch: {config.PPO_FRAMES_PER_BATCH}")
     print(f"Mini-batch size: {config.PPO_MINI_BATCH_SIZE}")
     print(f"Epochs per batch: {config.PPO_EPOCHS}")
+    print("Waiting for first batch from collector workers (this may take 30-120s on first run)...")
+    iter_start = time.time()
 
     for batch_data in collector:
+        if batch_idx == 0:
+            print(f"First batch received after {time.time() - iter_start:.1f}s")
         total_frames += batch_data.numel()
         batch_idx += 1
 
@@ -251,7 +253,6 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
     print(f"Training complete. Model saved to {final_path}")
 
     collector.shutdown()
-    env.close()
     writer.close()
 
     return final_path
