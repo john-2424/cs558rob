@@ -202,3 +202,52 @@ PLANNER_ATTACHED_MOTION_LABELS = {
     "transfer_pre_place",
     "place_descend",
 }
+
+# =========================
+# M2: Residual RL
+# =========================
+RUN_M2_TRAINING = False
+RUN_M2_EVALUATION = False
+RUN_M2_RESIDUAL_DEMO = False
+
+# Residual bounds
+RESIDUAL_MAX = 0.5
+
+# RL simulation
+RL_SIM_SUBSTEPS = 4
+RL_MAX_EPISODE_STEPS = 2000
+
+# Perturbation
+PERTURB_XY_RANGE = 0.04
+PERTURB_YAW_RANGE = 0.2
+PERTURB_LEVELS = [0.0, 0.02, 0.04, 0.06]
+
+# Reward shaping
+REWARD_ALPHA = 10.0
+REWARD_BETA = 0.1
+REWARD_GAMMA = 0.05
+REWARD_DELTA = 50.0
+REWARD_EPSILON = 100.0
+REWARD_ZETA = 50.0
+
+# PPO hyperparameters
+PPO_TOTAL_TIMESTEPS = 500_000
+PPO_LR = 3e-4
+PPO_FRAMES_PER_BATCH = 2048
+PPO_MINI_BATCH_SIZE = 64
+PPO_EPOCHS = 10
+PPO_CLIP_EPSILON = 0.2
+PPO_GAMMA = 0.99
+PPO_GAE_LAMBDA = 0.95
+PPO_ENT_COEF = 0.01
+
+# Evaluation
+EVAL_EPISODES_PER_LEVEL = 50
+
+# M2 paths
+M2_RESULTS_DIR = "results/m2"
+M2_MODEL_DIR = "results/m2/models"
+M2_TB_LOG_DIR = "results/m2/tb_logs"
+M2_EVAL_RESULTS_PATH = "results/m2/eval_results.json"
+M2_PLOT_DIR = "results/m2/plots"
+M2_TRAJECTORY_LOG_PATH = "results/m2/trajectory_log.json"

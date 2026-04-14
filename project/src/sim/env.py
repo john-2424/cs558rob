@@ -72,6 +72,14 @@ class BulletEnv:
             if self.gui and sleep and not config.USE_REALTIME:
                 time.sleep(self.time_step)
 
+    def reset_scene(self, cube_pos=None, cube_orn=None) -> None:
+        if cube_pos is not None and self.objects is not None:
+            if cube_orn is None:
+                cube_orn = p.getQuaternionFromEuler(config.CUBE_BASE_ORN_EULER)
+            p.resetBasePositionAndOrientation(
+                self.objects.cube_id, cube_pos, cube_orn,
+            )
+
     def disconnect(self) -> None:
         if self.client_id is not None:
             p.disconnect()
