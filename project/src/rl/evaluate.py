@@ -44,20 +44,35 @@ def run_episode(env, actor=None, mode="hybrid", deterministic=True):
         if terminated or truncated:
             break
 
-    return {
+    # Forward diagnostic keys from the terminal info dict so aggregators can use them.
+    diag_keys = (
+        "ep_max_phase", "ep_end_phase",
+        "ep_wp_pregrasp", "ep_wp_graspdescend", "ep_wp_lift", "ep_wp_total",
+        "ep_grasp_attempted", "ep_grasp_attached",
+        "ep_cube_dz", "ep_ee_cube_dist",
+        "ep_cube_fallen", "ep_cube_lifted",
+    )
+    result = {
         "success": info.get("success", False),
         "total_reward": total_reward,
         "step_count": step_count,
         "mean_residual": float(np.mean(residual_norms)) if residual_norms else 0.0,
+        "truncated": bool(truncated),
+        "terminated": bool(terminated),
     }
+    for k in diag_keys:
+        if k in info:
+            result[k] = info[k]
+    return result
 
 
-def _run_episodes(mode, actor, perturb_level, num_episodes):
+def _run_episodes(mode, actor, perturb_level, num_episodes, verbose_episodes=False):
     """Serially run a batch of episodes in one PyBullet client."""
     env = PandaGraspEnv(
         gui=False,
         mode=mode,
         perturb_xy_range=perturb_level,
+        verbose_episodes=verbose_episodes,
     )
     results = []
     try:
@@ -70,7 +85,7 @@ def _run_episodes(mode, actor, perturb_level, num_episodes):
     return results
 
 
-def _eval_worker_entry(mode, model_path, perturb_level, num_episodes):
+def _eval_worker_entry(mode, model_path, perturb_level, num_episodes, verbose_episodes=False):
     """Top-level worker function -- picklable under spawn.
 
     Loads its own actor copy from disk (avoids shipping torch modules
@@ -85,10 +100,11 @@ def _eval_worker_entry(mode, model_path, perturb_level, num_episodes):
     if model_path and mode != "planner_only":
         actor = load_trained_actor(model_path)
 
-    return _run_episodes(mode, actor, perturb_level, num_episodes)
+    return _run_episodes(mode, actor, perturb_level, num_episodes, verbose_episodes=verbose_episodes)
 
 
-def evaluate_method(mode, model_path, perturb_level, num_episodes, num_workers=None):
+def evaluate_method(mode, model_path, perturb_level, num_episodes, num_workers=None,
+                    verbose_episodes=False):
     """Evaluate one method-x-level over num_episodes, optionally in parallel."""
     num_workers = (
         int(num_workers) if num_workers is not None else int(config.EVAL_NUM_WORKERS)
@@ -99,7 +115,8 @@ def evaluate_method(mode, model_path, perturb_level, num_episodes, num_workers=N
         actor = None
         if model_path and mode != "planner_only":
             actor = load_trained_actor(model_path)
-        results = _run_episodes(mode, actor, perturb_level, num_episodes)
+        results = _run_episodes(mode, actor, perturb_level, num_episodes,
+                                verbose_episodes=verbose_episodes)
     else:
         # Split num_episodes as evenly as possible across workers.
         base, rem = divmod(num_episodes, num_workers)
@@ -110,7 +127,8 @@ def evaluate_method(mode, model_path, perturb_level, num_episodes, num_workers=N
         with ProcessPoolExecutor(max_workers=len(chunks)) as pool:
             futures = [
                 pool.submit(
-                    _eval_worker_entry, mode, model_path, perturb_level, c
+                    _eval_worker_entry, mode, model_path, perturb_level, c,
+                    verbose_episodes,
                 )
                 for c in chunks
             ]
@@ -133,7 +151,8 @@ def evaluate_method(mode, model_path, perturb_level, num_episodes, num_workers=N
     }
 
 
-def _eval_one_method(label, mode, model_path, perturb_level, num_episodes, num_workers):
+def _eval_one_method(label, mode, model_path, perturb_level, num_episodes, num_workers,
+                     verbose_episodes=False):
     """Time a single method-x-level and print a one-line summary."""
     print(f"  Evaluating {label} ({num_episodes} episodes, {num_workers} worker(s))...")
     t0 = time.time()
@@ -143,6 +162,7 @@ def _eval_one_method(label, mode, model_path, perturb_level, num_episodes, num_w
         perturb_level=perturb_level,
         num_episodes=num_episodes,
         num_workers=num_workers,
+        verbose_episodes=verbose_episodes,
     )
     elapsed = time.time() - t0
     print(
@@ -152,6 +172,39 @@ def _eval_one_method(label, mode, model_path, perturb_level, num_episodes, num_w
         f"residual={result['mean_residual']:.3f} | "
         f"time={elapsed:.1f}s"
     )
+
+    # Diagnostic breakdown: where did episodes end up?
+    ind = result.get("individual_results", [])
+    if ind and any("ep_max_phase" in r for r in ind):
+        phase_names = {0: "pre_grasp", 1: "grasp_descend", 2: "lift"}
+        phase_counts = {0: 0, 1: 0, 2: 0}
+        tried = 0
+        attached = 0
+        truncated_n = 0
+        terminated_n = 0
+        fallen_n = 0
+        dz_vals = []
+        dist_vals = []
+        for r in ind:
+            if "ep_max_phase" in r:
+                phase_counts[r["ep_max_phase"]] += 1
+            if r.get("ep_grasp_attempted"): tried += 1
+            if r.get("ep_grasp_attached"): attached += 1
+            if r.get("truncated"): truncated_n += 1
+            if r.get("terminated"): terminated_n += 1
+            if r.get("ep_cube_fallen"): fallen_n += 1
+            if "ep_cube_dz" in r: dz_vals.append(r["ep_cube_dz"])
+            if "ep_ee_cube_dist" in r: dist_vals.append(r["ep_ee_cube_dist"])
+        n = len(ind)
+        phase_str = " ".join(f"{phase_names[k]}={v}" for k, v in phase_counts.items())
+        mean_dz = float(np.mean(dz_vals)) if dz_vals else 0.0
+        mean_dist = float(np.mean(dist_vals)) if dist_vals else 0.0
+        print(
+            f"      diag: max_phase_reached[{phase_str}] | "
+            f"grasp_try={tried}/{n} attach={attached}/{n} | "
+            f"trunc={truncated_n} term={terminated_n} fallen={fallen_n} | "
+            f"final cube_dz={mean_dz:+.3f} ee_cube={mean_dist:.3f}"
+        )
     return result
 
 

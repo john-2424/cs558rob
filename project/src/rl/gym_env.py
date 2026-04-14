@@ -31,13 +31,14 @@ class PandaGraspEnv(gymnasium.Env):
     metadata = {"render_modes": ["human"]}
 
     def __init__(self, gui=False, mode="hybrid", perturb_xy_range=None,
-                 perturb_yaw_range=None, render_mode=None):
+                 perturb_yaw_range=None, render_mode=None, verbose_episodes=False):
         super().__init__()
 
         self.gui = gui
         self.mode = mode
         self.perturb_xy_range = perturb_xy_range or config.PERTURB_XY_RANGE
         self.perturb_yaw_range = perturb_yaw_range or config.PERTURB_YAW_RANGE
+        self.verbose_episodes = verbose_episodes
 
         self.observation_space = spaces.Box(
             low=-np.inf, high=np.inf, shape=(OBS_DIM,), dtype=np.float32,
@@ -227,6 +228,13 @@ class PandaGraspEnv(gymnasium.Env):
         self._step_count = 0
         self._grasp_bonus_given = False
 
+        # Episode diagnostics
+        self._max_phase_reached = self._phase
+        self._max_waypoint_per_phase = {PHASE_PRE_GRASP: 0, PHASE_GRASP_DESCEND: 0, PHASE_LIFT: 0}
+        self._grasp_attempted = False
+        self._grasp_attached = False
+        self._summary_printed = False
+
         # Initial EE-cube distance
         ee_pos, _ = self._robot.get_ee_pose()
         cube_pos, _ = get_body_pose(self._objects.cube_id)
@@ -299,6 +307,8 @@ class PandaGraspEnv(gymnasium.Env):
         return False
 
     def _auto_grasp_and_attach(self):
+        self._grasp_attempted = True
+
         # Close gripper
         for _ in range(config.GRIPPER_SETTLE_STEPS):
             self._robot.close_gripper()
@@ -336,6 +346,7 @@ class PandaGraspEnv(gymnasium.Env):
 
         if ready:
             self._robot.attach_object(self._objects.cube_id)
+            self._grasp_attached = True
             self._grasp_bonus_given = False  # will be given in reward
             return True
 
@@ -399,11 +410,19 @@ class PandaGraspEnv(gymnasium.Env):
             if self._robot.is_at_joint_target(q_target, tol=tol):
                 self._waypoint_idx += 1
 
+        # Track per-phase max waypoint progress (diagnostic)
+        self._max_waypoint_per_phase[self._phase] = max(
+            self._max_waypoint_per_phase[self._phase], self._waypoint_idx,
+        )
+
         # Check if phase trajectory is complete
         terminated = False
         episode_done = False
         if self._waypoint_idx >= len(self._waypoints):
             episode_done = self._advance_phase()
+
+        # Track max phase reached (after advance_phase may have bumped it)
+        self._max_phase_reached = max(self._max_phase_reached, self._phase)
 
         # Compute reward
         ee_pos, _ = self._robot.get_ee_pose()
@@ -446,6 +465,43 @@ class PandaGraspEnv(gymnasium.Env):
             "step_count": self._step_count,
             **reward_info,
         }
+
+        if terminated or truncated:
+            num_wp = max(1, len(self._waypoints))
+            cube_dz = float(cube_pos[2] - self._table_top_z)
+            ee_cube_dist = float(np.linalg.norm(ee_pos - cube_pos))
+            info.update({
+                "ep_max_phase": int(self._max_phase_reached),
+                "ep_end_phase": int(self._phase),
+                "ep_wp_pregrasp": int(self._max_waypoint_per_phase[PHASE_PRE_GRASP]),
+                "ep_wp_graspdescend": int(self._max_waypoint_per_phase[PHASE_GRASP_DESCEND]),
+                "ep_wp_lift": int(self._max_waypoint_per_phase[PHASE_LIFT]),
+                "ep_wp_total": int(num_wp),
+                "ep_grasp_attempted": bool(self._grasp_attempted),
+                "ep_grasp_attached": bool(self._grasp_attached),
+                "ep_cube_dz": cube_dz,
+                "ep_ee_cube_dist": ee_cube_dist,
+                "ep_cube_fallen": bool(cube_fallen),
+                "ep_cube_lifted": bool(cube_lifted),
+            })
+            if self.verbose_episodes and not self._summary_printed:
+                self._summary_printed = True
+                phase_names = {0: "pre_grasp", 1: "grasp_descend", 2: "lift"}
+                end_reason = (
+                    "lifted" if cube_lifted else
+                    "fallen" if cube_fallen else
+                    "truncated" if truncated else
+                    "phase_done"
+                )
+                print(
+                    f"[ep] end={end_reason:>9s} | max_phase={phase_names[self._max_phase_reached]:<13s} "
+                    f"| wp(p/g/l)={self._max_waypoint_per_phase[PHASE_PRE_GRASP]:d}/"
+                    f"{self._max_waypoint_per_phase[PHASE_GRASP_DESCEND]:d}/"
+                    f"{self._max_waypoint_per_phase[PHASE_LIFT]:d} of {num_wp:d} "
+                    f"| grasp(try/attach)={int(self._grasp_attempted)}/{int(self._grasp_attached)} "
+                    f"| cube_dz={cube_dz:+.3f} | ee_cube={ee_cube_dist:.3f} "
+                    f"| steps={self._step_count:d}"
+                )
 
         obs = self._get_obs()
         return obs, float(reward), terminated, truncated, info
