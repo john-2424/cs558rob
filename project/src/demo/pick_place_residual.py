@@ -5,6 +5,7 @@ import numpy as np
 import pybullet as p
 import torch
 from tensordict import TensorDict
+from torchrl.envs.utils import ExplorationType, set_exploration_type
 
 from src import config
 from src.sim.env import BulletEnv
@@ -79,10 +80,10 @@ def execute_residual_trajectory(
                 np.array([float(phase_id)], dtype=np.float32),
             ])
 
-            # Get action from policy
+            # Get action from policy (deterministic: use TanhNormal mean)
             obs_tensor = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
             td = TensorDict({"observation": obs_tensor}, batch_size=[1])
-            with torch.no_grad():
+            with torch.no_grad(), set_exploration_type(ExplorationType.MODE):
                 td = actor(td)
             raw_action = td["action"].squeeze(0).numpy()
 

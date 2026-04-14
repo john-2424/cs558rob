@@ -6,6 +6,7 @@ from concurrent.futures import ProcessPoolExecutor
 import numpy as np
 import torch
 from tensordict import TensorDict
+from torchrl.envs.utils import ExplorationType, set_exploration_type
 
 from src import config
 from src.rl.gym_env import PandaGraspEnv
@@ -19,19 +20,17 @@ def run_episode(env, actor=None, mode="hybrid", deterministic=True):
     step_count = 0
     residual_norms = []
 
+    # In deterministic eval we want the TanhNormal's mode (mean), not a sample.
+    exploration_type = ExplorationType.MODE if deterministic else ExplorationType.RANDOM
+
     while True:
         if actor is not None and mode != "planner_only":
             obs_tensor = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
             td = TensorDict({"observation": obs_tensor}, batch_size=[1])
 
-            if deterministic:
-                with torch.no_grad():
-                    td = actor(td)
-                action = td["action"].squeeze(0).numpy()
-            else:
-                with torch.no_grad():
-                    td = actor(td)
-                action = td["action"].squeeze(0).numpy()
+            with torch.no_grad(), set_exploration_type(exploration_type):
+                td = actor(td)
+            action = td["action"].squeeze(0).numpy()
         else:
             action = np.zeros(7, dtype=np.float32)
 
