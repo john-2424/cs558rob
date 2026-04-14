@@ -1,5 +1,7 @@
 import os
+import sys
 import time
+from datetime import datetime
 from functools import partial
 
 import numpy as np
@@ -40,6 +42,41 @@ def _make_env_worker(mode, perturb_xy_range):
     except Exception:
         pass
     return make_env(gui=False, mode=mode, perturb_xy_range=perturb_xy_range)
+
+
+class _Tee:
+    """Mirror stdout writes to both the original stream and a log file."""
+    def __init__(self, *streams):
+        self.streams = streams
+
+    def write(self, data):
+        for s in self.streams:
+            try:
+                s.write(data)
+                s.flush()
+            except Exception:
+                pass
+
+    def flush(self):
+        for s in self.streams:
+            try:
+                s.flush()
+            except Exception:
+                pass
+
+
+def _open_tee_log(log_path):
+    os.makedirs(os.path.dirname(log_path), exist_ok=True)
+    log_file = open(log_path, "a", buffering=1)  # line-buffered
+    header = (
+        f"\n{'=' * 80}\n"
+        f"Training run started: {datetime.now().isoformat(timespec='seconds')}\n"
+        f"{'=' * 80}\n"
+    )
+    log_file.write(header)
+    original_stdout = sys.stdout
+    sys.stdout = _Tee(original_stdout, log_file)
+    return original_stdout, log_file
 
 
 def build_actor(obs_dim, act_dim, device="cpu"):
@@ -86,16 +123,24 @@ def build_critic(obs_dim, device="cpu"):
 
 
 def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
-          model_save_path=None, tb_log_dir=None):
+          model_save_path=None, tb_log_dir=None, log_file_path=None):
     device = "cpu"
     total_timesteps = total_timesteps or config.PPO_TOTAL_TIMESTEPS
     model_save_path = model_save_path or config.M2_MODEL_DIR
     tb_log_dir = tb_log_dir or config.M2_TB_LOG_DIR
+    log_file_path = log_file_path or os.path.join(config.M2_RESULTS_DIR, "train_log.txt")
 
     os.makedirs(model_save_path, exist_ok=True)
     os.makedirs(tb_log_dir, exist_ok=True)
 
+    # Mirror stdout (all print() output) to a persistent log file.
+    original_stdout, log_file = _open_tee_log(log_file_path)
+
     writer = SummaryWriter(log_dir=tb_log_dir)
+
+    print(f"Log file: {log_file_path}")
+    print(f"TensorBoard log dir: {tb_log_dir}")
+    print(f"Model checkpoint dir: {model_save_path}")
 
     obs_dim = 37
     act_dim = 7
@@ -157,7 +202,10 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
     total_frames = 0
     batch_idx = 0
     episode_rewards = []
+    episode_lengths = []
+    episode_successes = []
     ep_reward_acc = None  # per-env running episode-reward accumulator (lazy init)
+    ep_length_acc = None  # per-env running episode-length accumulator (lazy init)
     start_time = time.time()
 
     print(f"Starting PPO training: mode={mode}, total_timesteps={total_timesteps}")
@@ -217,6 +265,8 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
         num_dones = int(done_t.sum().item()) if done_t is not None else 0
 
         # Per-env accumulation so episode returns can span batches.
+        batch_new_rewards = []
+        batch_new_lengths = []
         if step_rewards_t is not None and done_t is not None:
             r = step_rewards_t.squeeze(-1) if step_rewards_t.shape[-1] == 1 else step_rewards_t
             d = done_t.squeeze(-1) if done_t.shape[-1] == 1 else done_t
@@ -226,34 +276,62 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
             num_envs, T = r.shape[0], r.shape[1]
             if ep_reward_acc is None or len(ep_reward_acc) != num_envs:
                 ep_reward_acc = [0.0] * num_envs
+                ep_length_acc = [0] * num_envs
             r_list = r.tolist()
             d_list = d.bool().tolist()
             for w in range(num_envs):
                 for t in range(T):
                     ep_reward_acc[w] += r_list[w][t]
+                    ep_length_acc[w] += 1
                     if d_list[w][t]:
-                        episode_rewards.append(ep_reward_acc[w])
+                        ep_r_done = ep_reward_acc[w]
+                        ep_len_done = ep_length_acc[w]
+                        episode_rewards.append(ep_r_done)
+                        episode_lengths.append(ep_len_done)
+                        episode_successes.append(
+                            1 if ep_r_done >= config.EP_SUCCESS_REWARD_THRESHOLD else 0
+                        )
+                        batch_new_rewards.append(ep_r_done)
+                        batch_new_lengths.append(ep_len_done)
                         ep_reward_acc[w] = 0.0
+                        ep_length_acc[w] = 0
 
         elapsed = time.time() - start_time
         fps = total_frames / elapsed if elapsed > 0 else 0
+
+        recent_rewards = episode_rewards[-20:]
+        recent_lengths = episode_lengths[-20:]
+        recent_successes = episode_successes[-20:]
+
+        mean_ep_reward = float(np.mean(recent_rewards)) if recent_rewards else float("nan")
+        std_ep_reward = float(np.std(recent_rewards)) if len(recent_rewards) > 1 else 0.0
+        mean_ep_length = float(np.mean(recent_lengths)) if recent_lengths else float("nan")
+        succ_rate = float(np.mean(recent_successes)) if recent_successes else 0.0
+
+        # Per-batch worker-divergence signal (std of episode rewards completed this batch)
+        batch_ep_std = float(np.std(batch_new_rewards)) if len(batch_new_rewards) > 1 else 0.0
 
         writer.add_scalar("train/loss", mean_loss, total_frames)
         writer.add_scalar("train/fps", fps, total_frames)
         writer.add_scalar("train/mean_step_reward", mean_step_reward, total_frames)
         writer.add_scalar("train/episodes_completed", len(episode_rewards), total_frames)
-
-        mean_ep_reward = float(np.mean(episode_rewards[-20:])) if episode_rewards else float("nan")
-        if episode_rewards:
+        if recent_rewards:
             writer.add_scalar("train/mean_episode_reward", mean_ep_reward, total_frames)
+            writer.add_scalar("train/std_episode_reward", std_ep_reward, total_frames)
+            writer.add_scalar("train/mean_episode_length", mean_ep_length, total_frames)
+            writer.add_scalar("train/success_rate", succ_rate, total_frames)
+        if len(batch_new_rewards) > 1:
+            writer.add_scalar("train/batch_episode_reward_std", batch_ep_std, total_frames)
 
         print(
             f"batch={batch_idx:4d} | "
             f"frames={total_frames:8d}/{total_timesteps} | "
-            f"loss={mean_loss:.4f} | "
+            f"loss={mean_loss:+.3f} | "
             f"step_r={mean_step_reward:+.3f} | "
-            f"ep_r={mean_ep_reward:+.2f} | "
-            f"eps={len(episode_rewards)} (+{num_dones}) | "
+            f"ep_r={mean_ep_reward:+7.2f}±{std_ep_reward:5.2f} | "
+            f"len={mean_ep_length:5.0f} | "
+            f"succ={succ_rate:5.0%} | "
+            f"eps={len(episode_rewards):5d} (+{num_dones}) | "
             f"fps={fps:.0f}"
         )
 
@@ -278,6 +356,15 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
 
     collector.shutdown()
     writer.close()
+
+    # Restore stdout and close the log file.
+    try:
+        sys.stdout = original_stdout
+    finally:
+        try:
+            log_file.close()
+        except Exception:
+            pass
 
     return final_path
 

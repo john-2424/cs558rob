@@ -215,7 +215,7 @@ RESIDUAL_MAX = 0.5
 
 # RL simulation
 RL_SIM_SUBSTEPS = 4
-RL_MAX_EPISODE_STEPS = 500
+RL_MAX_EPISODE_STEPS = 2000
 
 # Perturbation
 PERTURB_XY_RANGE = 0.04
@@ -233,7 +233,7 @@ REWARD_ZETA = 50.0
 # PPO hyperparameters
 PPO_TOTAL_TIMESTEPS = 500_000
 PPO_LR = 3e-4
-PPO_FRAMES_PER_BATCH = 512
+PPO_FRAMES_PER_BATCH = 2048
 PPO_MINI_BATCH_SIZE = 64
 PPO_EPOCHS = 10
 PPO_CLIP_EPSILON = 0.2
@@ -243,6 +243,10 @@ PPO_ENT_COEFF = 0.01
 
 # Parallel env workers for data collection (set to 1 to disable multiprocessing)
 PPO_NUM_COLLECTOR_WORKERS = 8
+
+# Episode-reward threshold for counting an episode as a "success" in training logs.
+# Lift bonus is REWARD_EPSILON (100.0); grasp bonus is REWARD_DELTA (50.0).
+EP_SUCCESS_REWARD_THRESHOLD = 50.0
 
 # Evaluation
 EVAL_EPISODES_PER_LEVEL = 50
