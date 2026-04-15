@@ -31,7 +31,8 @@ class PandaGraspEnv(gymnasium.Env):
     metadata = {"render_modes": ["human"]}
 
     def __init__(self, gui=False, mode="hybrid", perturb_xy_range=None,
-                 perturb_yaw_range=None, render_mode=None, verbose_episodes=False):
+                 perturb_yaw_range=None, render_mode=None, verbose_episodes=False,
+                 curriculum=False):
         super().__init__()
 
         self.gui = gui
@@ -42,6 +43,10 @@ class PandaGraspEnv(gymnasium.Env):
         self.perturb_yaw_range = (
             config.PERTURB_YAW_RANGE if perturb_yaw_range is None else perturb_yaw_range
         )
+        # Curriculum: if True, each reset() samples an effective xy_range
+        # uniformly in [0, self.perturb_xy_range]. Used during training so the
+        # agent sees easy (~nominal) episodes early and gradually harder ones.
+        self.curriculum = curriculum
         self.verbose_episodes = verbose_episodes
 
         self.observation_space = spaces.Box(
@@ -205,14 +210,21 @@ class PandaGraspEnv(gymnasium.Env):
         # nominal target. Residual RL's job is to correct for that offset.
         q_pre_grasp, q_grasp, q_lift = self._compute_grasp_targets()
 
-        if self.perturb_xy_range > 0:
+        if self.curriculum:
+            effective_xy = float(self._rng.uniform(0.0, self.perturb_xy_range))
+            effective_yaw = float(self._rng.uniform(0.0, self.perturb_yaw_range))
+        else:
+            effective_xy = self.perturb_xy_range
+            effective_yaw = self.perturb_yaw_range
+
+        if effective_xy > 0:
             perturb_cube_pose(
                 cube_id=self._objects.cube_id,
                 nominal_pos=self._cube_nominal_pos,
                 nominal_orn_euler=self._cube_nominal_orn_euler,
                 rng=self._rng,
-                xy_range=self.perturb_xy_range,
-                yaw_range=self.perturb_yaw_range,
+                xy_range=effective_xy,
+                yaw_range=effective_yaw,
             )
 
             for _ in range(20):
@@ -463,6 +475,7 @@ class PandaGraspEnv(gymnasium.Env):
             cube_lifted=cube_lifted,
             cube_fallen=cube_fallen,
             grasp_bonus_given=self._grasp_bonus_given,
+            phase=self._phase,
         )
 
         if grasp_ready and not self._grasp_bonus_given:

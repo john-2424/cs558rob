@@ -24,23 +24,25 @@ from src.rl.gym_env import PandaGraspEnv
 from src.utils.run_log import open_tee_log, close_tee_log
 
 
-def make_env(gui=False, mode="hybrid", perturb_xy_range=None):
+def make_env(gui=False, mode="hybrid", perturb_xy_range=None, curriculum=False):
     gym_env = PandaGraspEnv(
         gui=gui,
         mode=mode,
         perturb_xy_range=perturb_xy_range,
+        curriculum=curriculum,
     )
     env = GymWrapper(gym_env, device="cpu")
     env = TransformedEnv(env, StepCounter(max_steps=config.RL_MAX_EPISODE_STEPS))
     return env
 
 
-def _make_env_worker(mode, perturb_xy_range):
+def _make_env_worker(mode, perturb_xy_range, curriculum):
     try:
         torch.set_num_threads(1)
     except Exception:
         pass
-    return make_env(gui=False, mode=mode, perturb_xy_range=perturb_xy_range)
+    return make_env(gui=False, mode=mode, perturb_xy_range=perturb_xy_range,
+                    curriculum=curriculum)
 
 
 
@@ -148,7 +150,10 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
 
     # Collector (no main-process env -- workers each build their own PyBullet client)
     num_workers = max(1, int(config.PPO_NUM_COLLECTOR_WORKERS))
-    env_fn = partial(_make_env_worker, mode, perturb_xy_range)
+    use_curriculum = bool(getattr(config, "TRAIN_CURRICULUM", False))
+    print(f"Train curriculum: {use_curriculum} "
+          f"(xy_range sampled in [0, {config.PERTURB_XY_RANGE}])")
+    env_fn = partial(_make_env_worker, mode, perturb_xy_range, use_curriculum)
 
     if num_workers > 1:
         print(f"Using MultiSyncDataCollector with {num_workers} workers")

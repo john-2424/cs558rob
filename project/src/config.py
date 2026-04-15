@@ -228,6 +228,10 @@ RL_MAX_STEPS_PER_WAYPOINT = 150
 PERTURB_XY_RANGE = 0.04
 PERTURB_YAW_RANGE = 0.2
 PERTURB_LEVELS = [0.00, 0.02, 0.04, 0.06, 0.08, 0.10, 0.12]
+# During training, sample per-episode xy_range uniformly in
+# [0, PERTURB_XY_RANGE]. Gives agent easy episodes early so it can
+# discover the grasp cliff; still exposed to full range at train cap.
+TRAIN_CURRICULUM = True
 
 # Reward shaping
 REWARD_ALPHA = 10.0
@@ -238,6 +242,11 @@ REWARD_GAMMA = 0.05
 REWARD_DELTA = 50.0
 REWARD_EPSILON = 100.0
 REWARD_ZETA = 50.0
+# Dense proximity bonus during grasp_descend phase: linear ramp in
+# [0, REWARD_ETA] for ee_cube_dist in [0.10, 0.0]. Smooths the cliff
+# between "approached but didn't grasp" and the one-shot REWARD_DELTA.
+REWARD_ETA = 2.0
+PROXIMITY_RADIUS = 0.10
 
 # PPO hyperparameters
 # Tuned after run #3 oscillated 60-95% on bimodal rewards. Lower LR + lower
@@ -251,14 +260,16 @@ PPO_EPOCHS = 4
 PPO_CLIP_EPSILON = 0.2
 PPO_GAMMA = 0.99
 PPO_GAE_LAMBDA = 0.95
-PPO_ENT_COEFF = 0.001
+PPO_ENT_COEFF = 0.01
 
 # Parallel env workers for data collection (set to 1 to disable multiprocessing)
 PPO_NUM_COLLECTOR_WORKERS = 8
 
 # Episode-reward threshold for counting an episode as a "success" in training logs.
-# Lift bonus is REWARD_EPSILON (100.0); grasp bonus is REWARD_DELTA (50.0).
-EP_SUCCESS_REWARD_THRESHOLD = 50.0
+# Lift bonus is REWARD_EPSILON (100.0); grasp bonus is REWARD_DELTA (50.0). Set
+# at 90 so only episodes that actually received the lift terminal bonus count --
+# previous value 50 also counted grasp-only-no-lift episodes.
+EP_SUCCESS_REWARD_THRESHOLD = 90.0
 
 # Evaluation
 EVAL_EPISODES_PER_LEVEL = 20
