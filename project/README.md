@@ -90,28 +90,43 @@ The expected task sequence is:
 
 ### M2: Training the Residual PPO Policy
 
+Hybrid policy (PD backbone + bounded residual -- default):
+
 ```bash
 python -m src.main train
+python -m src.main train --mode hybrid
 ```
 
-Or run training directly:
+RL-only baseline (no PD backbone, full velocity from policy):
 
 ```bash
-python -m src.rl.train
+python -m src.main train --mode rl_only
 ```
+
+The `rl_only` run writes to separate paths (`results/m2/models_rl_only/`,
+`results/m2/tb_logs_rl_only/`, `results/m2/train_log_rl_only.txt`) so it
+never overwrites the hybrid model.
 
 Training runs headless (no GUI). Monitor progress via TensorBoard:
 
 ```bash
-tensorboard --logdir results/m2/tb_logs
+tensorboard --logdir results/m2/tb_logs           # hybrid
+tensorboard --logdir results/m2/tb_logs_rl_only   # rl_only
 ```
 
 ### M2: Evaluation
 
 ```bash
-python -m src.main eval            # per-episode diagnostics on (config default)
-python -m src.main eval --quiet    # suppress per-episode lines
+python -m src.main eval                          # per-episode diagnostics on (config default)
+python -m src.main eval --quiet                  # suppress per-episode lines
+python -m src.main eval --hybrid-model PATH      # override hybrid checkpoint
+python -m src.main eval --rl-only-model PATH     # explicitly point at rl_only checkpoint
 ```
+
+If a checkpoint exists at `results/m2/models_rl_only/final_model.pt` the
+evaluator picks it up automatically; otherwise the rl-only column is
+skipped. `planner_only` and `hybrid` always run when their models are
+available.
 
 Or run evaluation directly:
 
@@ -119,7 +134,7 @@ Or run evaluation directly:
 python -m src.rl.evaluate
 ```
 
-This evaluates planner-only, hybrid, and RL-only methods across four perturbation levels (0, 0.02, 0.04, 0.06 m) with 50 episodes each. Results are saved to `results/m2/eval_results.json`.
+This evaluates planner-only, hybrid, and RL-only methods across the configured perturbation levels (see `config.PERTURB_LEVELS`) with `EVAL_EPISODES_PER_LEVEL` episodes each. Results are saved to `results/m2/eval_results.json`.
 
 ### M2: Generate Evaluation Plots
 

@@ -216,6 +216,12 @@ def _eval_one_method(label, mode, model_path, perturb_level, num_episodes, num_w
 def run_evaluation(model_path=None, rl_only_model_path=None, log_file_path=None,
                    verbose_episodes=False):
     model_path = model_path or os.path.join(config.M2_MODEL_DIR, "final_model.pt")
+    if rl_only_model_path is None:
+        default_rl_path = os.path.join(
+            config.M2_RESULTS_DIR, "models_rl_only", "final_model.pt"
+        )
+        if os.path.exists(default_rl_path):
+            rl_only_model_path = default_rl_path
     log_file_path = log_file_path or os.path.join(config.M2_RESULTS_DIR, "eval_log.txt")
     os.makedirs(config.M2_RESULTS_DIR, exist_ok=True)
 

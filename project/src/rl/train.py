@@ -92,9 +92,20 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
           model_save_path=None, tb_log_dir=None, log_file_path=None):
     device = "cpu"
     total_timesteps = total_timesteps or config.PPO_TOTAL_TIMESTEPS
-    model_save_path = model_save_path or config.M2_MODEL_DIR
-    tb_log_dir = tb_log_dir or config.M2_TB_LOG_DIR
-    log_file_path = log_file_path or os.path.join(config.M2_RESULTS_DIR, "train_log.txt")
+
+    # Suffix default output paths by mode so rl_only and hybrid runs stay isolated.
+    if mode == "hybrid":
+        default_model_dir = config.M2_MODEL_DIR
+        default_tb_dir = config.M2_TB_LOG_DIR
+        default_log_name = "train_log.txt"
+    else:
+        default_model_dir = os.path.join(config.M2_RESULTS_DIR, f"models_{mode}")
+        default_tb_dir = os.path.join(config.M2_RESULTS_DIR, f"tb_logs_{mode}")
+        default_log_name = f"train_log_{mode}.txt"
+
+    model_save_path = model_save_path or default_model_dir
+    tb_log_dir = tb_log_dir or default_tb_dir
+    log_file_path = log_file_path or os.path.join(config.M2_RESULTS_DIR, default_log_name)
 
     os.makedirs(model_save_path, exist_ok=True)
     os.makedirs(tb_log_dir, exist_ok=True)
