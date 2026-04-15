@@ -36,8 +36,12 @@ class PandaGraspEnv(gymnasium.Env):
 
         self.gui = gui
         self.mode = mode
-        self.perturb_xy_range = perturb_xy_range or config.PERTURB_XY_RANGE
-        self.perturb_yaw_range = perturb_yaw_range or config.PERTURB_YAW_RANGE
+        self.perturb_xy_range = (
+            config.PERTURB_XY_RANGE if perturb_xy_range is None else perturb_xy_range
+        )
+        self.perturb_yaw_range = (
+            config.PERTURB_YAW_RANGE if perturb_yaw_range is None else perturb_yaw_range
+        )
         self.verbose_episodes = verbose_episodes
 
         self.observation_space = spaces.Box(
@@ -321,25 +325,13 @@ class PandaGraspEnv(gymnasium.Env):
         # counter measures RL transitions for truncation budget. Counting
         # inline steps here exhausted the episode budget before LIFT could run.
 
-        dbg = getattr(self, "verbose_episodes", False)
-
-        if dbg:
-            ee0, _ = self._robot.get_ee_pose()
-            cube0, _ = get_body_pose(self._objects.cube_id)
-            print(f"  [grasp] BEFORE close: ee={ee0.tolist()} cube={cube0.tolist()} ")
-
         # Close gripper
         for _ in range(config.GRIPPER_SETTLE_STEPS):
             self._robot.close_gripper()
             self._env.step(sleep=False)
 
         # Validate grasp
-        ready, debug1 = self._robot.is_grasp_ready(self._objects.cube_id)
-        if dbg:
-            ee1, _ = self._robot.get_ee_pose()
-            cube1, _ = get_body_pose(self._objects.cube_id)
-            print(f"  [grasp] AFTER close#1: ee={ee1.tolist()} cube={cube1.tolist()}")
-            print(f"  [grasp] ready={ready} dbg={ {k: debug1[k] for k in ('ee_to_cube_dist','min_finger_to_cube_dist','total_contacts','finger_contacts','dist_ok','finger_dist_ok','total_contact_ok','finger_contact_ok')} }")
+        ready, _ = self._robot.is_grasp_ready(self._objects.cube_id)
 
         if not ready:
             # Retry deeper descend
@@ -348,9 +340,6 @@ class PandaGraspEnv(gymnasium.Env):
             retry_pos = np.array(ee_pos, dtype=float)
             retry_pos[2] -= config.GRASP_DESCEND_RETRY_DELTA_Z
             q_retry_target = self._robot.solve_ik(retry_pos, self._grasp_orn)
-
-            if dbg:
-                print(f"  [grasp] RETRY target ee_pos={retry_pos.tolist()} q_retry_target={q_retry_target.tolist()}")
 
             waypoints = self._build_phase_waypoints(q_retry, q_retry_target)
             for wp in waypoints:
@@ -362,21 +351,11 @@ class PandaGraspEnv(gymnasium.Env):
                     if self._robot.is_at_joint_target(wp, tol=config.WAYPOINT_TOL):
                         break
 
-            if dbg:
-                ee2, _ = self._robot.get_ee_pose()
-                cube2, _ = get_body_pose(self._objects.cube_id)
-                print(f"  [grasp] AFTER retry descend: ee={ee2.tolist()} cube={cube2.tolist()}")
-
             for _ in range(config.GRIPPER_SETTLE_STEPS):
                 self._robot.close_gripper()
                 self._env.step(sleep=False)
 
-            ready, debug2 = self._robot.is_grasp_ready(self._objects.cube_id)
-            if dbg:
-                ee3, _ = self._robot.get_ee_pose()
-                cube3, _ = get_body_pose(self._objects.cube_id)
-                print(f"  [grasp] AFTER close#2: ee={ee3.tolist()} cube={cube3.tolist()}")
-                print(f"  [grasp] ready={ready} dbg={ {k: debug2[k] for k in ('ee_to_cube_dist','min_finger_to_cube_dist','total_contacts','finger_contacts','dist_ok','finger_dist_ok','total_contact_ok','finger_contact_ok')} }")
+            ready, _ = self._robot.is_grasp_ready(self._objects.cube_id)
 
         if ready:
             self._robot.attach_object(self._objects.cube_id)
