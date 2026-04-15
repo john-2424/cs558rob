@@ -224,7 +224,7 @@ RL_MAX_STEPS_PER_WAYPOINT = 150
 # Perturbation
 PERTURB_XY_RANGE = 0.10
 PERTURB_YAW_RANGE = 0.4
-PERTURB_LEVELS = [0.06, 0.08, 0.10, 0.12]
+PERTURB_LEVELS = [0.00, 0.06, 0.08, 0.10, 0.12]
 
 # Reward shaping
 REWARD_ALPHA = 10.0
@@ -259,7 +259,7 @@ PPO_NUM_COLLECTOR_WORKERS = 8
 EP_SUCCESS_REWARD_THRESHOLD = 50.0
 
 # Evaluation
-EVAL_EPISODES_PER_LEVEL = 50
+EVAL_EPISODES_PER_LEVEL = 20
 EVAL_NUM_WORKERS = 8  # parallel workers for episode rollout; set to 1 for serial
 EVAL_VERBOSE_EPISODES = True  # print one diagnostic line per episode (phase/waypoint/grasp)
 

@@ -1210,3 +1210,23 @@ batch= 243 | frames=  995328/1000000 | loss=+1.046 | step_r=+0.062 | ep_r= +46.0
 batch= 244 | frames=  999424/1000000 | loss=+0.447 | step_r=+0.025 | ep_r= +37.76±82.24 | len= 1608 | succ=  45% | eps=  634 (+3) | fps=30
 batch= 245 | frames= 1003520/1000000 | loss=+0.655 | step_r=+0.079 | ep_r= +51.75±84.19 | len= 1517 | succ=  55% | eps=  638 (+4) | fps=30
 Training complete. Model saved to results/m2/models/final_model.pt
+
+================================================================================
+Training run started: 2026-04-15T19:32:55
+================================================================================
+Log file: results/m2/train_log.txt
+TensorBoard log dir: results/m2/tb_logs
+Model checkpoint dir: results/m2/models
+Using MultiSyncDataCollector with 8 workers
+Starting PPO training: mode=hybrid, total_timesteps=20000
+Frames per batch: 4096
+Mini-batch size: 64
+Epochs per batch: 4
+Waiting for first batch from collector workers (this may take 30-120s on first run)...
+First batch received after 8.2s
+batch=   1 | frames=    4096/20000 | loss=+0.001 | step_r=-0.023 | ep_r=   +nan± 0.00 | len=  nan | succ=   0% | eps=    0 (+0) | fps=412
+batch=   2 | frames=    8192/20000 | loss=-0.012 | step_r=-0.022 | ep_r= -23.35± 0.00 | len= 1019 | succ=   0% | eps=    1 (+1) | fps=409
+batch=   3 | frames=   12288/20000 | loss=+10.781 | step_r=+0.014 | ep_r=  -6.67±48.86 | len= 1116 | succ=  12% | eps=    8 (+7) | fps=405
+batch=   4 | frames=   16384/20000 | loss=+0.012 | step_r=-0.021 | ep_r=  -6.67±48.86 | len= 1116 | succ=  12% | eps=    8 (+0) | fps=408
+batch=   5 | frames=   20480/20000 | loss=+0.001 | step_r=-0.022 | ep_r= -14.59±35.46 | len= 1073 | succ=   6% | eps=   16 (+8) | fps=406
+Training complete. Model saved to results/m2/models/final_model.pt
