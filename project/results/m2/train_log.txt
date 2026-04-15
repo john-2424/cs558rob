@@ -950,3 +950,263 @@ batch= 171 | frames=  350208/1000000 | loss=+0.413 | step_r=+0.078 | ep_r= +62.8
 batch= 172 | frames=  352256/1000000 | loss=+0.233 | step_r=+0.028 | ep_r= +63.19±87.87 | len= 1428 | succ=  65% | eps=  243 (+1) | fps=18
 batch= 173 | frames=  354304/1000000 | loss=+0.808 | step_r=+0.124 | ep_r= +62.84±87.82 | len= 1431 | succ=  65% | eps=  246 (+3) | fps=18
 batch= 174 | frames=  356352/1000000 | loss=+0.175 | step_r=+0.050 | ep_r= +62.74±87.75 | len= 1432 | succ=  65% | eps=  247 (+1) | fps=18
+
+================================================================================
+Training run started: 2026-04-15T00:27:10
+================================================================================
+Log file: results/m2/train_log.txt
+TensorBoard log dir: results/m2/tb_logs
+Model checkpoint dir: results/m2/models
+Using MultiSyncDataCollector with 8 workers
+Starting PPO training: mode=hybrid, total_timesteps=1000000
+Frames per batch: 4096
+Mini-batch size: 64
+Epochs per batch: 4
+Waiting for first batch from collector workers (this may take 30-120s on first run)...
+First batch received after 8.2s
+batch=   1 | frames=    4096/1000000 | loss=-0.009 | step_r=-0.023 | ep_r=   +nan± 0.00 | len=  nan | succ=   0% | eps=    0 (+0) | fps=424
+batch=   2 | frames=    8192/1000000 | loss=-0.019 | step_r=-0.022 | ep_r=   +nan± 0.00 | len=  nan | succ=   0% | eps=    0 (+0) | fps=420
+batch=   3 | frames=   12288/1000000 | loss=+63.006 | step_r=+0.191 | ep_r=+120.50± 1.39 | len= 1273 | succ= 100% | eps=    6 (+6) | fps=48
+batch=   4 | frames=   16384/1000000 | loss=+0.047 | step_r=-0.025 | ep_r= +74.63±79.46 | len= 1455 | succ=  75% | eps=    8 (+2) | fps=32
+batch=   5 | frames=   20480/1000000 | loss=+35.442 | step_r=+0.097 | ep_r= +87.72±71.06 | len= 1392 | succ=  82% | eps=   11 (+3) | fps=32
+batch=   6 | frames=   24576/1000000 | loss=+11.150 | step_r=+0.023 | ep_r= +90.61±68.70 | len= 1378 | succ=  83% | eps=   12 (+1) | fps=26
+batch=   7 | frames=   28672/1000000 | loss=+19.655 | step_r=+0.051 | ep_r= +76.40±78.82 | len= 1425 | succ=  75% | eps=   16 (+4) | fps=27
+batch=   8 | frames=   32768/1000000 | loss=+37.722 | step_r=+0.124 | ep_r= +85.61±72.87 | len= 1387 | succ=  80% | eps=   20 (+4) | fps=31
+batch=   9 | frames=   36864/1000000 | loss=+32.241 | step_r=+0.099 | ep_r= +86.23±73.19 | len= 1366 | succ=  80% | eps=   24 (+4) | fps=34
+batch=  10 | frames=   40960/1000000 | loss=+27.911 | step_r=+0.086 | ep_r= +96.12±65.25 | len= 1305 | succ=  85% | eps=   27 (+3) | fps=30
+batch=  11 | frames=   45056/1000000 | loss=+16.926 | step_r=+0.046 | ep_r= +96.58±64.79 | len= 1298 | succ=  85% | eps=   30 (+3) | fps=27
+batch=  12 | frames=   49152/1000000 | loss=+18.368 | step_r=+0.057 | ep_r= +96.58±64.79 | len= 1297 | succ=  85% | eps=   32 (+2) | fps=25
+batch=  13 | frames=   53248/1000000 | loss=+11.830 | step_r=+0.012 | ep_r= +95.77±66.55 | len= 1298 | succ=  85% | eps=   35 (+3) | fps=26
+batch=  14 | frames=   57344/1000000 | loss=+11.460 | step_r=+0.022 | ep_r= +95.73±66.54 | len= 1298 | succ=  85% | eps=   36 (+1) | fps=24
+batch=  15 | frames=   61440/1000000 | loss=+12.567 | step_r=+0.033 | ep_r= +77.04±81.30 | len= 1371 | succ=  75% | eps=   40 (+4) | fps=23
+batch=  16 | frames=   65536/1000000 | loss=+6.949 | step_r=-0.006 | ep_r= +66.86±85.32 | len= 1448 | succ=  70% | eps=   42 (+2) | fps=23
+batch=  17 | frames=   69632/1000000 | loss=+10.254 | step_r=+0.008 | ep_r= +57.56±88.81 | len= 1487 | succ=  65% | eps=   44 (+2) | fps=22
+batch=  18 | frames=   73728/1000000 | loss=+7.666 | step_r=+0.005 | ep_r= +38.90±92.58 | len= 1569 | succ=  55% | eps=   47 (+3) | fps=21
+batch=  19 | frames=   77824/1000000 | loss=+18.836 | step_r=+0.059 | ep_r= +29.57±93.22 | len= 1604 | succ=  50% | eps=   51 (+4) | fps=21
+batch=  20 | frames=   81920/1000000 | loss=+9.315 | step_r=+0.014 | ep_r= +29.72±93.26 | len= 1604 | succ=  50% | eps=   53 (+2) | fps=20
+batch=  21 | frames=   86016/1000000 | loss=+13.193 | step_r=+0.023 | ep_r= +39.29±92.83 | len= 1560 | succ=  55% | eps=   54 (+1) | fps=20
+batch=  22 | frames=   90112/1000000 | loss=+24.563 | step_r=+0.084 | ep_r= +30.48±92.87 | len= 1605 | succ=  50% | eps=   58 (+4) | fps=20
+batch=  23 | frames=   94208/1000000 | loss=+12.101 | step_r=+0.027 | ep_r= +41.26±92.34 | len= 1538 | succ=  55% | eps=   62 (+4) | fps=20
+batch=  24 | frames=   98304/1000000 | loss=+21.875 | step_r=+0.062 | ep_r= +50.85±90.92 | len= 1494 | succ=  60% | eps=   64 (+2) | fps=20
+batch=  25 | frames=  102400/1000000 | loss=+24.059 | step_r=+0.086 | ep_r= +69.73±84.62 | len= 1411 | succ=  70% | eps=   67 (+3) | fps=19
+batch=  26 | frames=  106496/1000000 | loss=+18.111 | step_r=+0.051 | ep_r= +70.40±82.53 | len= 1431 | succ=  70% | eps=   71 (+4) | fps=20
+batch=  27 | frames=  110592/1000000 | loss=+19.639 | step_r=+0.064 | ep_r= +79.75±77.32 | len= 1393 | succ=  75% | eps=   73 (+2) | fps=20
+batch=  28 | frames=  114688/1000000 | loss=+32.926 | step_r=+0.135 | ep_r= +88.65±71.49 | len= 1348 | succ=  80% | eps=   78 (+5) | fps=20
+batch=  29 | frames=  118784/1000000 | loss=+2.960 | step_r=-0.010 | ep_r= +89.15±70.47 | len= 1348 | succ=  80% | eps=   79 (+1) | fps=20
+batch=  30 | frames=  122880/1000000 | loss=+19.023 | step_r=+0.048 | ep_r= +89.11±70.45 | len= 1349 | succ=  80% | eps=   81 (+2) | fps=20
+batch=  31 | frames=  126976/1000000 | loss=+4.388 | step_r=-0.001 | ep_r= +89.17±69.73 | len= 1354 | succ=  80% | eps=   83 (+2) | fps=19
+batch=  32 | frames=  131072/1000000 | loss=+0.396 | step_r=-0.023 | ep_r= +62.83±83.12 | len= 1481 | succ=  65% | eps=   86 (+3) | fps=19
+batch=  33 | frames=  135168/1000000 | loss=+16.972 | step_r=+0.050 | ep_r= +54.24±85.51 | len= 1512 | succ=  60% | eps=   89 (+3) | fps=19
+batch=  34 | frames=  139264/1000000 | loss=+7.614 | step_r=+0.010 | ep_r= +53.96±85.67 | len= 1514 | succ=  60% | eps=   92 (+3) | fps=19
+batch=  35 | frames=  143360/1000000 | loss=+13.684 | step_r=+0.049 | ep_r= +54.01±85.71 | len= 1513 | succ=  60% | eps=   94 (+2) | fps=19
+batch=  36 | frames=  147456/1000000 | loss=+3.552 | step_r=-0.010 | ep_r= +36.19±87.66 | len= 1596 | succ=  50% | eps=   96 (+2) | fps=19
+batch=  37 | frames=  151552/1000000 | loss=+11.894 | step_r=+0.025 | ep_r= +27.53±87.18 | len= 1637 | succ=  45% | eps=   98 (+2) | fps=18
+batch=  38 | frames=  155648/1000000 | loss=+23.820 | step_r=+0.099 | ep_r= +35.90±87.08 | len= 1618 | succ=  50% | eps=  104 (+6) | fps=18
+batch=  39 | frames=  159744/1000000 | loss=+7.053 | step_r=+0.015 | ep_r= +44.58±86.74 | len= 1580 | succ=  55% | eps=  105 (+1) | fps=19
+batch=  40 | frames=  163840/1000000 | loss=+29.739 | step_r=+0.135 | ep_r= +61.58±82.83 | len= 1523 | succ=  65% | eps=  109 (+4) | fps=19
+batch=  41 | frames=  167936/1000000 | loss=+4.509 | step_r=+0.002 | ep_r= +70.03±79.62 | len= 1492 | succ=  70% | eps=  110 (+1) | fps=19
+batch=  42 | frames=  172032/1000000 | loss=+15.021 | step_r=+0.049 | ep_r= +61.17±82.31 | len= 1543 | succ=  65% | eps=  113 (+3) | fps=19
+batch=  43 | frames=  176128/1000000 | loss=+18.787 | step_r=+0.087 | ep_r= +87.22±68.61 | len= 1439 | succ=  80% | eps=  117 (+4) | fps=19
+batch=  44 | frames=  180224/1000000 | loss=+16.252 | step_r=+0.063 | ep_r= +87.13±68.54 | len= 1444 | succ=  80% | eps=  120 (+3) | fps=19
+batch=  45 | frames=  184320/1000000 | loss=+14.586 | step_r=+0.048 | ep_r= +96.45±61.63 | len= 1376 | succ=  85% | eps=  122 (+2) | fps=19
+batch=  46 | frames=  188416/1000000 | loss=+4.465 | step_r=+0.001 | ep_r= +87.46±69.00 | len= 1421 | succ=  80% | eps=  124 (+2) | fps=19
+batch=  47 | frames=  192512/1000000 | loss=+12.553 | step_r=+0.049 | ep_r= +78.67±74.72 | len= 1458 | succ=  75% | eps=  127 (+3) | fps=19
+batch=  48 | frames=  196608/1000000 | loss=+0.101 | step_r=-0.024 | ep_r= +61.69±82.00 | len= 1528 | succ=  65% | eps=  129 (+2) | fps=19
+batch=  49 | frames=  200704/1000000 | loss=+8.858 | step_r=+0.023 | ep_r= +52.94±84.28 | len= 1566 | succ=  60% | eps=  132 (+3) | fps=19
+batch=  50 | frames=  204800/1000000 | loss=+18.297 | step_r=+0.075 | ep_r= +52.75±84.67 | len= 1557 | succ=  60% | eps=  136 (+4) | fps=19
+batch=  51 | frames=  208896/1000000 | loss=+12.448 | step_r=+0.052 | ep_r= +52.45±84.43 | len= 1570 | succ=  60% | eps=  138 (+2) | fps=19
+batch=  52 | frames=  212992/1000000 | loss=+17.458 | step_r=+0.075 | ep_r= +61.10±82.46 | len= 1530 | succ=  65% | eps=  140 (+2) | fps=19
+batch=  53 | frames=  217088/1000000 | loss=+8.189 | step_r=+0.024 | ep_r= +51.96±83.96 | len= 1593 | succ=  60% | eps=  143 (+3) | fps=19
+batch=  54 | frames=  221184/1000000 | loss=+8.270 | step_r=+0.026 | ep_r= +52.00±83.62 | len= 1600 | succ=  60% | eps=  145 (+2) | fps=19
+batch=  55 | frames=  225280/1000000 | loss=+7.650 | step_r=+0.038 | ep_r= +60.43±81.92 | len= 1567 | succ=  65% | eps=  148 (+3) | fps=19
+batch=  56 | frames=  229376/1000000 | loss=+6.378 | step_r=+0.025 | ep_r= +68.86±78.96 | len= 1531 | succ=  70% | eps=  150 (+2) | fps=19
+batch=  57 | frames=  233472/1000000 | loss=+22.889 | step_r=+0.113 | ep_r= +77.68±73.83 | len= 1518 | succ=  75% | eps=  155 (+5) | fps=19
+batch=  58 | frames=  237568/1000000 | loss=+1.907 | step_r=-0.010 | ep_r= +77.68±73.83 | len= 1518 | succ=  75% | eps=  155 (+0) | fps=19
+batch=  59 | frames=  241664/1000000 | loss=+17.498 | step_r=+0.060 | ep_r= +68.81±78.39 | len= 1559 | succ=  70% | eps=  158 (+3) | fps=19
+batch=  60 | frames=  245760/1000000 | loss=+15.477 | step_r=+0.060 | ep_r= +68.48±78.73 | len= 1571 | succ=  70% | eps=  162 (+4) | fps=19
+batch=  61 | frames=  249856/1000000 | loss=+9.111 | step_r=+0.039 | ep_r= +59.92±81.62 | len= 1607 | succ=  65% | eps=  164 (+2) | fps=19
+batch=  62 | frames=  253952/1000000 | loss=+16.483 | step_r=+0.087 | ep_r= +76.74±73.95 | len= 1554 | succ=  75% | eps=  167 (+3) | fps=19
+batch=  63 | frames=  258048/1000000 | loss=+19.293 | step_r=+0.076 | ep_r= +84.84±68.02 | len= 1538 | succ=  80% | eps=  170 (+3) | fps=20
+batch=  64 | frames=  262144/1000000 | loss=+16.380 | step_r=+0.088 | ep_r= +85.10±68.15 | len= 1517 | succ=  80% | eps=  173 (+3) | fps=20
+batch=  65 | frames=  266240/1000000 | loss=+17.084 | step_r=+0.124 | ep_r=+102.72±51.28 | len= 1437 | succ=  90% | eps=  177 (+4) | fps=20
+batch=  66 | frames=  270336/1000000 | loss=+6.147 | step_r=+0.027 | ep_r=+102.87±51.33 | len= 1432 | succ=  90% | eps=  178 (+1) | fps=21
+batch=  67 | frames=  274432/1000000 | loss=+15.668 | step_r=+0.100 | ep_r=+111.34±36.77 | len= 1399 | succ=  95% | eps=  181 (+3) | fps=21
+batch=  68 | frames=  278528/1000000 | loss=+10.220 | step_r=+0.049 | ep_r=+111.54±37.78 | len= 1385 | succ=  95% | eps=  185 (+4) | fps=21
+batch=  69 | frames=  282624/1000000 | loss=+10.849 | step_r=+0.062 | ep_r=+111.81±37.80 | len= 1382 | succ=  95% | eps=  187 (+2) | fps=20
+batch=  70 | frames=  286720/1000000 | loss=+10.565 | step_r=+0.075 | ep_r=+103.88±51.54 | len= 1400 | succ=  90% | eps=  190 (+3) | fps=21
+batch=  71 | frames=  290816/1000000 | loss=+10.538 | step_r=+0.051 | ep_r=+103.35±51.40 | len= 1418 | succ=  90% | eps=  193 (+3) | fps=21
+batch=  72 | frames=  294912/1000000 | loss=+6.417 | step_r=+0.025 | ep_r=+103.13±51.33 | len= 1426 | succ=  90% | eps=  194 (+1) | fps=21
+batch=  73 | frames=  299008/1000000 | loss=+8.345 | step_r=+0.060 | ep_r= +93.89±60.91 | len= 1476 | succ=  85% | eps=  197 (+3) | fps=21
+batch=  74 | frames=  303104/1000000 | loss=+4.422 | step_r=+0.026 | ep_r= +77.04±73.54 | len= 1539 | succ=  75% | eps=  201 (+4) | fps=21
+batch=  75 | frames=  307200/1000000 | loss=+5.543 | step_r=+0.013 | ep_r= +76.88±73.45 | len= 1543 | succ=  75% | eps=  202 (+1) | fps=21
+batch=  76 | frames=  311296/1000000 | loss=+12.328 | step_r=+0.109 | ep_r= +75.88±73.24 | len= 1563 | succ=  75% | eps=  206 (+4) | fps=21
+batch=  77 | frames=  315392/1000000 | loss=+3.168 | step_r=+0.001 | ep_r= +67.11±77.35 | len= 1598 | succ=  70% | eps=  208 (+2) | fps=21
+batch=  78 | frames=  319488/1000000 | loss=+6.435 | step_r=+0.051 | ep_r= +74.45±72.78 | len= 1603 | succ=  75% | eps=  210 (+2) | fps=21
+batch=  79 | frames=  323584/1000000 | loss=+12.904 | step_r=+0.111 | ep_r= +74.32±72.70 | len= 1617 | succ=  75% | eps=  214 (+4) | fps=21
+batch=  80 | frames=  327680/1000000 | loss=+4.387 | step_r=+0.027 | ep_r= +74.70±72.63 | len= 1608 | succ=  75% | eps=  216 (+2) | fps=21
+batch=  81 | frames=  331776/1000000 | loss=+7.327 | step_r=+0.088 | ep_r= +82.89±67.30 | len= 1581 | succ=  80% | eps=  219 (+3) | fps=21
+batch=  82 | frames=  335872/1000000 | loss=+10.219 | step_r=+0.112 | ep_r=+100.06±50.28 | len= 1524 | succ=  90% | eps=  223 (+4) | fps=22
+batch=  83 | frames=  339968/1000000 | loss=+0.556 | step_r=-0.023 | ep_r=+100.06±50.28 | len= 1524 | succ=  90% | eps=  223 (+0) | fps=22
+batch=  84 | frames=  344064/1000000 | loss=+6.406 | step_r=+0.048 | ep_r= +92.19±59.76 | len= 1542 | succ=  85% | eps=  226 (+3) | fps=22
+batch=  85 | frames=  348160/1000000 | loss=+4.527 | step_r=+0.047 | ep_r= +84.51±67.63 | len= 1542 | succ=  80% | eps=  230 (+4) | fps=22
+batch=  86 | frames=  352256/1000000 | loss=+2.555 | step_r=+0.024 | ep_r= +83.70±67.34 | len= 1565 | succ=  80% | eps=  231 (+1) | fps=22
+batch=  87 | frames=  356352/1000000 | loss=+1.662 | step_r=+0.001 | ep_r= +83.85±67.42 | len= 1558 | succ=  80% | eps=  232 (+1) | fps=22
+batch=  88 | frames=  360448/1000000 | loss=+3.738 | step_r=+0.050 | ep_r= +71.87±71.05 | len= 1614 | succ=  70% | eps=  236 (+4) | fps=22
+batch=  89 | frames=  364544/1000000 | loss=+5.428 | step_r=+0.061 | ep_r= +64.91±71.27 | len= 1679 | succ=  65% | eps=  239 (+3) | fps=23
+batch=  90 | frames=  368640/1000000 | loss=+6.873 | step_r=+0.037 | ep_r= +64.82±71.22 | len= 1678 | succ=  65% | eps=  241 (+2) | fps=23
+batch=  91 | frames=  372736/1000000 | loss=+0.158 | step_r=-0.024 | ep_r= +64.82±71.22 | len= 1678 | succ=  65% | eps=  241 (+0) | fps=22
+batch=  92 | frames=  376832/1000000 | loss=+3.284 | step_r=+0.024 | ep_r= +47.42±76.12 | len= 1747 | succ=  55% | eps=  245 (+4) | fps=22
+batch=  93 | frames=  380928/1000000 | loss=+0.549 | step_r=-0.026 | ep_r= +29.98±77.62 | len= 1808 | succ=  45% | eps=  247 (+2) | fps=22
+batch=  94 | frames=  385024/1000000 | loss=+5.584 | step_r=+0.048 | ep_r= +37.66±77.13 | len= 1800 | succ=  50% | eps=  250 (+3) | fps=22
+batch=  95 | frames=  389120/1000000 | loss=+6.401 | step_r=+0.047 | ep_r= +37.69±77.09 | len= 1801 | succ=  50% | eps=  252 (+2) | fps=23
+batch=  96 | frames=  393216/1000000 | loss=+5.331 | step_r=+0.047 | ep_r= +46.15±75.85 | len= 1779 | succ=  55% | eps=  255 (+3) | fps=23
+batch=  97 | frames=  397312/1000000 | loss=+0.023 | step_r=-0.026 | ep_r= +43.49±78.34 | len= 1779 | succ=  55% | eps=  256 (+1) | fps=23
+batch=  98 | frames=  401408/1000000 | loss=+0.009 | step_r=-0.030 | ep_r= +27.51±80.10 | len= 1799 | succ=  45% | eps=  258 (+2) | fps=23
+batch=  99 | frames=  405504/1000000 | loss=+0.003 | step_r=-0.031 | ep_r= +16.09±80.49 | len= 1833 | succ=  40% | eps=  260 (+2) | fps=23
+batch= 100 | frames=  409600/1000000 | loss=-0.006 | step_r=-0.032 | ep_r=  +7.06±79.37 | len= 1851 | succ=  35% | eps=  263 (+3) | fps=24
+batch= 101 | frames=  413696/1000000 | loss=+0.013 | step_r=-0.033 | ep_r=  +6.21±80.07 | len= 1851 | succ=  35% | eps=  264 (+1) | fps=24
+batch= 102 | frames=  417792/1000000 | loss=-0.007 | step_r=-0.033 | ep_r=  -3.51±77.91 | len= 1875 | succ=  30% | eps=  266 (+2) | fps=24
+batch= 103 | frames=  421888/1000000 | loss=+0.006 | step_r=-0.033 | ep_r= -13.55±74.12 | len= 1907 | succ=  25% | eps=  268 (+2) | fps=24
+batch= 104 | frames=  425984/1000000 | loss=-0.012 | step_r=-0.032 | ep_r= -31.16±62.82 | len= 1935 | succ=  15% | eps=  271 (+3) | fps=25
+batch= 105 | frames=  430080/1000000 | loss=+0.002 | step_r=-0.032 | ep_r= -39.97±54.45 | len= 1947 | succ=  10% | eps=  272 (+1) | fps=25
+batch= 106 | frames=  434176/1000000 | loss=-0.017 | step_r=-0.031 | ep_r= -52.76±38.84 | len= 1979 | succ=   5% | eps=  274 (+2) | fps=25
+batch= 107 | frames=  438272/1000000 | loss=-0.003 | step_r=-0.030 | ep_r= -62.44± 6.49 | len= 2000 | succ=   0% | eps=  276 (+2) | fps=25
+batch= 108 | frames=  442368/1000000 | loss=+0.005 | step_r=-0.030 | ep_r= -62.81± 6.59 | len= 2000 | succ=   0% | eps=  279 (+3) | fps=25
+batch= 109 | frames=  446464/1000000 | loss=+1.826 | step_r=-0.018 | ep_r= -63.26± 6.41 | len= 2000 | succ=   0% | eps=  280 (+1) | fps=26
+batch= 110 | frames=  450560/1000000 | loss=+3.303 | step_r=-0.008 | ep_r= -56.21±34.15 | len= 1993 | succ=   5% | eps=  282 (+2) | fps=26
+batch= 111 | frames=  454656/1000000 | loss=+1.373 | step_r=-0.018 | ep_r= -54.78±35.56 | len= 1993 | succ=   5% | eps=  284 (+2) | fps=25
+batch= 112 | frames=  458752/1000000 | loss=+4.479 | step_r=+0.004 | ep_r= -43.79±49.44 | len= 1962 | succ=  10% | eps=  288 (+4) | fps=25
+batch= 113 | frames=  462848/1000000 | loss=+0.034 | step_r=-0.032 | ep_r= -44.07±49.59 | len= 1962 | succ=  10% | eps=  289 (+1) | fps=25
+batch= 114 | frames=  466944/1000000 | loss=+3.901 | step_r=+0.004 | ep_r= -42.06±49.99 | len= 1962 | succ=  10% | eps=  290 (+1) | fps=26
+batch= 115 | frames=  471040/1000000 | loss=+12.268 | step_r=+0.078 | ep_r= -15.36±66.64 | len= 1931 | succ=  25% | eps=  294 (+4) | fps=26
+batch= 116 | frames=  475136/1000000 | loss=+1.779 | step_r=-0.007 | ep_r=  -7.19±69.81 | len= 1915 | succ=  30% | eps=  296 (+2) | fps=26
+batch= 117 | frames=  479232/1000000 | loss=+5.473 | step_r=+0.018 | ep_r=  -0.26±73.19 | len= 1897 | succ=  35% | eps=  298 (+2) | fps=26
+batch= 118 | frames=  483328/1000000 | loss=+7.293 | step_r=+0.056 | ep_r= +15.65±76.10 | len= 1855 | succ=  45% | eps=  300 (+2) | fps=26
+batch= 119 | frames=  487424/1000000 | loss=+6.063 | step_r=+0.070 | ep_r= +34.65±73.87 | len= 1801 | succ=  55% | eps=  304 (+4) | fps=26
+batch= 120 | frames=  491520/1000000 | loss=+4.256 | step_r=+0.044 | ep_r= +42.17±72.86 | len= 1780 | succ=  60% | eps=  306 (+2) | fps=26
+batch= 121 | frames=  495616/1000000 | loss=+6.797 | step_r=+0.044 | ep_r= +57.52±66.41 | len= 1748 | succ=  70% | eps=  308 (+2) | fps=27
+batch= 122 | frames=  499712/1000000 | loss=+4.697 | step_r=+0.004 | ep_r= +58.63±64.38 | len= 1748 | succ=  70% | eps=  310 (+2) | fps=27
+batch= 123 | frames=  503808/1000000 | loss=+1.851 | step_r=+0.007 | ep_r= +51.44±70.09 | len= 1740 | succ=  65% | eps=  313 (+3) | fps=27
+batch= 124 | frames=  507904/1000000 | loss=+2.408 | step_r=-0.005 | ep_r= +44.06±74.38 | len= 1737 | succ=  60% | eps=  315 (+2) | fps=27
+batch= 125 | frames=  512000/1000000 | loss=+0.996 | step_r=-0.001 | ep_r= +43.94±74.56 | len= 1737 | succ=  60% | eps=  316 (+1) | fps=26
+batch= 126 | frames=  516096/1000000 | loss=+4.636 | step_r=+0.046 | ep_r= +48.32±70.38 | len= 1737 | succ=  60% | eps=  319 (+3) | fps=26
+batch= 127 | frames=  520192/1000000 | loss=+4.590 | step_r=+0.049 | ep_r= +40.29±73.90 | len= 1799 | succ=  55% | eps=  323 (+4) | fps=26
+batch= 128 | frames=  524288/1000000 | loss=+2.580 | step_r=+0.049 | ep_r= +41.44±74.91 | len= 1775 | succ=  55% | eps=  325 (+2) | fps=27
+batch= 129 | frames=  528384/1000000 | loss=+0.406 | step_r=-0.002 | ep_r= +41.44±74.91 | len= 1775 | succ=  55% | eps=  325 (+0) | fps=27
+batch= 130 | frames=  532480/1000000 | loss=+4.737 | step_r=+0.090 | ep_r= +49.65±77.25 | len= 1736 | succ=  60% | eps=  331 (+6) | fps=27
+batch= 131 | frames=  536576/1000000 | loss=+0.996 | step_r=+0.010 | ep_r= +47.29±80.66 | len= 1731 | succ=  60% | eps=  333 (+2) | fps=27
+batch= 132 | frames=  540672/1000000 | loss=+1.201 | step_r=+0.025 | ep_r= +56.50±77.56 | len= 1694 | succ=  65% | eps=  334 (+1) | fps=27
+batch= 133 | frames=  544768/1000000 | loss=+2.307 | step_r=+0.023 | ep_r= +56.71±77.70 | len= 1691 | succ=  65% | eps=  335 (+1) | fps=27
+batch= 134 | frames=  548864/1000000 | loss=+2.447 | step_r=+0.024 | ep_r= +47.62±81.65 | len= 1697 | succ=  60% | eps=  340 (+5) | fps=27
+batch= 135 | frames=  552960/1000000 | loss=+0.594 | step_r=-0.014 | ep_r= +44.94±83.88 | len= 1697 | succ=  60% | eps=  341 (+1) | fps=27
+batch= 136 | frames=  557056/1000000 | loss=+1.253 | step_r=-0.001 | ep_r= +48.49±80.53 | len= 1697 | succ=  60% | eps=  342 (+1) | fps=27
+batch= 137 | frames=  561152/1000000 | loss=+7.967 | step_r=+0.098 | ep_r= +47.11±79.57 | len= 1706 | succ=  60% | eps=  346 (+4) | fps=27
+batch= 138 | frames=  565248/1000000 | loss=+3.435 | step_r=+0.025 | ep_r= +51.38±74.55 | len= 1713 | succ=  60% | eps=  349 (+3) | fps=27
+batch= 139 | frames=  569344/1000000 | loss=+0.785 | step_r=-0.000 | ep_r= +51.38±74.55 | len= 1713 | succ=  60% | eps=  349 (+0) | fps=28
+batch= 140 | frames=  573440/1000000 | loss=+5.990 | step_r=+0.086 | ep_r= +51.42±72.27 | len= 1750 | succ=  60% | eps=  353 (+4) | fps=28
+batch= 141 | frames=  577536/1000000 | loss=+5.837 | step_r=+0.099 | ep_r= +59.10±69.66 | len= 1744 | succ=  65% | eps=  357 (+4) | fps=28
+batch= 142 | frames=  581632/1000000 | loss=+1.455 | step_r=+0.025 | ep_r= +67.29±66.39 | len= 1712 | succ=  70% | eps=  358 (+1) | fps=28
+batch= 143 | frames=  585728/1000000 | loss=+2.723 | step_r=+0.048 | ep_r= +75.80±60.32 | len= 1698 | succ=  75% | eps=  360 (+2) | fps=28
+batch= 144 | frames=  589824/1000000 | loss=+4.654 | step_r=+0.073 | ep_r= +81.66±59.35 | len= 1661 | succ=  80% | eps=  364 (+4) | fps=28
+batch= 145 | frames=  593920/1000000 | loss=+1.464 | step_r=+0.048 | ep_r= +80.95±64.50 | len= 1611 | succ=  80% | eps=  367 (+3) | fps=28
+batch= 146 | frames=  598016/1000000 | loss=+0.788 | step_r=+0.011 | ep_r= +89.15±58.18 | len= 1573 | succ=  85% | eps=  368 (+1) | fps=28
+batch= 147 | frames=  602112/1000000 | loss=+3.468 | step_r=+0.093 | ep_r= +97.36±49.39 | len= 1546 | succ=  90% | eps=  371 (+3) | fps=28
+batch= 148 | frames=  606208/1000000 | loss=+1.041 | step_r=+0.036 | ep_r= +80.87±68.48 | len= 1540 | succ=  80% | eps=  375 (+4) | fps=28
+batch= 149 | frames=  610304/1000000 | loss=+0.533 | step_r=+0.012 | ep_r= +73.35±74.87 | len= 1535 | succ=  75% | eps=  377 (+2) | fps=28
+batch= 150 | frames=  614400/1000000 | loss=+0.345 | step_r=-0.012 | ep_r= +73.35±74.87 | len= 1535 | succ=  75% | eps=  377 (+0) | fps=28
+batch= 151 | frames=  618496/1000000 | loss=+3.195 | step_r=+0.073 | ep_r= +73.41±73.72 | len= 1546 | succ=  75% | eps=  381 (+4) | fps=28
+batch= 152 | frames=  622592/1000000 | loss=+0.074 | step_r=-0.027 | ep_r= +49.03±82.54 | len= 1622 | succ=  60% | eps=  384 (+3) | fps=28
+batch= 153 | frames=  626688/1000000 | loss=+0.010 | step_r=-0.026 | ep_r= +39.67±84.35 | len= 1664 | succ=  55% | eps=  385 (+1) | fps=28
+batch= 154 | frames=  630784/1000000 | loss=+1.113 | step_r=+0.009 | ep_r= +39.36±84.73 | len= 1667 | succ=  55% | eps=  387 (+2) | fps=28
+batch= 155 | frames=  634880/1000000 | loss=+4.892 | step_r=+0.007 | ep_r= +13.43±83.64 | len= 1760 | succ=  40% | eps=  391 (+4) | fps=28
+batch= 156 | frames=  638976/1000000 | loss=+0.010 | step_r=-0.023 | ep_r=  +4.14±81.99 | len= 1795 | succ=  35% | eps=  392 (+1) | fps=28
+batch= 157 | frames=  643072/1000000 | loss=+0.443 | step_r=-0.011 | ep_r=  +4.92±81.48 | len= 1795 | succ=  35% | eps=  393 (+1) | fps=28
+batch= 158 | frames=  647168/1000000 | loss=+4.431 | step_r=+0.110 | ep_r= +13.68±81.27 | len= 1812 | succ=  40% | eps=  398 (+5) | fps=28
+batch= 159 | frames=  651264/1000000 | loss=+1.690 | step_r=-0.012 | ep_r=  +6.11±78.88 | len= 1833 | succ=  35% | eps=  399 (+1) | fps=28
+batch= 160 | frames=  655360/1000000 | loss=+0.567 | step_r=+0.026 | ep_r=  +5.39±79.31 | len= 1840 | succ=  35% | eps=  401 (+2) | fps=28
+batch= 161 | frames=  659456/1000000 | loss=+3.455 | step_r=+0.137 | ep_r= +47.83±82.09 | len= 1692 | succ=  60% | eps=  406 (+5) | fps=28
+batch= 162 | frames=  663552/1000000 | loss=+1.718 | step_r=+0.028 | ep_r= +49.40±80.80 | len= 1685 | succ=  60% | eps=  408 (+2) | fps=29
+batch= 163 | frames=  667648/1000000 | loss=+2.364 | step_r=+0.053 | ep_r= +58.68±77.99 | len= 1649 | succ=  65% | eps=  410 (+2) | fps=29
+batch= 164 | frames=  671744/1000000 | loss=+1.646 | step_r=+0.051 | ep_r= +75.96±69.40 | len= 1597 | succ=  75% | eps=  412 (+2) | fps=29
+batch= 165 | frames=  675840/1000000 | loss=+1.082 | step_r=+0.015 | ep_r= +78.80±66.10 | len= 1587 | succ=  75% | eps=  415 (+3) | fps=29
+batch= 166 | frames=  679936/1000000 | loss=+0.977 | step_r=+0.040 | ep_r= +69.08±68.39 | len= 1613 | succ=  65% | eps=  418 (+3) | fps=29
+batch= 167 | frames=  684032/1000000 | loss=+1.468 | step_r=+0.012 | ep_r= +77.07±64.34 | len= 1587 | succ=  70% | eps=  419 (+1) | fps=29
+batch= 168 | frames=  688128/1000000 | loss=+2.596 | step_r=+0.024 | ep_r= +69.27±68.75 | len= 1611 | succ=  65% | eps=  422 (+3) | fps=29
+batch= 169 | frames=  692224/1000000 | loss=+2.238 | step_r=+0.038 | ep_r= +60.57±73.13 | len= 1648 | succ=  60% | eps=  425 (+3) | fps=29
+batch= 170 | frames=  696320/1000000 | loss=+0.443 | step_r=+0.015 | ep_r= +60.30±73.14 | len= 1651 | succ=  60% | eps=  427 (+2) | fps=29
+batch= 171 | frames=  700416/1000000 | loss=+2.060 | step_r=+0.088 | ep_r= +59.83±72.78 | len= 1680 | succ=  60% | eps=  430 (+3) | fps=29
+batch= 172 | frames=  704512/1000000 | loss=+4.547 | step_r=+0.050 | ep_r= +59.26±72.34 | len= 1699 | succ=  60% | eps=  432 (+2) | fps=29
+batch= 173 | frames=  708608/1000000 | loss=+4.451 | step_r=+0.084 | ep_r= +69.84±73.86 | len= 1625 | succ=  70% | eps=  436 (+4) | fps=29
+batch= 174 | frames=  712704/1000000 | loss=+1.379 | step_r=+0.014 | ep_r= +66.99±77.25 | len= 1631 | succ=  70% | eps=  438 (+2) | fps=29
+batch= 175 | frames=  716800/1000000 | loss=+3.016 | step_r=+0.023 | ep_r= +66.99±77.25 | len= 1631 | succ=  70% | eps=  438 (+0) | fps=29
+batch= 176 | frames=  720896/1000000 | loss=+2.961 | step_r=+0.110 | ep_r= +76.69±74.45 | len= 1541 | succ=  75% | eps=  445 (+7) | fps=29
+batch= 177 | frames=  724992/1000000 | loss=+0.178 | step_r=-0.022 | ep_r= +67.88±79.39 | len= 1570 | succ=  70% | eps=  446 (+1) | fps=29
+batch= 178 | frames=  729088/1000000 | loss=+3.808 | step_r=+0.123 | ep_r= +77.31±76.74 | len= 1488 | succ=  75% | eps=  449 (+3) | fps=29
+batch= 179 | frames=  733184/1000000 | loss=+1.217 | step_r=+0.051 | ep_r= +78.11±77.13 | len= 1452 | succ=  75% | eps=  452 (+3) | fps=29
+batch= 180 | frames=  737280/1000000 | loss=+1.658 | step_r=+0.026 | ep_r= +69.20±80.93 | len= 1497 | succ=  70% | eps=  454 (+2) | fps=29
+batch= 181 | frames=  741376/1000000 | loss=+6.725 | step_r=+0.086 | ep_r= +78.03±76.08 | len= 1460 | succ=  75% | eps=  457 (+3) | fps=29
+batch= 182 | frames=  745472/1000000 | loss=+2.902 | step_r=+0.076 | ep_r= +76.28±76.26 | len= 1507 | succ=  75% | eps=  461 (+4) | fps=29
+batch= 183 | frames=  749568/1000000 | loss=+1.411 | step_r=+0.089 | ep_r= +93.94±62.91 | len= 1449 | succ=  85% | eps=  464 (+3) | fps=29
+batch= 184 | frames=  753664/1000000 | loss=+3.205 | step_r=+0.101 | ep_r=+102.91±52.38 | len= 1428 | succ=  90% | eps=  467 (+3) | fps=29
+batch= 185 | frames=  757760/1000000 | loss=+1.075 | step_r=+0.077 | ep_r=+102.77±52.34 | len= 1433 | succ=  90% | eps=  470 (+3) | fps=29
+batch= 186 | frames=  761856/1000000 | loss=+0.894 | step_r=+0.076 | ep_r=+102.57±52.28 | len= 1454 | succ=  90% | eps=  472 (+2) | fps=29
+batch= 187 | frames=  765952/1000000 | loss=+1.858 | step_r=+0.114 | ep_r=+112.06±39.35 | len= 1393 | succ=  95% | eps=  476 (+4) | fps=29
+batch= 188 | frames=  770048/1000000 | loss=+1.023 | step_r=+0.041 | ep_r=+112.75±39.37 | len= 1384 | succ=  95% | eps=  478 (+2) | fps=30
+batch= 189 | frames=  774144/1000000 | loss=+1.581 | step_r=+0.102 | ep_r=+121.80± 3.43 | len= 1348 | succ= 100% | eps=  481 (+3) | fps=30
+batch= 190 | frames=  778240/1000000 | loss=+1.120 | step_r=+0.078 | ep_r=+113.65±35.59 | len= 1391 | succ=  95% | eps=  485 (+4) | fps=30
+batch= 191 | frames=  782336/1000000 | loss=+0.335 | step_r=+0.041 | ep_r=+113.24±35.49 | len= 1409 | succ=  95% | eps=  486 (+1) | fps=30
+batch= 192 | frames=  786432/1000000 | loss=+0.969 | step_r=+0.150 | ep_r=+114.33±35.74 | len= 1387 | succ=  95% | eps=  491 (+5) | fps=30
+batch= 193 | frames=  790528/1000000 | loss=+0.738 | step_r=+0.077 | ep_r=+115.09±35.95 | len= 1364 | succ=  95% | eps=  494 (+3) | fps=30
+batch= 194 | frames=  794624/1000000 | loss=+1.745 | step_r=+0.062 | ep_r=+115.54±36.09 | len= 1345 | succ=  95% | eps=  496 (+2) | fps=30
+batch= 195 | frames=  798720/1000000 | loss=+0.964 | step_r=+0.086 | ep_r=+106.74±52.55 | len= 1359 | succ=  90% | eps=  500 (+4) | fps=30
+batch= 196 | frames=  802816/1000000 | loss=+0.947 | step_r=+0.051 | ep_r=+114.91±40.30 | len= 1326 | succ=  95% | eps=  502 (+2) | fps=30
+batch= 197 | frames=  806912/1000000 | loss=+0.669 | step_r=+0.051 | ep_r=+106.89±54.86 | len= 1314 | succ=  90% | eps=  505 (+3) | fps=30
+batch= 198 | frames=  811008/1000000 | loss=+0.463 | step_r=+0.039 | ep_r= +98.33±64.25 | len= 1326 | succ=  85% | eps=  508 (+3) | fps=30
+batch= 199 | frames=  815104/1000000 | loss=+0.884 | step_r=+0.088 | ep_r= +90.06±71.10 | len= 1346 | succ=  80% | eps=  512 (+4) | fps=30
+batch= 200 | frames=  819200/1000000 | loss=+2.249 | step_r=+0.051 | ep_r= +89.35±70.83 | len= 1372 | succ=  80% | eps=  514 (+2) | fps=30
+batch= 201 | frames=  823296/1000000 | loss=+0.760 | step_r=+0.063 | ep_r= +89.00±70.30 | len= 1393 | succ=  80% | eps=  517 (+3) | fps=30
+batch= 202 | frames=  827392/1000000 | loss=+0.628 | step_r=+0.052 | ep_r= +88.57±70.13 | len= 1424 | succ=  80% | eps=  519 (+2) | fps=30
+batch= 203 | frames=  831488/1000000 | loss=+1.291 | step_r=+0.089 | ep_r= +87.58±69.71 | len= 1465 | succ=  80% | eps=  521 (+2) | fps=30
+batch= 204 | frames=  835584/1000000 | loss=+1.793 | step_r=+0.089 | ep_r= +95.53±61.52 | len= 1466 | succ=  85% | eps=  525 (+4) | fps=30
+batch= 205 | frames=  839680/1000000 | loss=+0.494 | step_r=+0.077 | ep_r= +94.85±61.27 | len= 1502 | succ=  85% | eps=  527 (+2) | fps=30
+batch= 206 | frames=  843776/1000000 | loss=+0.834 | step_r=+0.053 | ep_r= +95.53±60.53 | len= 1489 | succ=  85% | eps=  531 (+4) | fps=30
+batch= 207 | frames=  847872/1000000 | loss=+0.407 | step_r=+0.102 | ep_r=+103.73±51.43 | len= 1462 | succ=  90% | eps=  534 (+3) | fps=30
+batch= 208 | frames=  851968/1000000 | loss=+0.336 | step_r=+0.077 | ep_r=+112.38±35.86 | len= 1450 | succ=  95% | eps=  537 (+3) | fps=31
+batch= 209 | frames=  856064/1000000 | loss=+0.070 | step_r=-0.021 | ep_r=+112.38±35.86 | len= 1450 | succ=  95% | eps=  537 (+0) | fps=31
+batch= 210 | frames=  860160/1000000 | loss=+0.750 | step_r=+0.137 | ep_r=+104.69±48.82 | len= 1461 | succ=  90% | eps=  542 (+5) | fps=31
+batch= 211 | frames=  864256/1000000 | loss=+0.088 | step_r=+0.004 | ep_r= +96.81±58.13 | len= 1483 | succ=  85% | eps=  544 (+2) | fps=31
+batch= 212 | frames=  868352/1000000 | loss=+2.691 | step_r=+0.049 | ep_r= +89.77±65.71 | len= 1462 | succ=  80% | eps=  547 (+3) | fps=31
+batch= 213 | frames=  872448/1000000 | loss=+2.921 | step_r=+0.049 | ep_r= +89.36±65.49 | len= 1473 | succ=  80% | eps=  549 (+2) | fps=31
+batch= 214 | frames=  876544/1000000 | loss=+0.186 | step_r=+0.052 | ep_r= +80.00±73.86 | len= 1482 | succ=  75% | eps=  553 (+4) | fps=31
+batch= 215 | frames=  880640/1000000 | loss=+0.100 | step_r=+0.016 | ep_r= +71.99±77.77 | len= 1506 | succ=  70% | eps=  555 (+2) | fps=31
+batch= 216 | frames=  884736/1000000 | loss=+0.223 | step_r=+0.063 | ep_r= +64.20±80.97 | len= 1517 | succ=  65% | eps=  558 (+3) | fps=31
+batch= 217 | frames=  888832/1000000 | loss=+0.981 | step_r=+0.014 | ep_r= +65.09±81.78 | len= 1478 | succ=  65% | eps=  560 (+2) | fps=31
+batch= 218 | frames=  892928/1000000 | loss=+0.596 | step_r=+0.052 | ep_r= +64.46±83.04 | len= 1468 | succ=  65% | eps=  563 (+3) | fps=31
+batch= 219 | frames=  897024/1000000 | loss=+0.181 | step_r=+0.040 | ep_r= +65.15±83.69 | len= 1445 | succ=  65% | eps=  566 (+3) | fps=31
+batch= 220 | frames=  901120/1000000 | loss=+1.018 | step_r=+0.026 | ep_r= +50.79±84.78 | len= 1531 | succ=  55% | eps=  569 (+3) | fps=31
+batch= 221 | frames=  905216/1000000 | loss=+0.915 | step_r=+0.025 | ep_r= +51.84±83.32 | len= 1532 | succ=  55% | eps=  571 (+2) | fps=31
+batch= 222 | frames=  909312/1000000 | loss=+1.434 | step_r=+0.062 | ep_r= +51.86±84.18 | len= 1519 | succ=  55% | eps=  574 (+3) | fps=31
+batch= 223 | frames=  913408/1000000 | loss=+0.454 | step_r=+0.063 | ep_r= +59.44±84.50 | len= 1467 | succ=  60% | eps=  579 (+5) | fps=31
+batch= 224 | frames=  917504/1000000 | loss=+2.082 | step_r=+0.026 | ep_r= +59.06±84.21 | len= 1475 | succ=  60% | eps=  580 (+1) | fps=31
+batch= 225 | frames=  921600/1000000 | loss=+1.687 | step_r=+0.074 | ep_r= +68.73±81.24 | len= 1407 | succ=  65% | eps=  583 (+3) | fps=31
+batch= 226 | frames=  925696/1000000 | loss=+0.191 | step_r=+0.012 | ep_r= +58.61±84.34 | len= 1472 | succ=  60% | eps=  586 (+3) | fps=30
+batch= 227 | frames=  929792/1000000 | loss=+0.491 | step_r=+0.041 | ep_r= +57.76±85.16 | len= 1478 | succ=  60% | eps=  589 (+3) | fps=30
+batch= 228 | frames=  933888/1000000 | loss=+0.870 | step_r=-0.009 | ep_r= +57.76±85.16 | len= 1478 | succ=  60% | eps=  589 (+0) | fps=31
+batch= 229 | frames=  937984/1000000 | loss=+3.361 | step_r=+0.138 | ep_r= +66.67±80.74 | len= 1480 | succ=  65% | eps=  596 (+7) | fps=31
+batch= 230 | frames=  942080/1000000 | loss=+0.189 | step_r=+0.017 | ep_r= +66.24±80.43 | len= 1498 | succ=  65% | eps=  597 (+1) | fps=31
+batch= 231 | frames=  946176/1000000 | loss=+1.434 | step_r=+0.176 | ep_r= +76.22±77.40 | len= 1419 | succ=  70% | eps=  602 (+5) | fps=31
+batch= 232 | frames=  950272/1000000 | loss=+0.062 | step_r=+0.004 | ep_r= +76.37±77.51 | len= 1414 | succ=  70% | eps=  603 (+1) | fps=31
+batch= 233 | frames=  954368/1000000 | loss=+0.705 | step_r=+0.014 | ep_r= +77.97±75.87 | len= 1399 | succ=  70% | eps=  606 (+3) | fps=31
+batch= 234 | frames=  958464/1000000 | loss=+0.562 | step_r=-0.012 | ep_r= +77.97±75.87 | len= 1399 | succ=  70% | eps=  606 (+0) | fps=31
+batch= 235 | frames=  962560/1000000 | loss=+0.304 | step_r=+0.040 | ep_r= +65.54±80.87 | len= 1522 | succ=  65% | eps=  611 (+5) | fps=31
+batch= 236 | frames=  966656/1000000 | loss=+2.572 | step_r=+0.015 | ep_r= +65.57±81.80 | len= 1495 | succ=  65% | eps=  613 (+2) | fps=30
+batch= 237 | frames=  970752/1000000 | loss=+0.536 | step_r=+0.027 | ep_r= +68.03±79.07 | len= 1497 | succ=  65% | eps=  615 (+2) | fps=30
+batch= 238 | frames=  974848/1000000 | loss=+0.295 | step_r=+0.013 | ep_r= +59.57±82.69 | len= 1514 | succ=  60% | eps=  617 (+2) | fps=30
+batch= 239 | frames=  978944/1000000 | loss=+0.111 | step_r=+0.016 | ep_r= +33.57±84.05 | len= 1656 | succ=  45% | eps=  621 (+4) | fps=30
+batch= 240 | frames=  983040/1000000 | loss=+0.149 | step_r=+0.028 | ep_r= +24.98±82.45 | len= 1705 | succ=  40% | eps=  623 (+2) | fps=30
+batch= 241 | frames=  987136/1000000 | loss=+0.933 | step_r=+0.052 | ep_r= +33.08±83.45 | len= 1674 | succ=  45% | eps=  626 (+3) | fps=31
+batch= 242 | frames=  991232/1000000 | loss=+2.217 | step_r=+0.003 | ep_r= +40.53±83.16 | len= 1662 | succ=  50% | eps=  627 (+1) | fps=31
+batch= 243 | frames=  995328/1000000 | loss=+1.046 | step_r=+0.062 | ep_r= +46.03±82.21 | len= 1566 | succ=  50% | eps=  631 (+4) | fps=30
+batch= 244 | frames=  999424/1000000 | loss=+0.447 | step_r=+0.025 | ep_r= +37.76±82.24 | len= 1608 | succ=  45% | eps=  634 (+3) | fps=30
+batch= 245 | frames= 1003520/1000000 | loss=+0.655 | step_r=+0.079 | ep_r= +51.75±84.19 | len= 1517 | succ=  55% | eps=  638 (+4) | fps=30
+Training complete. Model saved to results/m2/models/final_model.pt
