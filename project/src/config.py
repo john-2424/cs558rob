@@ -207,10 +207,10 @@ PLANNER_ATTACHED_MOTION_LABELS = {
 # =========================
 
 # Residual bounds
-# 0.1 rad/s ≈ 3-4% of PD_MAX_JOINT_VEL. Tight enough that residual physically
-# cannot fully cancel a non-trivial PD command; previous 0.5 (≈20%) let the
-# policy learn an anti-PD equilibrium that blocked waypoint convergence.
-RESIDUAL_MAX = 0.1
+# 0.5 rad/s (~20% of PD max). Plan targets the nominal cube pose while the
+# cube is perturbed up to 12 cm, so the residual needs authority to steer
+# the EE several cm off-plan -- 0.1 was a ~1-2 cm ceiling.
+RESIDUAL_MAX = 0.5
 
 # RL simulation
 RL_SIM_SUBSTEPS = 4
@@ -228,10 +228,9 @@ PERTURB_LEVELS = [0.00, 0.06, 0.08, 0.10, 0.12]
 
 # Reward shaping
 REWARD_ALPHA = 10.0
-# Bumped 0.1 -> 0.5 so a constant non-zero residual is actually costly.
-# Combined with RESIDUAL_MAX=0.1, max per-step residual penalty ~= -0.05,
-# comparable in magnitude to per-step approach reward.
-REWARD_BETA = 0.5
+# Scaled down with RESIDUAL_MAX bump (0.1 -> 0.5) to keep max per-step
+# residual penalty ~= -0.05, comparable to per-step approach reward.
+REWARD_BETA = 0.1
 REWARD_GAMMA = 0.05
 REWARD_DELTA = 50.0
 REWARD_EPSILON = 100.0
