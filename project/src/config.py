@@ -207,10 +207,11 @@ PLANNER_ATTACHED_MOTION_LABELS = {
 # =========================
 
 # Residual bounds
-# 0.5 rad/s (~20% of PD max). Plan targets the nominal cube pose while the
-# cube is perturbed up to 12 cm, so the residual needs authority to steer
-# the EE several cm off-plan -- 0.1 was a ~1-2 cm ceiling.
-RESIDUAL_MAX = 0.5
+# 0.1 rad/s (~3-4% of PD max). Higher caps (tested 0.5) let random-init
+# actions overwhelm PD and stall waypoint tracking -- episodes truncated at
+# 2000 steps with zero success. 0.1 gives ~1-2 cm EE offset authority, so
+# training perturbation is kept small to match.
+RESIDUAL_MAX = 0.1
 
 # RL simulation
 RL_SIM_SUBSTEPS = 4
@@ -222,15 +223,17 @@ RL_MAX_EPISODE_STEPS = 2000
 RL_MAX_STEPS_PER_WAYPOINT = 150
 
 # Perturbation
-PERTURB_XY_RANGE = 0.10
-PERTURB_YAW_RANGE = 0.4
-PERTURB_LEVELS = [0.00, 0.06, 0.08, 0.10, 0.12]
+# Training range matched to residual authority (~1-2 cm at RESIDUAL_MAX=0.1).
+# Eval spans [0.0, 0.12] to characterize hybrid behavior in- and out-of-distribution.
+PERTURB_XY_RANGE = 0.04
+PERTURB_YAW_RANGE = 0.2
+PERTURB_LEVELS = [0.00, 0.02, 0.04, 0.06, 0.08, 0.10, 0.12]
 
 # Reward shaping
 REWARD_ALPHA = 10.0
-# Scaled down with RESIDUAL_MAX bump (0.1 -> 0.5) to keep max per-step
-# residual penalty ~= -0.05, comparable to per-step approach reward.
-REWARD_BETA = 0.1
+# With RESIDUAL_MAX=0.1, BETA=0.5 gives max per-step residual penalty
+# ~= -0.05, comparable in magnitude to per-step approach reward.
+REWARD_BETA = 0.5
 REWARD_GAMMA = 0.05
 REWARD_DELTA = 50.0
 REWARD_EPSILON = 100.0
