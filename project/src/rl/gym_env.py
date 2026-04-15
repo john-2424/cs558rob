@@ -471,7 +471,11 @@ class PandaGraspEnv(gymnasium.Env):
             terminated = True
         elif cube_fallen:
             terminated = True
-        elif episode_done and self._phase == PHASE_LIFT:
+        elif episode_done:
+            # _advance_phase returns True on LIFT completion OR on failed grasp
+            # in GRASP_DESCEND. Either way, the episode is over -- otherwise
+            # subsequent steps would re-trigger the gripper-close/retry loop
+            # every step because waypoints are exhausted.
             terminated = True
 
         info = {
