@@ -238,15 +238,18 @@ REWARD_EPSILON = 100.0
 REWARD_ZETA = 50.0
 
 # PPO hyperparameters
+# Tuned after run #3 oscillated 60-95% on bimodal rewards. Lower LR + lower
+# entropy reduce per-batch swing; larger batch + fewer epochs cut the
+# update/sample ratio from 320 to 64 (4x less over-fitting per batch).
 PPO_TOTAL_TIMESTEPS = 1_000_000
-PPO_LR = 3e-4
-PPO_FRAMES_PER_BATCH = 2048
+PPO_LR = 1e-4
+PPO_FRAMES_PER_BATCH = 4096
 PPO_MINI_BATCH_SIZE = 64
-PPO_EPOCHS = 10
+PPO_EPOCHS = 4
 PPO_CLIP_EPSILON = 0.2
 PPO_GAMMA = 0.99
 PPO_GAE_LAMBDA = 0.95
-PPO_ENT_COEFF = 0.01
+PPO_ENT_COEFF = 0.001
 
 # Parallel env workers for data collection (set to 1 to disable multiprocessing)
 PPO_NUM_COLLECTOR_WORKERS = 8
