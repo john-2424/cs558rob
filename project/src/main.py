@@ -18,6 +18,10 @@ def _build_parser():
         "--mode", choices=["hybrid", "rl_only"], default="hybrid",
         help="Policy variant: hybrid (PD + bounded residual) or rl_only (pure RL, no PD).",
     )
+    train_p.add_argument(
+        "--total-timesteps", type=int, default=None,
+        help="Override PPO_TOTAL_TIMESTEPS from config (e.g. 200000 for a diagnostic run).",
+    )
 
     eval_p = sub.add_parser("eval", help="M2: evaluate planner-only / hybrid / rl-only.")
     eval_default = bool(getattr(config, "EVAL_VERBOSE_EPISODES", False))
@@ -58,7 +62,7 @@ def main():
         run_init_dev()
     elif args.command == "train":
         from src.rl.train import train
-        train(mode=args.mode)
+        train(mode=args.mode, total_timesteps=args.total_timesteps)
     elif args.command == "eval":
         from src.rl.evaluate import run_evaluation
         run_evaluation(
