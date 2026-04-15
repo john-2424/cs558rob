@@ -187,11 +187,19 @@ class PandaGraspEnv(gymnasium.Env):
         # Reset robot to home
         self._reset_robot()
 
-        # Reset cube to nominal then perturb
+        # Reset cube to nominal
         cube_orn = p.getQuaternionFromEuler(self._cube_nominal_orn_euler)
         p.resetBasePositionAndOrientation(
             self._objects.cube_id, self._cube_nominal_pos, cube_orn,
         )
+
+        for _ in range(20):
+            self._env.step(sleep=False)
+
+        # Plan from the nominal cube pose: the classical pipeline is blind
+        # to the upcoming perturbation, so its waypoints track a phantom
+        # nominal target. Residual RL's job is to correct for that offset.
+        q_pre_grasp, q_grasp, q_lift = self._compute_grasp_targets()
 
         if self.perturb_xy_range > 0:
             perturb_cube_pose(
@@ -203,12 +211,8 @@ class PandaGraspEnv(gymnasium.Env):
                 yaw_range=self.perturb_yaw_range,
             )
 
-        # Settle after perturbation
-        for _ in range(20):
-            self._env.step(sleep=False)
-
-        # Compute grasp targets from perturbed cube pose
-        q_pre_grasp, q_grasp, q_lift = self._compute_grasp_targets()
+            for _ in range(20):
+                self._env.step(sleep=False)
         q_home = self._robot.home_joints.copy()
 
         # Build all phase waypoints

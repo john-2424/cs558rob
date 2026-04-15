@@ -259,7 +259,7 @@ PPO_NUM_COLLECTOR_WORKERS = 8
 EP_SUCCESS_REWARD_THRESHOLD = 50.0
 
 # Evaluation
-EVAL_EPISODES_PER_LEVEL = 20
+EVAL_EPISODES_PER_LEVEL = 50
 EVAL_NUM_WORKERS = 8  # parallel workers for episode rollout; set to 1 for serial
 EVAL_VERBOSE_EPISODES = True  # print one diagnostic line per episode (phase/waypoint/grasp)
 
