@@ -1,4 +1,5 @@
 import os
+import random
 import shutil
 import time
 from functools import partial
@@ -93,9 +94,15 @@ def build_critic(obs_dim, device="cpu"):
 
 def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
           model_save_path=None, tb_log_dir=None, log_file_path=None,
-          num_workers=None):
+          num_workers=None, seed=None):
     device = "cpu"
     run_tag = time.strftime("%Y%m%d_%H%M%S")
+
+    if seed is not None:
+        random.seed(seed)
+        np.random.seed(seed)
+        torch.manual_seed(seed)
+        print(f"Random seed: {seed}")
     total_timesteps = total_timesteps or config.PPO_TOTAL_TIMESTEPS
 
     # Suffix default output paths by mode so rl_only and hybrid runs stay isolated.

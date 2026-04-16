@@ -26,6 +26,10 @@ def _build_parser():
         "--workers", type=int, default=None,
         help="Number of parallel collector workers (default: PPO_NUM_COLLECTOR_WORKERS from config).",
     )
+    train_p.add_argument(
+        "--seed", type=int, default=None,
+        help="Random seed for reproducibility (seeds PyTorch, NumPy, Python random).",
+    )
 
     eval_p = sub.add_parser("eval", help="M2: evaluate planner-only / hybrid / rl-only.")
     eval_default = bool(getattr(config, "EVAL_VERBOSE_EPISODES", False))
@@ -83,7 +87,7 @@ def main():
     elif args.command == "train":
         from src.rl.train import train
         train(mode=args.mode, total_timesteps=args.total_timesteps,
-              num_workers=args.workers)
+              num_workers=args.workers, seed=args.seed)
     elif args.command == "eval":
         from src.rl.evaluate import run_evaluation
         run_evaluation(
