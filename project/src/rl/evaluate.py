@@ -14,13 +14,16 @@ from src.rl.train import load_trained_actor
 from src.utils.run_log import open_tee_log, close_tee_log
 
 
-def run_episode(env, actor=None, mode="hybrid", deterministic=True):
+def run_episode(env, actor=None, mode="hybrid", deterministic=False):
     obs, info = env.reset()
     total_reward = 0.0
     step_count = 0
     residual_norms = []
 
-    # TanhNormal has no analytical mode, so use DETERMINISTIC (tanh(loc)) for eval.
+    # TanhNormal: DETERMINISTIC uses tanh(loc) which can produce constant
+    # non-zero residuals that prevent waypoint convergence. Use RANDOM
+    # (sample from the learned distribution) to match training behavior.
+    # With 50 episodes per level, stochastic noise averages out.
     exploration_type = ExplorationType.DETERMINISTIC if deterministic else ExplorationType.RANDOM
 
     while True:
@@ -86,7 +89,7 @@ def _run_episodes(mode, actor, perturb_level, num_episodes, verbose_episodes=Fal
     try:
         for _ in range(num_episodes):
             results.append(
-                run_episode(env, actor=actor, mode=mode, deterministic=True)
+                run_episode(env, actor=actor, mode=mode)
             )
     finally:
         env.close()
