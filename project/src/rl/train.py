@@ -49,13 +49,15 @@ def _make_env_worker(mode, perturb_xy_range, curriculum):
 
 
 
-def build_actor(obs_dim, act_dim, device="cpu"):
+def build_actor(obs_dim, act_dim, device="cpu", warm_start=True):
     output_layer = nn.Linear(256, 2 * act_dim)
-    # Warm-start: small weights + zero bias so initial policy outputs
-    # near-zero residuals (≈ PD-only behavior). Avoids the need for
-    # lucky initialization to discover the first successful grasp.
-    nn.init.uniform_(output_layer.weight, -0.01, 0.01)
-    nn.init.zeros_(output_layer.bias)
+    if warm_start:
+        # Warm-start: small weights + zero bias so initial policy outputs
+        # near-zero residuals (≈ PD-only behavior). Avoids the need for
+        # lucky initialization to discover the first successful grasp.
+        # Only used for hybrid mode; rl_only needs random init to explore.
+        nn.init.uniform_(output_layer.weight, -0.01, 0.01)
+        nn.init.zeros_(output_layer.bias)
 
     actor_net = nn.Sequential(
         nn.Linear(obs_dim, 256),
@@ -142,7 +144,8 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
     act_dim = 7
 
     # Build actor-critic
-    actor = build_actor(obs_dim, act_dim, device)
+    warm_start = (mode == "hybrid")
+    actor = build_actor(obs_dim, act_dim, device, warm_start=warm_start)
     critic = build_critic(obs_dim, device)
 
     # GAE advantage estimator
