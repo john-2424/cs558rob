@@ -276,6 +276,12 @@ EVAL_EPISODES_PER_LEVEL = 50
 EVAL_NUM_WORKERS = 8  # parallel workers for episode rollout; set to 1 for serial
 EVAL_VERBOSE_EPISODES = True  # print one diagnostic line per episode (phase/waypoint/grasp)
 
+# Demo recording: seconds to hold at the nominal cube pose before applying
+# the perturbation in residual-demo runs. Lets you start your screen recorder
+# and see the nominal frame on camera before the cube teleports. GUI only;
+# has no effect on training or evaluation (headless).
+DEMO_PERTURB_HOLD_SECONDS = 10.0
+
 # M2 paths
 M2_RESULTS_DIR = "results/m2"
 M2_MODEL_DIR = "results/m2/models"

@@ -265,18 +265,50 @@ def run_pick_place_with_residual(
             table_top_z, config.CUBE_TABLE_CLEARANCE,
         )
 
+        # Log nominal cube pose
+        nominal_pos, nominal_orn = p.getBasePositionAndOrientation(objects.cube_id)
+        nominal_euler = p.getEulerFromQuaternion(nominal_orn)
+        print(f"[demo] Cube NOMINAL pose: "
+              f"xy=({nominal_pos[0]:.4f}, {nominal_pos[1]:.4f}) m, "
+              f"z={nominal_pos[2]:.4f} m, yaw={nominal_euler[2]:.4f} rad")
+
+        # In GUI mode, hold the scene at the nominal pose so the recorder can
+        # frame the shot before the cube teleports to its perturbed pose.
+        hold_seconds = float(getattr(config, "DEMO_PERTURB_HOLD_SECONDS", 0.0))
+        if config.GUI and perturb_xy_range > 0 and hold_seconds > 0:
+            print(f"[demo] Holding at nominal for {hold_seconds:.1f}s -- "
+                  f"start your recorder now. Perturbation will be applied after the countdown.")
+            hold_start = time.time()
+            next_tick = 1.0
+            while time.time() - hold_start < hold_seconds:
+                robot.hold_home_pose()
+                env.step()
+                elapsed = time.time() - hold_start
+                if elapsed >= next_tick:
+                    remaining = hold_seconds - elapsed
+                    print(f"[demo]   ... perturbing in {remaining:4.1f}s")
+                    next_tick += 1.0
+                time.sleep(1.0 / 240.0)
+
         # Perturb cube
         rng = np.random.default_rng()
         if perturb_xy_range > 0:
-            new_pos, _, (dx, dy, dyaw) = perturb_cube_pose(
+            new_pos, new_orn, (dx, dy, dyaw) = perturb_cube_pose(
                 cube_id=objects.cube_id,
-                nominal_pos=list(p.getBasePositionAndOrientation(objects.cube_id)[0]),
+                nominal_pos=list(nominal_pos),
                 nominal_orn_euler=config.CUBE_BASE_ORN_EULER,
                 rng=rng,
                 xy_range=perturb_xy_range,
                 yaw_range=config.PERTURB_YAW_RANGE,
             )
-            print(f"Cube perturbed: dx={dx:.4f}, dy={dy:.4f}, dyaw={dyaw:.4f}")
+            perturbed_pos, perturbed_orn = p.getBasePositionAndOrientation(objects.cube_id)
+            perturbed_euler = p.getEulerFromQuaternion(perturbed_orn)
+            print(f"[demo] Cube PERTURBED pose: "
+                  f"xy=({perturbed_pos[0]:.4f}, {perturbed_pos[1]:.4f}) m, "
+                  f"z={perturbed_pos[2]:.4f} m, yaw={perturbed_euler[2]:.4f} rad")
+            print(f"[demo] Perturbation delta: "
+                  f"dx={dx:+.4f} m, dy={dy:+.4f} m, "
+                  f"dyaw={dyaw:+.4f} rad ({np.degrees(dyaw):+.2f} deg)")
 
         robot.reset_home()
         robot.hold_home_pose()
