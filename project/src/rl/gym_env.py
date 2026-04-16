@@ -439,7 +439,7 @@ class PandaGraspEnv(gymnasium.Env):
 
         # Check waypoint convergence (or force-advance on timeout)
         if self._waypoint_idx < len(self._waypoints):
-            tol = config.WAYPOINT_TOL
+            tol = getattr(config, "RL_WAYPOINT_TOL", config.WAYPOINT_TOL)
             if self._phase == PHASE_GRASP_DESCEND:
                 tol = config.GRASP_DESCEND_WAYPOINT_TOL
             self._waypoint_step_count += 1

@@ -226,6 +226,10 @@ RL_MAX_EPISODE_STEPS = 2000
 # Without this a small constant residual can stall the policy on a single
 # waypoint until RL_MAX_EPISODE_STEPS truncation.
 RL_MAX_STEPS_PER_WAYPOINT = 150
+# Looser waypoint tolerance for RL: residual noise makes tight 0.010 hard to
+# converge, causing forced advances. 0.025 lets natural PD+residual pass
+# without stalling while still tracking the trajectory.
+RL_WAYPOINT_TOL = 0.025
 
 # Perturbation
 # Training range: XY ±4cm, Z ±1cm, yaw ±0.2rad. Planner sees nominal pose;
@@ -274,8 +278,8 @@ PPO_EPOCHS = 4
 PPO_CLIP_EPSILON = 0.2
 PPO_GAMMA = 0.99
 PPO_GAE_LAMBDA = 0.95
-PPO_ENT_COEFF = 0.01
-PPO_ENT_COEFF_START = 0.05  # high initial entropy for exploration; decays to PPO_ENT_COEFF
+PPO_ENT_COEFF = 0.001
+PPO_ENT_COEFF_START = 0.005  # mild initial entropy; decays to PPO_ENT_COEFF
 PPO_CRITIC_COEFF = 0.25
 PPO_MAX_GRAD_NORM = 5.0
 

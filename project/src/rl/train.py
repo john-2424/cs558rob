@@ -9,7 +9,6 @@ import torch
 from torch import nn, optim
 
 from tensordict.nn import TensorDictModule
-from tensordict.nn.distributions import NormalParamExtractor
 
 from torchrl.collectors import SyncDataCollector, MultiSyncDataCollector
 from torchrl.data import LazyTensorStorage, ReplayBuffer
@@ -49,23 +48,41 @@ def _make_env_worker(mode, perturb_xy_range, curriculum):
 
 
 
-def build_actor(obs_dim, act_dim, device="cpu", warm_start=True):
-    output_layer = nn.Linear(256, 2 * act_dim)
-    if warm_start:
-        # Warm-start: small weights + zero bias so initial policy outputs
-        # near-zero residuals (≈ PD-only behavior). Avoids the need for
-        # lucky initialization to discover the first successful grasp.
-        # Only used for hybrid mode; rl_only needs random init to explore.
-        nn.init.uniform_(output_layer.weight, -0.01, 0.01)
-        nn.init.zeros_(output_layer.bias)
+class ActorWithLearnableStd(nn.Module):
+    """MLP mean network + state-independent learnable log_std.
 
-    actor_net = nn.Sequential(
-        nn.Linear(obs_dim, 256),
-        nn.Tanh(),
-        nn.Linear(256, 256),
-        nn.Tanh(),
-        output_layer,
-        NormalParamExtractor(),
+    Standard approach in robotics PPO (Isaac Gym, Brax): the network outputs
+    only the action mean; a separate nn.Parameter controls exploration noise.
+    This lets the optimizer shrink std toward zero as the policy converges,
+    unlike NormalParamExtractor whose scale saturates around 0.58.
+    """
+
+    def __init__(self, obs_dim, act_dim, init_log_std=-2.0, warm_start=True):
+        super().__init__()
+        output_layer = nn.Linear(256, act_dim)
+        if warm_start:
+            nn.init.uniform_(output_layer.weight, -0.01, 0.01)
+            nn.init.zeros_(output_layer.bias)
+
+        self.mean_net = nn.Sequential(
+            nn.Linear(obs_dim, 256),
+            nn.Tanh(),
+            nn.Linear(256, 256),
+            nn.Tanh(),
+            output_layer,
+        )
+        # State-independent log-std: init_log_std=-2.0 -> std=exp(-2)≈0.135
+        self.log_std = nn.Parameter(torch.full((act_dim,), init_log_std))
+
+    def forward(self, observation):
+        loc = self.mean_net(observation)
+        scale = self.log_std.exp().expand_as(loc)
+        return loc, scale
+
+
+def build_actor(obs_dim, act_dim, device="cpu", warm_start=True):
+    actor_net = ActorWithLearnableStd(
+        obs_dim, act_dim, init_log_std=-2.0, warm_start=warm_start,
     )
 
     actor_module = TensorDictModule(
@@ -347,6 +364,13 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
         value_t = batch_data.get("state_value", None)
         val_mean = float(value_t.mean().item()) if value_t is not None else 0.0
 
+        # Log learnable log_std so we can monitor exploration narrowing
+        log_std_val = float("nan")
+        for mod in actor.modules():
+            if hasattr(mod, "log_std"):
+                log_std_val = float(mod.log_std.data.mean().item())
+                break
+
         # Logging
         mean_loss = np.mean(epoch_losses) if epoch_losses else 0.0
 
@@ -427,6 +451,8 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
         writer.add_scalar("train/action_mean", act_mean, total_frames)
         writer.add_scalar("train/action_std", act_std, total_frames)
         writer.add_scalar("train/value_mean", val_mean, total_frames)
+        if not np.isnan(log_std_val):
+            writer.add_scalar("train/log_std", log_std_val, total_frames)
         if recent_rewards:
             writer.add_scalar("train/mean_episode_reward", mean_ep_reward, total_frames)
             writer.add_scalar("train/std_episode_reward", std_ep_reward, total_frames)
@@ -477,7 +503,7 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
             f"grad={mean_grad_norm:.3f} clip={mean_clip_frac:.2f} ent={mean_entropy:.3f} | "
             f"kl={mean_kl:.4f} ep={epochs_run}/{config.PPO_EPOCHS}{kl_flag} | "
             f"lr={current_lr:.1e} ent_c={current_ent:.3f} | "
-            f"act={act_mean:+.3f}±{act_std:.3f} V={val_mean:+.1f} | "
+            f"act={act_mean:+.3f}±{act_std:.3f} logσ={log_std_val:+.2f} V={val_mean:+.1f} | "
             f"fps={fps:.0f}{best_flag}"
         )
 
