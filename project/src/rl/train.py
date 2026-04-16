@@ -92,8 +92,10 @@ def build_critic(obs_dim, device="cpu"):
 
 
 def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
-          model_save_path=None, tb_log_dir=None, log_file_path=None):
+          model_save_path=None, tb_log_dir=None, log_file_path=None,
+          num_workers=None):
     device = "cpu"
+    run_tag = time.strftime("%Y%m%d_%H%M%S")
     total_timesteps = total_timesteps or config.PPO_TOTAL_TIMESTEPS
 
     # Suffix default output paths by mode so rl_only and hybrid runs stay isolated.
@@ -152,7 +154,8 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
     optimizer = optim.Adam(loss_module.parameters(), lr=config.PPO_LR)
 
     # Collector (no main-process env -- workers each build their own PyBullet client)
-    num_workers = max(1, int(config.PPO_NUM_COLLECTOR_WORKERS))
+    num_workers = max(1, int(num_workers if num_workers is not None
+                                      else config.PPO_NUM_COLLECTOR_WORKERS))
     use_curriculum = bool(getattr(config, "TRAIN_CURRICULUM", False))
     print(f"Train curriculum: {use_curriculum} "
           f"(xy_range sampled in [0, {config.PERTURB_XY_RANGE}])")
@@ -201,7 +204,9 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
     ep_reward_acc = None
     ep_length_acc = None
     best_succ_rate = -1.0
+    best_mean_reward = -float("inf")
     best_succ_batch = 0
+    best_count = 0
     below_peak_count = 0
     current_lr = config.PPO_LR
     start_time = time.time()
@@ -399,20 +404,34 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
         kl_flag = " KL!" if kl_early_stop else ""
         best_flag = ""
 
-        # Best model tracking
-        if save_best and len(recent_successes) >= 5 and succ_rate > best_succ_rate:
+        # Best model tracking: higher succ_rate wins; ties broken by mean ep reward
+        is_new_best = (
+            save_best
+            and len(recent_successes) >= 5
+            and (succ_rate > best_succ_rate
+                 or (succ_rate == best_succ_rate and mean_ep_reward > best_mean_reward))
+        )
+        if is_new_best:
             best_succ_rate = succ_rate
+            best_mean_reward = mean_ep_reward
             best_succ_batch = batch_idx
+            best_count += 1
             below_peak_count = 0
-            best_path = os.path.join(model_save_path, "best_model.pt")
-            torch.save({
+            checkpoint_data = {
                 "actor_state_dict": actor.state_dict(),
                 "critic_state_dict": critic.state_dict(),
                 "optimizer_state_dict": optimizer.state_dict(),
                 "total_frames": total_frames,
                 "success_rate": succ_rate,
-            }, best_path)
-            best_flag = " *BEST*"
+                "mean_episode_reward": mean_ep_reward,
+            }
+            best_path = os.path.join(model_save_path, "best_model.pt")
+            torch.save(checkpoint_data, best_path)
+            # Numbered copy: best_003_succ100_r152.3.pt
+            succ_pct = int(round(succ_rate * 100))
+            numbered_name = f"best_{run_tag}_{best_count:03d}_succ{succ_pct}_r{mean_ep_reward:.1f}.pt"
+            torch.save(checkpoint_data, os.path.join(model_save_path, numbered_name))
+            best_flag = f" *BEST #{best_count}*"
 
         print(
             f"batch={batch_idx:4d} | "
@@ -459,7 +478,7 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
     if save_best and os.path.exists(best_path):
         shutil.copy2(best_path, final_path)
         print(f"Training complete. Copied best model (succ={best_succ_rate:.0%}, "
-              f"batch={best_succ_batch}) to {final_path}")
+              f"ep_r={best_mean_reward:+.1f}, batch={best_succ_batch}) to {final_path}")
     else:
         torch.save({
             "actor_state_dict": actor.state_dict(),

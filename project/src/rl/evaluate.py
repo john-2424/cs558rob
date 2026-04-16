@@ -214,7 +214,7 @@ def _eval_one_method(label, mode, model_path, perturb_level, num_episodes, num_w
 
 
 def run_evaluation(model_path=None, rl_only_model_path=None, log_file_path=None,
-                   verbose_episodes=False):
+                   verbose_episodes=False, num_workers=None):
     model_path = model_path or os.path.join(config.M2_MODEL_DIR, "final_model.pt")
     if rl_only_model_path is None:
         default_rl_path = os.path.join(
@@ -244,7 +244,7 @@ def run_evaluation(model_path=None, rl_only_model_path=None, log_file_path=None,
 
         all_results = {}
         num_episodes = config.EVAL_EPISODES_PER_LEVEL
-        num_workers = config.EVAL_NUM_WORKERS
+        num_workers = int(num_workers) if num_workers is not None else config.EVAL_NUM_WORKERS
 
         print(f"Using {num_workers} parallel worker(s) per method-level")
         run_start = time.time()

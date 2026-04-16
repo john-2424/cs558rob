@@ -22,6 +22,10 @@ def _build_parser():
         "--total-timesteps", type=int, default=None,
         help="Override PPO_TOTAL_TIMESTEPS from config (e.g. 200000 for a diagnostic run).",
     )
+    train_p.add_argument(
+        "--workers", type=int, default=None,
+        help="Number of parallel collector workers (default: PPO_NUM_COLLECTOR_WORKERS from config).",
+    )
 
     eval_p = sub.add_parser("eval", help="M2: evaluate planner-only / hybrid / rl-only.")
     eval_default = bool(getattr(config, "EVAL_VERBOSE_EPISODES", False))
@@ -41,6 +45,10 @@ def _build_parser():
     eval_p.add_argument(
         "--rl-only-model", default=None,
         help="Path to rl_only .pt (default: auto-discover results/m2/models_rl_only/final_model.pt).",
+    )
+    eval_p.add_argument(
+        "--workers", type=int, default=None,
+        help="Number of parallel eval workers (default: EVAL_NUM_WORKERS from config).",
     )
 
     demo_p = sub.add_parser(
@@ -74,13 +82,15 @@ def main():
         run_init_dev()
     elif args.command == "train":
         from src.rl.train import train
-        train(mode=args.mode, total_timesteps=args.total_timesteps)
+        train(mode=args.mode, total_timesteps=args.total_timesteps,
+              num_workers=args.workers)
     elif args.command == "eval":
         from src.rl.evaluate import run_evaluation
         run_evaluation(
             model_path=args.hybrid_model,
             rl_only_model_path=args.rl_only_model,
             verbose_episodes=args.verbose,
+            num_workers=args.workers,
         )
     elif args.command == "residual-demo":
         from src.demo.pick_place_residual import run_pick_place_with_residual
