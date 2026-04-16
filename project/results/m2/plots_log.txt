@@ -1,0 +1,15 @@
+
+================================================================================
+Plot generation run started: 2026-04-15T23:47:30
+================================================================================
+Log file: results/m2/plots_log.txt
+Reading evaluation results from results/m2/eval_results.json
+Saving plots to results/m2/plots
+Saved results/m2/plots/success_rate_vs_perturbation.png
+  [success_rate] rendered in 0.44s
+Saved results/m2/plots/mean_reward_vs_perturbation.png
+  [mean_reward] rendered in 0.26s
+Saved results/m2/plots/episode_length_vs_perturbation.png
+  [episode_length] rendered in 0.25s
+
+All M2 plots saved to results/m2/plots (total: 0.95s)
