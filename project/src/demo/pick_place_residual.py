@@ -226,6 +226,7 @@ def get_pick_and_place_poses_from_cube(robot, cube_id, table_id):
 
 def run_pick_place_with_residual(
     model_path=None, perturb_xy_range=None, mode="hybrid", log_file_path=None,
+    allow_grasp_retry=True,
 ):
     model_path = model_path or os.path.join(config.M2_MODEL_DIR, "final_model.pt")
     perturb_xy_range = perturb_xy_range if perturb_xy_range is not None else config.PERTURB_XY_RANGE
@@ -363,11 +364,23 @@ def run_pick_place_with_residual(
 
         # Phase 5: Validate and attach
         print("\n=== Phase 5: validate_and_attach ===")
-        attached = verify_and_attach_with_retry(
-            env=env, robot=robot, cube_id=objects.cube_id,
-            grasp_orn=grasp_orn, base_grasp_pos=poses["grasp"],
-            logger=logger,
-        )
+        if allow_grasp_retry:
+            attached = verify_and_attach_with_retry(
+                env=env, robot=robot, cube_id=objects.cube_id,
+                grasp_orn=grasp_orn, base_grasp_pos=poses["grasp"],
+                logger=logger,
+            )
+        else:
+            from src.demo.pick_place import print_grasp_debug
+            ready, debug = robot.is_grasp_ready(objects.cube_id)
+            print_grasp_debug(debug)
+            if ready:
+                robot.attach_object(objects.cube_id)
+                print("Grasp validated. Object attached.")
+                attached = True
+            else:
+                print("Grasp check failed (no retry -- matches eval framework).")
+                attached = False
         if not attached:
             print("Grasp validation failed.")
             return

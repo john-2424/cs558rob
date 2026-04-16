@@ -55,6 +55,10 @@ def _build_parser():
         "--perturb-xy", type=float, default=None,
         help="Cube XY perturbation range in meters (default: PERTURB_XY_RANGE from config).",
     )
+    demo_p.add_argument(
+        "--no-retry", action="store_true", default=False,
+        help="Disable grasp retry (single attempt, matches eval framework behavior).",
+    )
 
     return parser
 
@@ -83,6 +87,7 @@ def main():
         run_pick_place_with_residual(
             mode=args.mode,
             perturb_xy_range=args.perturb_xy,
+            allow_grasp_retry=not args.no_retry,
         )
 
 
