@@ -186,6 +186,7 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
     # Stability settings
     use_lr_schedule = getattr(config, "PPO_LR_SCHEDULE", "constant") == "linear"
     target_kl = float(getattr(config, "PPO_TARGET_KL", 0.0))
+    kl_warmup_frames = int(getattr(config, "PPO_KL_WARMUP_FRAMES", 0))
     save_best = bool(getattr(config, "PPO_SAVE_BEST_MODEL", True))
     es_patience = int(getattr(config, "PPO_EARLY_STOP_PATIENCE", 0))
     es_min_peak = float(getattr(config, "PPO_EARLY_STOP_MIN_PEAK", 0.5))
@@ -209,7 +210,8 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
     print(f"Frames per batch: {config.PPO_FRAMES_PER_BATCH}")
     print(f"Mini-batch size: {config.PPO_MINI_BATCH_SIZE}")
     print(f"Epochs per batch: {config.PPO_EPOCHS}")
-    print(f"LR schedule: {config.PPO_LR_SCHEDULE}, target KL: {target_kl}")
+    print(f"LR schedule: {config.PPO_LR_SCHEDULE}, target KL: {target_kl} "
+          f"(warmup: {kl_warmup_frames} frames)")
     print(f"Early stop: patience={es_patience}, min_peak={es_min_peak}, drop={es_drop}")
     print(f"Best model tracking: {save_best}")
     print("Waiting for first batch from collector workers (this may take 30-120s on first run)...")
@@ -270,7 +272,8 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
                     epoch_kls.append(kl_item)
 
             epochs_run = epoch_i + 1
-            if target_kl > 0 and epoch_kls:
+            kl_active = target_kl > 0 and total_frames >= kl_warmup_frames
+            if kl_active and epoch_kls:
                 mean_epoch_kl = float(np.mean(epoch_kls))
                 batch_kls.append(mean_epoch_kl)
                 if mean_epoch_kl > target_kl:

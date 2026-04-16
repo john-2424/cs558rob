@@ -268,8 +268,9 @@ PPO_ENT_COEFF = 0.01
 
 # Training stability
 PPO_LR_SCHEDULE = "linear"  # "linear" (decay to 0) or "constant"
-PPO_TARGET_KL = 0.02  # stop PPO epochs early when mean approx KL exceeds this
-PPO_CLIP_VALUE = True  # clip value function updates (same epsilon as policy)
+PPO_TARGET_KL = 0.05  # stop PPO epochs early when mean approx KL exceeds this
+PPO_KL_WARMUP_FRAMES = 100_000  # disable KL stopping for this many initial frames
+PPO_CLIP_VALUE = False  # clip value function updates (same epsilon as policy)
 PPO_SAVE_BEST_MODEL = True  # track and save the peak-performance checkpoint
 PPO_EARLY_STOP_PATIENCE = 15  # consecutive batches below peak before stopping
 PPO_EARLY_STOP_MIN_PEAK = 0.50  # early stop only activates after peak >= this
