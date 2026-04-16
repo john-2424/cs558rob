@@ -183,9 +183,10 @@ def execute_residual_trajectory(
             # Apply residual
             qd_total = action_wrapper.compute_action(qd_pd, raw_action)
 
-            # Debug overlay: show residual magnitude
+            # Debug overlay: show residual magnitude (skip for planner_only)
             qd_residual = qd_total - qd_pd
-            _draw_residual_magnitude(float(np.linalg.norm(qd_residual)))
+            if action_wrapper.mode != "planner_only":
+                _draw_residual_magnitude(float(np.linalg.norm(qd_residual)))
 
             # Send to robot
             forces = robot.arm_max_forces
