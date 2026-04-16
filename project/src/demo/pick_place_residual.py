@@ -136,7 +136,10 @@ def execute_residual_trajectory(
     logger=None,
     gripper_width=None,
     phase_id=0,
+    perturb_offset=None,
 ):
+    if perturb_offset is None:
+        perturb_offset = np.zeros(3, dtype=np.float32)
     total_steps = 0
 
     for i, q_target in enumerate(waypoints):
@@ -156,7 +159,7 @@ def execute_residual_trajectory(
                 q_des=q_target, q=q, qd_des=np.zeros(7), qd=qd,
             )
 
-            # Build observation for the policy
+            # Build observation for the policy (must match gym_env OBS_DIM=40)
             obs = np.concatenate([
                 q.astype(np.float32),
                 qd.astype(np.float32),
@@ -167,6 +170,7 @@ def execute_residual_trajectory(
                 ee_to_cube.astype(np.float32),
                 qd_pd.astype(np.float32),
                 np.array([float(phase_id)], dtype=np.float32),
+                perturb_offset.astype(np.float32),
             ])
 
             # Get action from policy (deterministic: TanhNormal has no analytical mode)
@@ -229,6 +233,7 @@ def execute_residual_trajectory(
 def move_to_cartesian_target_residual(
     env, robot, target_pos, target_orn, actor, action_wrapper,
     cube_id, label, logger=None, gripper_width=None, phase_id=0,
+    perturb_offset=None,
 ):
     q_goal = robot.solve_ik(target_pos, target_orn)
     q_start = robot.get_joint_positions()
@@ -251,6 +256,7 @@ def move_to_cartesian_target_residual(
         label=label, logger=logger,
         gripper_width=gripper_width,
         phase_id=phase_id,
+        perturb_offset=perturb_offset,
     )
 
 
@@ -423,6 +429,10 @@ def run_pick_place_with_residual(
             _draw_perturbation_info(dx, dy, dz, dyaw)
             _draw_nominal_ghost(list(nominal_pos), objects.cube_id)
 
+        # Compute perturbation offset for the policy observation (matches gym_env)
+        perturbed_pos_final, _ = p.getBasePositionAndOrientation(objects.cube_id)
+        perturb_offset = np.array(perturbed_pos_final, dtype=np.float32) - np.array(nominal_pos, dtype=np.float32)
+
         robot.reset_home()
         robot.hold_home_pose()
 
@@ -447,6 +457,7 @@ def run_pick_place_with_residual(
             actor, action_wrapper, objects.cube_id,
             label="pre_grasp", logger=logger,
             gripper_width=config.GRIPPER_OPEN_WIDTH, phase_id=0,
+            perturb_offset=perturb_offset,
         )
         if not ok:
             print("Failed at pre_grasp with residual, falling back to classical")
@@ -462,6 +473,7 @@ def run_pick_place_with_residual(
             actor, action_wrapper, objects.cube_id,
             label="grasp_descend", logger=logger,
             gripper_width=config.GRIPPER_OPEN_WIDTH, phase_id=1,
+            perturb_offset=perturb_offset,
         )
         if not ok:
             print("Failed at grasp_descend with residual, falling back to classical")
@@ -506,6 +518,7 @@ def run_pick_place_with_residual(
             actor, action_wrapper, objects.cube_id,
             label="lift", logger=logger,
             gripper_width=config.GRIPPER_CLOSED_WIDTH, phase_id=2,
+            perturb_offset=perturb_offset,
         )
         if not ok:
             print("Failed at lift with residual, falling back to classical")

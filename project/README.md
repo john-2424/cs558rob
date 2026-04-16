@@ -95,7 +95,7 @@ The M2 system introduces:
 
 The planner computes IK targets from the **nominal** (pre-perturbation) cube pose. After perturbation, the classical PD controller tracks these now-stale targets. The RL policy observes the real-time EE-to-cube vector and outputs bounded velocity corrections to steer the arm toward the actual cube.
 
-- Observation space (37-dim): joint positions, joint velocities, EE pose, cube pose, EE-to-cube vector, PD nominal velocity command, phase indicator
+- Observation space (40-dim): joint positions, joint velocities, EE pose, cube pose, EE-to-cube vector, PD nominal velocity command, phase indicator, perturbation offset
 - Action space (7-dim): bounded residual velocity correction per joint, scaled by `RESIDUAL_MAX`
 
 The RL policy operates during the approach-and-grasp phases (pre-grasp, grasp-descend, lift). Post-grasp phases (transfer, place, retreat, return-home) use the classical pipeline unchanged.
