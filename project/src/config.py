@@ -243,9 +243,9 @@ REWARD_ALPHA = 10.0
 # PD backbone — penalizing the only control signal trains it to do nothing.
 REWARD_BETA = 0.15
 REWARD_GAMMA = 0.02
-REWARD_DELTA = 10.0
-REWARD_EPSILON = 20.0
-REWARD_ZETA = 10.0
+REWARD_DELTA = 50.0
+REWARD_EPSILON = 100.0
+REWARD_ZETA = 50.0
 # Dense proximity bonus during grasp_descend phase: linear ramp in
 # [0, REWARD_ETA] for ee_cube_dist in [0.10, 0.0]. Smooths the cliff
 # between "approached but didn't grasp" and the one-shot REWARD_DELTA.
@@ -282,9 +282,9 @@ PPO_EARLY_STOP_DROP = 0.25  # success must drop this much below peak to count
 PPO_NUM_COLLECTOR_WORKERS = 8
 
 # Episode-reward threshold for counting an episode as a "success" in training logs.
-# Lift bonus is REWARD_EPSILON (20); grasp bonus is REWARD_DELTA (10). Set at 15
-# so only episodes that actually received the lift terminal bonus count.
-EP_SUCCESS_REWARD_THRESHOLD = 15.0
+# Lift bonus is REWARD_EPSILON (100); grasp bonus is REWARD_DELTA (50). Set at 90
+# so only episodes that received the lift terminal bonus count.
+EP_SUCCESS_REWARD_THRESHOLD = 90.0
 
 # Evaluation
 EVAL_EPISODES_PER_LEVEL = 50
