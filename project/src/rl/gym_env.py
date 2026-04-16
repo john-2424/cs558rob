@@ -382,6 +382,12 @@ class PandaGraspEnv(gymnasium.Env):
 
     def step(self, action):
         action = np.asarray(action, dtype=np.float32).clip(-1.0, 1.0)
+
+        # Phase-gate: zero residual in phases where PD alone suffices
+        if (getattr(config, "RESIDUAL_PHASE_GATE", False)
+                and self._phase not in getattr(config, "RESIDUAL_ACTIVE_PHASES", {1, 2})):
+            action = np.zeros_like(action)
+
         self._step_count += 1
 
         # Get current waypoint target

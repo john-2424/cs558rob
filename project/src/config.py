@@ -206,6 +206,11 @@ PLANNER_ATTACHED_MOTION_LABELS = {
 # M2: Residual RL
 # =========================
 
+# Phase-gating: zero residual during phases where PD alone suffices.
+# Avoids wasting step budget on forced waypoint advances in pre_grasp.
+RESIDUAL_PHASE_GATE = True
+RESIDUAL_ACTIVE_PHASES = {1, 2}  # PHASE_GRASP_DESCEND, PHASE_LIFT
+
 # Residual bounds
 # 0.3 rad/s (~12% of PD max). Planner targets are computed from the nominal
 # (pre-perturbation) cube pose, so the PD drives toward the wrong spot.
