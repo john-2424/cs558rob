@@ -257,7 +257,7 @@ PROXIMITY_RADIUS = 0.10
 # entropy reduce per-batch swing; larger batch + fewer epochs cut the
 # update/sample ratio from 320 to 64 (4x less over-fitting per batch).
 PPO_TOTAL_TIMESTEPS = 1_000_000
-PPO_LR = 1e-4
+PPO_LR = 5e-5
 PPO_FRAMES_PER_BATCH = 4096
 PPO_MINI_BATCH_SIZE = 64
 PPO_EPOCHS = 4
