@@ -187,6 +187,237 @@ def plot_episode_length(results, save_dir):
     print(f"Saved {path}")
 
 
+def plot_phase_breakdown(results, save_dir):
+    """Stacked bar: fraction of episodes reaching each max phase, per method x level."""
+    levels = sorted(results.keys())
+    methods = set()
+    for level_data in results.values():
+        methods.update(level_data.keys())
+    methods = sorted(methods)
+
+    perturb_values = [float(lk.split("_")[1]) for lk in levels]
+
+    method_labels = {
+        "planner_only": "Planner Only",
+        "hybrid": "Planner + Residual RL",
+        "rl_only": "RL Only",
+    }
+    phase_colors = {
+        "pre_grasp": "#D65F5F",
+        "grasp_descend": "#F5A623",
+        "lift": "#6ACC65",
+    }
+    phase_names = ["pre_grasp", "grasp_descend", "lift"]
+
+    num_methods = len(methods)
+    num_levels = len(perturb_values)
+    x = np.arange(num_levels)
+    width = 0.25
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+
+    for i, method in enumerate(methods):
+        bottoms = np.zeros(num_levels)
+        for phase in phase_names:
+            fracs = []
+            for lk in levels:
+                if method in results[lk] and "phase_distribution" in results[lk][method]:
+                    pd = results[lk][method]["phase_distribution"]
+                    total = sum(pd.values())
+                    fracs.append(pd.get(phase, 0) / total * 100 if total > 0 else 0)
+                else:
+                    fracs.append(0)
+            fracs = np.array(fracs)
+            offset = (i - num_methods / 2 + 0.5) * width
+            ax.bar(
+                x + offset, fracs, width, bottom=bottoms,
+                color=phase_colors[phase],
+                label=phase.replace("_", " ").title() if i == 0 else "",
+                edgecolor="white", linewidth=0.5,
+            )
+            bottoms += fracs
+
+        # Add method label below each group
+        for j in range(num_levels):
+            offset = (i - num_methods / 2 + 0.5) * width
+            ax.text(
+                x[j] + offset, -6,
+                method_labels.get(method, method).split(" ")[0][:3],
+                ha="center", va="top", fontsize=6, rotation=0,
+            )
+
+    ax.set_xlabel("Perturbation Range (m)")
+    ax.set_ylabel("Episodes (%)")
+    ax.set_title("Max Phase Reached by Episode (per method)")
+    ax.set_xticks(x)
+    ax.set_xticklabels([f"{v:.2f}" for v in perturb_values])
+    ax.set_ylim(0, 115)
+    ax.legend(loc="upper right")
+    ax.grid(axis="y", alpha=0.3)
+
+    plt.tight_layout()
+    path = os.path.join(save_dir, "phase_breakdown.png")
+    plt.savefig(path, dpi=150)
+    plt.close()
+    print(f"Saved {path}")
+
+
+def plot_residual_magnitude(results, save_dir):
+    """Line plot: mean residual magnitude vs perturbation (hybrid only)."""
+    levels = sorted(results.keys())
+    perturb_values = [float(lk.split("_")[1]) for lk in levels]
+
+    method_labels = {
+        "planner_only": "Planner Only",
+        "hybrid": "Planner + Residual RL",
+        "rl_only": "RL Only",
+    }
+    colors = {
+        "planner_only": "#4878CF",
+        "hybrid": "#6ACC65",
+        "rl_only": "#D65F5F",
+    }
+
+    fig, ax = plt.subplots(figsize=(8, 5))
+
+    for method in sorted({m for lvl in results.values() for m in lvl.keys()}):
+        residuals = []
+        for lk in levels:
+            if method in results[lk]:
+                residuals.append(results[lk][method].get("mean_residual", 0.0))
+            else:
+                residuals.append(0)
+
+        ax.plot(
+            perturb_values, residuals,
+            marker="D", linewidth=2,
+            label=method_labels.get(method, method),
+            color=colors.get(method, None),
+        )
+
+    ax.set_xlabel("Perturbation Range (m)")
+    ax.set_ylabel("Mean Residual Magnitude (rad/s)")
+    ax.set_title("Residual Correction Magnitude vs Perturbation")
+    ax.legend()
+    ax.grid(alpha=0.3)
+
+    plt.tight_layout()
+    path = os.path.join(save_dir, "residual_magnitude.png")
+    plt.savefig(path, dpi=150)
+    plt.close()
+    print(f"Saved {path}")
+
+
+def plot_grasp_analysis(results, save_dir):
+    """Grouped bars: grasp attempted vs attached rate per method x level."""
+    levels = sorted(results.keys())
+    methods = sorted({m for lvl in results.values() for m in lvl.keys()})
+    perturb_values = [float(lk.split("_")[1]) for lk in levels]
+
+    method_labels = {
+        "planner_only": "Planner Only",
+        "hybrid": "Planner + Residual RL",
+        "rl_only": "RL Only",
+    }
+
+    fig, axes = plt.subplots(1, len(methods), figsize=(5 * len(methods), 5), sharey=True)
+    if len(methods) == 1:
+        axes = [axes]
+
+    for ax, method in zip(axes, methods):
+        attempted = []
+        attached = []
+        for lk in levels:
+            if method in results[lk]:
+                attempted.append(results[lk][method].get("grasp_attempted_rate", 0) * 100)
+                attached.append(results[lk][method].get("grasp_attached_rate", 0) * 100)
+            else:
+                attempted.append(0)
+                attached.append(0)
+
+        x = np.arange(len(perturb_values))
+        w = 0.35
+        ax.bar(x - w / 2, attempted, w, label="Attempted", color="#F5A623", alpha=0.85)
+        ax.bar(x + w / 2, attached, w, label="Attached", color="#6ACC65", alpha=0.85)
+
+        ax.set_title(method_labels.get(method, method))
+        ax.set_xlabel("Perturbation (m)")
+        ax.set_xticks(x)
+        ax.set_xticklabels([f"{v:.2f}" for v in perturb_values], fontsize=8)
+        ax.set_ylim(0, 115)
+        ax.legend(fontsize=8)
+        ax.grid(axis="y", alpha=0.3)
+
+    axes[0].set_ylabel("Rate (%)")
+    fig.suptitle("Grasp Attempted vs Attached Rate", fontsize=13, y=1.02)
+    plt.tight_layout()
+    path = os.path.join(save_dir, "grasp_analysis.png")
+    plt.savefig(path, dpi=150, bbox_inches="tight")
+    plt.close()
+    print(f"Saved {path}")
+
+
+def plot_summary_table(results, save_dir):
+    """Render a clean summary table as an image for slides."""
+    levels = sorted(results.keys())
+    methods = sorted({m for lvl in results.values() for m in lvl.keys()})
+    perturb_values = [f"{float(lk.split('_')[1]):.2f}m" for lk in levels]
+
+    method_labels = {
+        "planner_only": "Planner Only",
+        "hybrid": "PD + Residual RL",
+        "rl_only": "RL Only",
+    }
+
+    # Build table data: success rate per cell
+    cell_text = []
+    cell_colors = []
+    for method in methods:
+        row = []
+        row_colors = []
+        for lk in levels:
+            if method in results[lk]:
+                sr = results[lk][method]["success_rate"]
+                mr = results[lk][method].get("mean_reward", 0)
+                row.append(f"{sr:.0%}\n(r={mr:+.0f})")
+                # Color gradient: green for high success, red for low
+                g = sr
+                row_colors.append((1 - 0.6 * g, 0.5 + 0.5 * g, 0.5 - 0.2 * g, 0.3))
+            else:
+                row.append("--")
+                row_colors.append((0.9, 0.9, 0.9, 0.3))
+        cell_text.append(row)
+        cell_colors.append(row_colors)
+
+    row_labels = [method_labels.get(m, m) for m in methods]
+
+    fig, ax = plt.subplots(figsize=(max(8, len(levels) * 1.3), 1.2 + len(methods) * 0.8))
+    ax.axis("off")
+    ax.set_title("Evaluation Summary: Success Rate (Mean Reward)", fontsize=12, pad=15)
+
+    table = ax.table(
+        cellText=cell_text,
+        rowLabels=row_labels,
+        colLabels=perturb_values,
+        cellLoc="center",
+        loc="center",
+    )
+    table.auto_set_font_size(False)
+    table.set_fontsize(9)
+    table.scale(1.0, 1.8)
+
+    # Apply cell colors
+    for i, method in enumerate(methods):
+        for j in range(len(levels)):
+            table[i + 1, j].set_facecolor(cell_colors[i][j])
+
+    plt.tight_layout()
+    path = os.path.join(save_dir, "summary_table.png")
+    plt.savefig(path, dpi=150, bbox_inches="tight")
+    plt.close()
+    print(f"Saved {path}")
+
+
 def generate_all_plots(results_path=None, save_dir=None, log_file_path=None):
     save_dir = save_dir or config.M2_PLOT_DIR
     log_file_path = log_file_path or os.path.join(config.M2_RESULTS_DIR, "plots_log.txt")
@@ -206,6 +437,10 @@ def generate_all_plots(results_path=None, save_dir=None, log_file_path=None):
             ("success_rate", plot_success_rate),
             ("mean_reward", plot_mean_reward),
             ("episode_length", plot_episode_length),
+            ("phase_breakdown", plot_phase_breakdown),
+            ("residual_magnitude", plot_residual_magnitude),
+            ("grasp_analysis", plot_grasp_analysis),
+            ("summary_table", plot_summary_table),
         ]
         overall_start = time.time()
         for name, fn in plots:

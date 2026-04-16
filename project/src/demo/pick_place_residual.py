@@ -39,6 +39,95 @@ from src.demo.pick_place import (
 )
 
 
+# ---------------------------------------------------------------------------
+# PyBullet debug overlays for demo recording
+# ---------------------------------------------------------------------------
+
+_overlay_ids = {}  # reusable overlay item IDs for replacement
+
+
+def _update_text(key, text, position, color=(1, 1, 1), size=1.5):
+    """Add or replace a debug text overlay."""
+    if not config.GUI:
+        return
+    kwargs = dict(
+        text=text,
+        textPosition=position,
+        textColorRGB=list(color),
+        textSize=size,
+        lifeTime=0,
+    )
+    if key in _overlay_ids:
+        kwargs["replaceItemUniqueId"] = _overlay_ids[key]
+    _overlay_ids[key] = p.addUserDebugText(**kwargs)
+
+
+def _draw_mode_label(mode):
+    mode_text = {
+        "hybrid": "HYBRID  (PD + Residual RL)",
+        "planner_only": "PLANNER ONLY  (PD, no RL)",
+        "rl_only": "RL ONLY  (no PD backbone)",
+    }
+    _update_text("mode", mode_text.get(mode, mode), [0.65, 0.0, 0.90],
+                 color=(1.0, 1.0, 0.4), size=1.8)
+
+
+def _draw_phase_label(phase_name, phase_num=None):
+    prefix = f"Phase {phase_num}: " if phase_num is not None else ""
+    _update_text("phase", f"{prefix}{phase_name}", [0.65, 0.0, 0.82],
+                 color=(0.8, 0.9, 1.0), size=1.5)
+
+
+def _draw_perturbation_info(dx, dy, dz, dyaw):
+    text = (f"Perturbation: dx={dx*100:+.1f}cm dy={dy*100:+.1f}cm "
+            f"dz={dz*100:+.1f}cm yaw={np.degrees(dyaw):+.1f}deg")
+    _update_text("perturb", text, [0.30, 0.0, 0.75],
+                 color=(1.0, 0.6, 0.3), size=1.2)
+
+
+def _draw_nominal_ghost(nominal_pos, cube_id):
+    """Draw a wireframe box at the nominal (planned) cube position."""
+    if not config.GUI:
+        return []
+    # Get cube half-extents from its current AABB
+    aabb_min, aabb_max = p.getAABB(cube_id)
+    half = [(aabb_max[i] - aabb_min[i]) / 2.0 for i in range(3)]
+    cx, cy, cz = nominal_pos
+
+    c = {
+        (sx, sy, sz): [cx + sx * half[0], cy + sy * half[1], cz + sz * half[2]]
+        for sx in (-1, 1) for sy in (-1, 1) for sz in (-1, 1)
+    }
+    edges = [
+        # bottom face
+        ((-1,-1,-1), ( 1,-1,-1)), (( 1,-1,-1), ( 1, 1,-1)),
+        (( 1, 1,-1), (-1, 1,-1)), ((-1, 1,-1), (-1,-1,-1)),
+        # top face
+        ((-1,-1, 1), ( 1,-1, 1)), (( 1,-1, 1), ( 1, 1, 1)),
+        (( 1, 1, 1), (-1, 1, 1)), ((-1, 1, 1), (-1,-1, 1)),
+        # vertical edges
+        ((-1,-1,-1), (-1,-1, 1)), (( 1,-1,-1), ( 1,-1, 1)),
+        (( 1, 1,-1), ( 1, 1, 1)), ((-1, 1,-1), (-1, 1, 1)),
+    ]
+    line_ids = []
+    for a, b in edges:
+        line_ids.append(
+            p.addUserDebugLine(c[a], c[b], [1.0, 0.3, 0.3], lineWidth=1.5, lifeTime=0)
+        )
+    # Label
+    _update_text("ghost_label", "PLANNED", [cx, cy, cz + half[2] + 0.03],
+                 color=(1.0, 0.3, 0.3), size=1.0)
+    return line_ids
+
+
+def _draw_residual_magnitude(residual_norm):
+    bar_len = min(residual_norm / config.RESIDUAL_MAX, 1.0)
+    bar_str = "|" * max(1, int(bar_len * 20))
+    color = (0.3, 1.0, 0.3) if bar_len < 0.5 else (1.0, 1.0, 0.3) if bar_len < 0.8 else (1.0, 0.3, 0.3)
+    _update_text("residual", f"Residual: {residual_norm:.3f} {bar_str}",
+                 [0.30, 0.0, 0.70], color=color, size=1.1)
+
+
 def execute_residual_trajectory(
     env, robot, waypoints, actor, action_wrapper, cube_id,
     tol=config.WAYPOINT_TOL,
@@ -89,6 +178,10 @@ def execute_residual_trajectory(
 
             # Apply residual
             qd_total = action_wrapper.compute_action(qd_pd, raw_action)
+
+            # Debug overlay: show residual magnitude
+            qd_residual = qd_total - qd_pd
+            _draw_residual_magnitude(float(np.linalg.norm(qd_residual)))
 
             # Send to robot
             forces = robot.arm_max_forces
@@ -241,6 +334,7 @@ def run_pick_place_with_residual(
     action_wrapper = ResidualActionWrapper(mode=mode)
     print(f"Log file: {log_file_path}")
     print(f"Loaded model from {model_path}, mode={mode}, perturb_xy_range={perturb_xy_range}")
+    _overlay_ids.clear()
 
     env = BulletEnv(gui=config.GUI)
     env.connect()
@@ -265,6 +359,9 @@ def run_pick_place_with_residual(
             objects.cube_id, config.CUBE_BASE_POS[:2],
             table_top_z, config.CUBE_TABLE_CLEARANCE,
         )
+
+        # Draw mode label overlay
+        _draw_mode_label(mode)
 
         # Log nominal cube pose
         nominal_pos, nominal_orn = p.getBasePositionAndOrientation(objects.cube_id)
@@ -322,6 +419,9 @@ def run_pick_place_with_residual(
             total_offset = float(np.sqrt(dx**2 + dy**2 + dz**2))
             print(f"[demo] Planner targets are from NOMINAL — "
                   f"robot will aim {total_offset*100:.1f}cm away from actual cube")
+            # Debug overlays: perturbation info + ghost at nominal position
+            _draw_perturbation_info(dx, dy, dz, dyaw)
+            _draw_nominal_ghost(list(nominal_pos), objects.cube_id)
 
         robot.reset_home()
         robot.hold_home_pose()
@@ -336,10 +436,12 @@ def run_pick_place_with_residual(
 
         # Phase 1: Home
         print("\n=== Phase 1: home ===")
+        _draw_phase_label("home", 1)
         hold_gripper_for_steps(env, robot, config.GRIPPER_OPEN_WIDTH, config.GRIPPER_SETTLE_STEPS)
 
         # Phase 2: Pre-grasp (with residual)
         print("\n=== Phase 2: pre_grasp (residual) ===")
+        _draw_phase_label("pre_grasp (residual)", 2)
         ok = move_to_cartesian_target_residual(
             env, robot, poses["pre_grasp"], grasp_orn,
             actor, action_wrapper, objects.cube_id,
@@ -354,6 +456,7 @@ def run_pick_place_with_residual(
 
         # Phase 3: Grasp descend (with residual)
         print("\n=== Phase 3: grasp_descend (residual) ===")
+        _draw_phase_label("grasp_descend (residual)", 3)
         ok = move_to_cartesian_target_residual(
             env, robot, poses["grasp"], grasp_orn,
             actor, action_wrapper, objects.cube_id,
@@ -368,10 +471,12 @@ def run_pick_place_with_residual(
 
         # Phase 4: Close gripper
         print("\n=== Phase 4: close_gripper ===")
+        _draw_phase_label("close_gripper", 4)
         hold_gripper_for_steps(env, robot, config.GRIPPER_CLOSED_WIDTH, config.GRIPPER_SETTLE_STEPS)
 
         # Phase 5: Validate and attach
         print("\n=== Phase 5: validate_and_attach ===")
+        _draw_phase_label("validate_and_attach", 5)
         if allow_grasp_retry:
             attached = verify_and_attach_with_retry(
                 env=env, robot=robot, cube_id=objects.cube_id,
@@ -395,6 +500,7 @@ def run_pick_place_with_residual(
 
         # Phase 6: Lift (with residual)
         print("\n=== Phase 6: lift (residual) ===")
+        _draw_phase_label("lift (residual)", 6)
         ok = move_to_cartesian_target_residual(
             env, robot, poses["lift"], grasp_orn,
             actor, action_wrapper, objects.cube_id,
@@ -411,6 +517,7 @@ def run_pick_place_with_residual(
 
         # Phase 7: Transfer to pre-place
         print("\n=== Phase 7: transfer_pre_place ===")
+        _draw_phase_label("transfer_pre_place (classical)", 7)
         ok = move_to_cartesian_target(
             env, robot, poses["pre_place"], grasp_orn,
             label="transfer_pre_place", logger=logger,
@@ -419,6 +526,7 @@ def run_pick_place_with_residual(
 
         # Phase 8: Place descend
         print("\n=== Phase 8: place_descend ===")
+        _draw_phase_label("place_descend (classical)", 8)
         ok = move_to_cartesian_target(
             env, robot, poses["place"], grasp_orn,
             label="place_descend", logger=logger,
@@ -427,6 +535,7 @@ def run_pick_place_with_residual(
 
         # Phase 9: Detach
         print("\n=== Phase 9: detach_object ===")
+        _draw_phase_label("detach_object", 9)
         if config.PLACE_SNAP_BEFORE_RELEASE:
             snap_cube_to_place_pose(objects)
         if robot.has_attached_object():
@@ -441,10 +550,12 @@ def run_pick_place_with_residual(
 
         # Phase 10: Open gripper
         print("\n=== Phase 10: open_gripper ===")
+        _draw_phase_label("open_gripper", 10)
         hold_gripper_for_steps(env, robot, config.GRIPPER_OPEN_WIDTH, config.GRIPPER_SETTLE_STEPS)
 
         # Phase 11: Retreat
         print("\n=== Phase 11: post_place_retreat ===")
+        _draw_phase_label("post_place_retreat (classical)", 11)
         ok = move_to_cartesian_target(
             env, robot, poses["post_place"], grasp_orn,
             label="post_place_retreat", logger=logger,
@@ -453,6 +564,7 @@ def run_pick_place_with_residual(
 
         # Phase 12: Return home
         print("\n=== Phase 12: return_home ===")
+        _draw_phase_label("return_home (classical)", 12)
         ok = move_to_joint_target(
             env, robot, robot.home_joints,
             label="return_home", logger=logger,
@@ -467,6 +579,7 @@ def run_pick_place_with_residual(
             env.step()
 
         # Final state
+        _draw_phase_label("COMPLETE", None)
         cube_pos, cube_orn = get_body_pose(objects.cube_id)
         print("\n=== Final Cube Pose ===")
         print("Cube position:", cube_pos)
