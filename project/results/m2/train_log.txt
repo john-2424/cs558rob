@@ -2511,3 +2511,51 @@ batch= 243 | frames=  995328/1000000 | loss=+0.424 | step_r=+0.018 | ep_r=  -0.4
 batch= 244 | frames=  999424/1000000 | loss=+0.044 | step_r=-0.004 | ep_r=  -0.49±10.06 | len= 2000 | succ=   0% | kl=0.0000 ep=4/4 | lr=2.9e-08 | fps=417
 batch= 245 | frames= 1003520/1000000 | loss=+0.056 | step_r=-0.005 | ep_r=  -0.49±10.06 | len= 2000 | succ=   0% | kl=-0.0000 ep=4/4 | lr=0.0e+00 | fps=417
 Training complete. Copied best model (succ=12%, batch=4) to results/m2/models/final_model.pt
+
+================================================================================
+Training run started: 2026-04-16T15:21:45
+================================================================================
+Log file: results/m2/train_log.txt
+TensorBoard log dir: results/m2/tb_logs
+Model checkpoint dir: results/m2/models
+Train curriculum: True (xy_range sampled in [0, 0.04])
+Using MultiSyncDataCollector with 8 workers
+Starting PPO training: mode=hybrid, total_timesteps=1000000
+Frames per batch: 4096
+Mini-batch size: 64
+Epochs per batch: 4
+LR schedule: linear, target KL: 0.05 (warmup: 100000 frames)
+Early stop: patience=15, min_peak=0.5, drop=0.25
+Best model tracking: True
+Waiting for first batch from collector workers (this may take 30-120s on first run)...
+First batch received after 8.2s
+batch=   1 | frames=    4096/1000000 | loss=-0.070 | step_r=-0.023 | ep_r=   +nan± 0.00 | len=  nan | succ=   0% | kl=0.0147 ep=4/4 | lr=5.0e-05 | fps=413
+batch=   2 | frames=    8192/1000000 | loss=-0.060 | step_r=-0.022 | ep_r=   +nan± 0.00 | len=  nan | succ=   0% | kl=0.0160 ep=4/4 | lr=5.0e-05 | fps=411
+batch=   3 | frames=   12288/1000000 | loss=+0.088 | step_r=-0.016 | ep_r=   +nan± 0.00 | len=  nan | succ=   0% | kl=0.0134 ep=4/4 | lr=4.9e-05 | fps=409
+batch=   4 | frames=   16384/1000000 | loss=+30.577 | step_r=+0.327 | ep_r=+137.43±182.21 | len= 1993 | succ=  50% | kl=0.0079 ep=4/4 | lr=4.9e-05 | fps=408 *BEST*
+batch=   5 | frames=   20480/1000000 | loss=-0.024 | step_r=-0.022 | ep_r=+137.43±182.21 | len= 1993 | succ=  50% | kl=0.0150 ep=4/4 | lr=4.9e-05 | fps=408
+batch=   6 | frames=   24576/1000000 | loss=-0.031 | step_r=-0.022 | ep_r=+137.43±182.21 | len= 1993 | succ=  50% | kl=0.0110 ep=4/4 | lr=4.9e-05 | fps=407
+batch=   7 | frames=   28672/1000000 | loss=-0.012 | step_r=-0.025 | ep_r=+137.43±182.21 | len= 1993 | succ=  50% | kl=0.0127 ep=4/4 | lr=4.9e-05 | fps=408
+batch=   8 | frames=   32768/1000000 | loss=+0.703 | step_r=-0.002 | ep_r= +51.03±156.14 | len= 1996 | succ=  25% | kl=0.0096 ep=4/4 | lr=4.8e-05 | fps=409
+batch=   9 | frames=   36864/1000000 | loss=-0.055 | step_r=-0.023 | ep_r= +51.03±156.14 | len= 1996 | succ=  25% | kl=0.0176 ep=4/4 | lr=4.8e-05 | fps=409
+batch=  10 | frames=   40960/1000000 | loss=-0.055 | step_r=-0.022 | ep_r= +51.03±156.14 | len= 1996 | succ=  25% | kl=0.0102 ep=4/4 | lr=4.8e-05 | fps=409
+batch=  11 | frames=   45056/1000000 | loss=-0.038 | step_r=-0.023 | ep_r= +51.03±156.14 | len= 1996 | succ=  25% | kl=0.0116 ep=4/4 | lr=4.8e-05 | fps=408
+batch=  12 | frames=   49152/1000000 | loss=+0.044 | step_r=-0.019 | ep_r=  +8.36±130.82 | len= 2000 | succ=  15% | kl=0.0086 ep=4/4 | lr=4.8e-05 | fps=409
+batch=  13 | frames=   53248/1000000 | loss=-0.048 | step_r=-0.021 | ep_r=  +8.36±130.82 | len= 2000 | succ=  15% | kl=0.0158 ep=4/4 | lr=4.7e-05 | fps=409
+batch=  14 | frames=   57344/1000000 | loss=-0.058 | step_r=-0.020 | ep_r=  +8.36±130.82 | len= 2000 | succ=  15% | kl=0.0098 ep=4/4 | lr=4.7e-05 | fps=409
+batch=  15 | frames=   61440/1000000 | loss=-0.028 | step_r=-0.021 | ep_r=  +8.36±130.82 | len= 2000 | succ=  15% | kl=0.0106 ep=4/4 | lr=4.7e-05 | fps=409
+batch=  16 | frames=   65536/1000000 | loss=-0.040 | step_r=-0.022 | ep_r= -39.88±16.46 | len= 2000 | succ=   0% | kl=0.0125 ep=4/4 | lr=4.7e-05 | fps=410
+batch=  17 | frames=   69632/1000000 | loss=-0.051 | step_r=-0.019 | ep_r= -39.88±16.46 | len= 2000 | succ=   0% | kl=0.0095 ep=4/4 | lr=4.7e-05 | fps=410
+batch=  18 | frames=   73728/1000000 | loss=-0.067 | step_r=-0.020 | ep_r= -39.88±16.46 | len= 2000 | succ=   0% | kl=0.0108 ep=4/4 | lr=4.6e-05 | fps=410
+batch=  19 | frames=   77824/1000000 | loss=-0.029 | step_r=-0.022 | ep_r= -39.88±16.46 | len= 2000 | succ=   0% | kl=0.0127 ep=4/4 | lr=4.6e-05 | fps=410
+batch=  20 | frames=   81920/1000000 | loss=+0.297 | step_r=-0.005 | ep_r= -38.38±11.68 | len= 2000 | succ=   0% | kl=0.0127 ep=4/4 | lr=4.6e-05 | fps=410
+batch=  21 | frames=   86016/1000000 | loss=-0.051 | step_r=-0.019 | ep_r= -38.38±11.68 | len= 2000 | succ=   0% | kl=0.0149 ep=4/4 | lr=4.6e-05 | fps=410
+batch=  22 | frames=   90112/1000000 | loss=-0.043 | step_r=-0.019 | ep_r= -38.38±11.68 | len= 2000 | succ=   0% | kl=0.0119 ep=4/4 | lr=4.5e-05 | fps=410
+batch=  23 | frames=   94208/1000000 | loss=-0.045 | step_r=-0.021 | ep_r= -38.38±11.68 | len= 2000 | succ=   0% | kl=0.0165 ep=4/4 | lr=4.5e-05 | fps=410
+batch=  24 | frames=   98304/1000000 | loss=+0.298 | step_r=-0.002 | ep_r= -33.61±15.32 | len= 2000 | succ=   0% | kl=0.0088 ep=4/4 | lr=4.5e-05 | fps=411
+batch=  25 | frames=  102400/1000000 | loss=-0.052 | step_r=-0.018 | ep_r= -33.61±15.32 | len= 2000 | succ=   0% | kl=0.0072 ep=4/4 | lr=4.5e-05 | fps=411
+batch=  26 | frames=  106496/1000000 | loss=-0.049 | step_r=-0.019 | ep_r= -33.61±15.32 | len= 2000 | succ=   0% | kl=0.0116 ep=4/4 | lr=4.5e-05 | fps=411
+
+*** EARLY STOP: succ=0% has been >25% below peak=50% (batch 4) for 15 consecutive batches ***
+
+Training complete. Copied best model (succ=50%, batch=4) to results/m2/models/final_model.pt
