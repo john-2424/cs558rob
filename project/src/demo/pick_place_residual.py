@@ -68,20 +68,20 @@ def _draw_mode_label(mode):
         "planner_only": "PLANNER ONLY  (PD, no RL)",
         "rl_only": "RL ONLY  (no PD backbone)",
     }
-    _update_text("mode", mode_text.get(mode, mode), [0.65, 0.0, 0.90],
+    _update_text("mode", mode_text.get(mode, mode), [0.65, 0.0, 1.00],
                  color=(0.6, 0.6, 0.0), size=1.8)
 
 
 def _draw_phase_label(phase_name, phase_num=None):
     prefix = f"Phase {phase_num}: " if phase_num is not None else ""
-    _update_text("phase", f"{prefix}{phase_name}", [0.65, 0.0, 0.82],
+    _update_text("phase", f"{prefix}{phase_name}", [0.65, 0.0, 0.90],
                  color=(0.2, 0.3, 0.6), size=1.5)
 
 
 def _draw_perturbation_info(dx, dy, dz, dyaw):
     text = (f"Perturbation: dx={dx*100:+.1f}cm dy={dy*100:+.1f}cm "
             f"dz={dz*100:+.1f}cm yaw={np.degrees(dyaw):+.1f}deg")
-    _update_text("perturb", text, [0.30, 0.0, 0.75],
+    _update_text("perturb", text, [0.30, 0.0, 0.80],
                  color=(0.7, 0.3, 0.0), size=1.2)
 
 
@@ -125,7 +125,7 @@ def _draw_residual_magnitude(residual_norm):
     bar_str = "|" * max(1, int(bar_len * 20))
     color = (0.0, 0.5, 0.0) if bar_len < 0.5 else (0.6, 0.5, 0.0) if bar_len < 0.8 else (0.6, 0.0, 0.0)
     _update_text("residual", f"Residual: {residual_norm:.3f} {bar_str}",
-                 [0.30, 0.0, 0.70], color=color, size=1.1)
+                 [0.30, 0.0, 0.70], color=color, size=1.2)
 
 
 def execute_residual_trajectory(
@@ -449,9 +449,10 @@ def run_pick_place_with_residual(
         _draw_phase_label("home", 1)
         hold_gripper_for_steps(env, robot, config.GRIPPER_OPEN_WIDTH, config.GRIPPER_SETTLE_STEPS)
 
-        # Phase 2: Pre-grasp (with residual)
-        print("\n=== Phase 2: pre_grasp (residual) ===")
-        _draw_phase_label("pre_grasp (residual)", 2)
+        # Phase 2: Pre-grasp
+        rl_tag = "residual" if mode == "hybrid" else mode
+        print(f"\n=== Phase 2: pre_grasp ({rl_tag}) ===")
+        _draw_phase_label(f"pre_grasp ({rl_tag})", 2)
         ok = move_to_cartesian_target_residual(
             env, robot, poses["pre_grasp"], grasp_orn,
             actor, action_wrapper, objects.cube_id,
@@ -465,9 +466,9 @@ def run_pick_place_with_residual(
                                           label="pre_grasp_fallback", logger=logger,
                                           gripper_width=config.GRIPPER_OPEN_WIDTH)
 
-        # Phase 3: Grasp descend (with residual)
-        print("\n=== Phase 3: grasp_descend (residual) ===")
-        _draw_phase_label("grasp_descend (residual)", 3)
+        # Phase 3: Grasp descend
+        print(f"\n=== Phase 3: grasp_descend ({rl_tag}) ===")
+        _draw_phase_label(f"grasp_descend ({rl_tag})", 3)
         ok = move_to_cartesian_target_residual(
             env, robot, poses["grasp"], grasp_orn,
             actor, action_wrapper, objects.cube_id,
@@ -507,12 +508,17 @@ def run_pick_place_with_residual(
                 print("Grasp check failed (no retry -- matches eval framework).")
                 attached = False
         if not attached:
-            print("Grasp validation failed.")
+            print("Grasp validation failed — demo ending early.")
+            _draw_phase_label("FAILED (grasp)", None)
+            if logger is not None:
+                os.makedirs(os.path.dirname(config.M2_TRAJECTORY_LOG_PATH), exist_ok=True)
+                logger.save_json(config.M2_TRAJECTORY_LOG_PATH)
+                print(f"Saved trajectory log to {config.M2_TRAJECTORY_LOG_PATH}")
             return
 
         # Phase 6: Lift (with residual)
-        print("\n=== Phase 6: lift (residual) ===")
-        _draw_phase_label("lift (residual)", 6)
+        print(f"\n=== Phase 6: lift ({rl_tag}) ===")
+        _draw_phase_label(f"lift ({rl_tag})", 6)
         ok = move_to_cartesian_target_residual(
             env, robot, poses["lift"], grasp_orn,
             actor, action_wrapper, objects.cube_id,
