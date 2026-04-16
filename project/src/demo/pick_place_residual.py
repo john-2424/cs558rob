@@ -324,11 +324,14 @@ def get_pick_and_place_poses_from_cube(robot, cube_id, table_id):
 
 
 def run_pick_place_with_residual(
-    model_path=None, perturb_xy_range=None, mode="hybrid", log_file_path=None,
+    model_path=None, perturb_xy_range=None, perturb_z_range=None,
+    perturb_yaw_range=None, mode="hybrid", log_file_path=None,
     allow_grasp_retry=True,
 ):
     model_path = model_path or os.path.join(config.M2_MODEL_DIR, "final_model.pt")
     perturb_xy_range = perturb_xy_range if perturb_xy_range is not None else config.PERTURB_XY_RANGE
+    perturb_z_range = perturb_z_range if perturb_z_range is not None else float(getattr(config, "PERTURB_Z_RANGE", 0.0))
+    perturb_yaw_range = perturb_yaw_range if perturb_yaw_range is not None else config.PERTURB_YAW_RANGE
     log_file_path = log_file_path or os.path.join(config.M2_RESULTS_DIR, "demo_log.txt")
     os.makedirs(config.M2_RESULTS_DIR, exist_ok=True)
 
@@ -339,7 +342,8 @@ def run_pick_place_with_residual(
     actor = load_trained_actor(model_path)
     action_wrapper = ResidualActionWrapper(mode=mode)
     print(f"Log file: {log_file_path}")
-    print(f"Loaded model from {model_path}, mode={mode}, perturb_xy_range={perturb_xy_range}")
+    print(f"Loaded model from {model_path}, mode={mode}")
+    print(f"Perturbation ranges: xy={perturb_xy_range}, z={perturb_z_range}, yaw={perturb_yaw_range}")
     _overlay_ids.clear()
 
     env = BulletEnv(gui=config.GUI)
@@ -403,16 +407,15 @@ def run_pick_place_with_residual(
 
         # Perturb cube AFTER planning — the planner targets are now "stale"
         rng = np.random.default_rng()
-        z_range = float(getattr(config, "PERTURB_Z_RANGE", 0.0))
-        if perturb_xy_range > 0 or z_range > 0:
+        if perturb_xy_range > 0 or perturb_z_range > 0 or perturb_yaw_range > 0:
             new_pos, new_orn, (dx, dy, dz, dyaw) = perturb_cube_pose(
                 cube_id=objects.cube_id,
                 nominal_pos=list(nominal_pos),
                 nominal_orn_euler=config.CUBE_BASE_ORN_EULER,
                 rng=rng,
                 xy_range=perturb_xy_range,
-                yaw_range=config.PERTURB_YAW_RANGE,
-                z_range=z_range,
+                yaw_range=perturb_yaw_range,
+                z_range=perturb_z_range,
             )
             perturbed_pos, perturbed_orn = p.getBasePositionAndOrientation(objects.cube_id)
             perturbed_euler = p.getEulerFromQuaternion(perturbed_orn)

@@ -3,6 +3,22 @@ import argparse
 from src import config
 
 
+def _add_perturb_args(parser):
+    """Add common perturbation CLI flags to a subparser."""
+    parser.add_argument(
+        "--perturb-xy", type=float, default=None,
+        help="Cube XY perturbation range in meters (default: PERTURB_XY_RANGE from config).",
+    )
+    parser.add_argument(
+        "--perturb-z", type=float, default=None,
+        help="Cube Z perturbation range in meters (default: PERTURB_Z_RANGE from config).",
+    )
+    parser.add_argument(
+        "--perturb-yaw", type=float, default=None,
+        help="Cube yaw perturbation range in radians (default: PERTURB_YAW_RANGE from config).",
+    )
+
+
 def _build_parser():
     parser = argparse.ArgumentParser(
         prog="python -m src.main",
@@ -64,13 +80,10 @@ def _build_parser():
         help="Control mode: hybrid (PD+residual), planner_only (PD only, residual zeroed), rl_only.",
     )
     demo_p.add_argument(
-        "--perturb-xy", type=float, default=None,
-        help="Cube XY perturbation range in meters (default: PERTURB_XY_RANGE from config).",
-    )
-    demo_p.add_argument(
         "--no-retry", action="store_true", default=False,
         help="Disable grasp retry (single attempt, matches eval framework behavior).",
     )
+    _add_perturb_args(demo_p)
 
     return parser
 
@@ -101,6 +114,8 @@ def main():
         run_pick_place_with_residual(
             mode=args.mode,
             perturb_xy_range=args.perturb_xy,
+            perturb_z_range=args.perturb_z,
+            perturb_yaw_range=args.perturb_yaw,
             allow_grasp_retry=not args.no_retry,
         )
 
