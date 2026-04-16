@@ -160,7 +160,7 @@ GRASP_MAX_EE_TO_CUBE_CENTER_DIST = 0.110
 GRASP_REQUIRE_CONTACT = True
 GRASP_MIN_TOTAL_CONTACTS = 1
 GRASP_MIN_FINGER_CONTACTS = 1
-GRASP_MAX_FINGER_TO_CUBE_DIST = 0.030
+GRASP_MAX_FINGER_TO_CUBE_DIST = 0.055
 GRASP_USE_FINGER_DISTANCE = True
 
 GRASP_DESCEND_WAYPOINT_TOL = 0.012
@@ -257,8 +257,8 @@ REWARD_ZETA = 50.0
 # REWARD_DELTA. Radius 0.12 starts pulling from slightly further out
 # than before; ETA 3.0 gives up to +3/step at contact — strong enough
 # to guide random policies without drowning out grasp/lift bonuses.
-REWARD_ETA = 3.0
-PROXIMITY_RADIUS = 0.12
+REWARD_ETA = 2.0
+PROXIMITY_RADIUS = 0.10
 
 # PPO hyperparameters
 # Tuned after run #3 oscillated 60-95% on bimodal rewards. Lower LR + lower

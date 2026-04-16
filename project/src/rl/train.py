@@ -222,6 +222,7 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
     episode_successes = []
     ep_reward_acc = None
     ep_length_acc = None
+    ep_max_step_r_acc = None
     best_succ_rate = -1.0
     best_mean_reward = -float("inf")
     best_succ_batch = 0
@@ -368,24 +369,32 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
             if ep_reward_acc is None or len(ep_reward_acc) != num_envs:
                 ep_reward_acc = [0.0] * num_envs
                 ep_length_acc = [0] * num_envs
+                ep_max_step_r_acc = [-float("inf")] * num_envs
             r_list = r.tolist()
             d_list = d.bool().tolist()
             for w in range(num_envs):
                 for t in range(T):
-                    ep_reward_acc[w] += r_list[w][t]
+                    step_r = r_list[w][t]
+                    ep_reward_acc[w] += step_r
                     ep_length_acc[w] += 1
+                    if step_r > ep_max_step_r_acc[w]:
+                        ep_max_step_r_acc[w] = step_r
                     if d_list[w][t]:
                         ep_r_done = ep_reward_acc[w]
                         ep_len_done = ep_length_acc[w]
                         episode_rewards.append(ep_r_done)
                         episode_lengths.append(ep_len_done)
-                        episode_successes.append(
-                            1 if ep_r_done >= config.EP_SUCCESS_REWARD_THRESHOLD else 0
-                        )
+                        # Detect actual cube lift: the lift bonus
+                        # (REWARD_EPSILON=100) is the only single-step reward
+                        # component that can exceed ~80. This is reliable
+                        # regardless of cumulative proximity or approach rewards.
+                        lifted = ep_max_step_r_acc[w] >= config.REWARD_EPSILON * 0.8
+                        episode_successes.append(1 if lifted else 0)
                         batch_new_rewards.append(ep_r_done)
                         batch_new_lengths.append(ep_len_done)
                         ep_reward_acc[w] = 0.0
                         ep_length_acc[w] = 0
+                        ep_max_step_r_acc[w] = -float("inf")
 
         elapsed = time.time() - start_time
         fps = total_frames / elapsed if elapsed > 0 else 0
