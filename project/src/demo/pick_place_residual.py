@@ -300,14 +300,16 @@ def run_pick_place_with_residual(
 
         # Perturb cube AFTER planning — the planner targets are now "stale"
         rng = np.random.default_rng()
-        if perturb_xy_range > 0:
-            new_pos, new_orn, (dx, dy, dyaw) = perturb_cube_pose(
+        z_range = float(getattr(config, "PERTURB_Z_RANGE", 0.0))
+        if perturb_xy_range > 0 or z_range > 0:
+            new_pos, new_orn, (dx, dy, dz, dyaw) = perturb_cube_pose(
                 cube_id=objects.cube_id,
                 nominal_pos=list(nominal_pos),
                 nominal_orn_euler=config.CUBE_BASE_ORN_EULER,
                 rng=rng,
                 xy_range=perturb_xy_range,
                 yaw_range=config.PERTURB_YAW_RANGE,
+                z_range=z_range,
             )
             perturbed_pos, perturbed_orn = p.getBasePositionAndOrientation(objects.cube_id)
             perturbed_euler = p.getEulerFromQuaternion(perturbed_orn)
@@ -315,10 +317,11 @@ def run_pick_place_with_residual(
                   f"xy=({perturbed_pos[0]:.4f}, {perturbed_pos[1]:.4f}) m, "
                   f"z={perturbed_pos[2]:.4f} m, yaw={perturbed_euler[2]:.4f} rad")
             print(f"[demo] Perturbation delta: "
-                  f"dx={dx:+.4f} m, dy={dy:+.4f} m, "
+                  f"dx={dx:+.4f} m, dy={dy:+.4f} m, dz={dz:+.4f} m, "
                   f"dyaw={dyaw:+.4f} rad ({np.degrees(dyaw):+.2f} deg)")
+            total_offset = float(np.sqrt(dx**2 + dy**2 + dz**2))
             print(f"[demo] Planner targets are from NOMINAL — "
-                  f"robot will aim {float(np.sqrt(dx**2 + dy**2))*100:.1f}cm away from actual cube")
+                  f"robot will aim {total_offset*100:.1f}cm away from actual cube")
 
         robot.reset_home()
         robot.hold_home_pose()

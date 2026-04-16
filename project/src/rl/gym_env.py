@@ -210,14 +210,17 @@ class PandaGraspEnv(gymnasium.Env):
         # nominal target. Residual RL's job is to correct for that offset.
         q_pre_grasp, q_grasp, q_lift = self._compute_grasp_targets()
 
+        z_range = float(getattr(config, "PERTURB_Z_RANGE", 0.0))
         if self.curriculum:
             effective_xy = float(self._rng.uniform(0.0, self.perturb_xy_range))
             effective_yaw = float(self._rng.uniform(0.0, self.perturb_yaw_range))
+            effective_z = float(self._rng.uniform(0.0, z_range))
         else:
             effective_xy = self.perturb_xy_range
             effective_yaw = self.perturb_yaw_range
+            effective_z = z_range
 
-        if effective_xy > 0:
+        if effective_xy > 0 or effective_z > 0:
             perturb_cube_pose(
                 cube_id=self._objects.cube_id,
                 nominal_pos=self._cube_nominal_pos,
@@ -225,6 +228,7 @@ class PandaGraspEnv(gymnasium.Env):
                 rng=self._rng,
                 xy_range=effective_xy,
                 yaw_range=effective_yaw,
+                z_range=effective_z,
             )
 
             for _ in range(20):
@@ -333,46 +337,19 @@ class PandaGraspEnv(gymnasium.Env):
     def _auto_grasp_and_attach(self):
         self._grasp_attempted = True
 
-        # Inline sim steps below are NOT counted toward _step_count: that
-        # counter measures RL transitions for truncation budget. Counting
-        # inline steps here exhausted the episode budget before LIFT could run.
-
-        # Close gripper
+        # Close gripper (inline sim steps not counted toward _step_count)
         for _ in range(config.GRIPPER_SETTLE_STEPS):
             self._robot.close_gripper()
             self._env.step(sleep=False)
 
-        # Validate grasp
+        # Single-attempt grasp validation — no retry. RL must learn to
+        # position precisely enough for the physics contact check to pass.
         ready, _ = self._robot.is_grasp_ready(self._objects.cube_id)
-
-        if not ready:
-            # Retry deeper descend
-            q_retry = self._robot.get_joint_positions()
-            ee_pos, _ = self._robot.get_ee_pose()
-            retry_pos = np.array(ee_pos, dtype=float)
-            retry_pos[2] -= config.GRASP_DESCEND_RETRY_DELTA_Z
-            q_retry_target = self._robot.solve_ik(retry_pos, self._grasp_orn)
-
-            waypoints = self._build_phase_waypoints(q_retry, q_retry_target)
-            for wp in waypoints:
-                for _ in range(config.WAYPOINT_MAX_STEPS):
-                    self._robot.command_arm_and_gripper(
-                        wp, gripper_width=config.GRIPPER_OPEN_WIDTH,
-                    )
-                    self._env.step(sleep=False)
-                    if self._robot.is_at_joint_target(wp, tol=config.WAYPOINT_TOL):
-                        break
-
-            for _ in range(config.GRIPPER_SETTLE_STEPS):
-                self._robot.close_gripper()
-                self._env.step(sleep=False)
-
-            ready, _ = self._robot.is_grasp_ready(self._objects.cube_id)
 
         if ready:
             self._robot.attach_object(self._objects.cube_id)
             self._grasp_attached = True
-            self._grasp_bonus_given = False  # will be given in reward
+            self._grasp_bonus_given = False
             return True
 
         return False
@@ -407,6 +384,11 @@ class PandaGraspEnv(gymnasium.Env):
         # Apply action through residual wrapper
         qd_total = self.action_wrapper.compute_action(qd_pd, action)
         qd_residual = self.action_wrapper.get_residual(action)
+
+        # For rl_only mode, don't penalize the policy for using its actions --
+        # there is no PD backbone, so the "residual" IS the entire command.
+        if self.mode == "rl_only":
+            qd_residual = np.zeros(ACT_DIM, dtype=np.float32)
 
         # Apply velocity command + maintain gripper
         forces = self._robot.arm_max_forces

@@ -207,11 +207,11 @@ PLANNER_ATTACHED_MOTION_LABELS = {
 # =========================
 
 # Residual bounds
-# 0.1 rad/s (~3-4% of PD max). Higher caps (tested 0.5) let random-init
-# actions overwhelm PD and stall waypoint tracking -- episodes truncated at
-# 2000 steps with zero success. 0.1 gives ~1-2 cm EE offset authority, so
-# training perturbation is kept small to match.
-RESIDUAL_MAX = 0.1
+# 0.3 rad/s (~12% of PD max). Planner targets are computed from the nominal
+# (pre-perturbation) cube pose, so the PD drives toward the wrong spot.
+# At 0.04m perturbation the PD pulls ~0.2 rad/s toward nominal; the residual
+# needs >= 0.2 to counteract. 0.3 gives enough headroom for RL to override.
+RESIDUAL_MAX = 0.3
 
 # RL simulation
 RL_SIM_SUBSTEPS = 4
@@ -223,9 +223,10 @@ RL_MAX_EPISODE_STEPS = 2000
 RL_MAX_STEPS_PER_WAYPOINT = 150
 
 # Perturbation
-# Training range matched to residual authority (~1-2 cm at RESIDUAL_MAX=0.1).
-# Eval spans [0.0, 0.12] to characterize hybrid behavior in- and out-of-distribution.
+# Training range: XY ±4cm, Z ±1cm, yaw ±0.2rad. Planner sees nominal pose;
+# RL must correct for the offset. Curriculum samples per-episode ranges.
 PERTURB_XY_RANGE = 0.04
+PERTURB_Z_RANGE = 0.01
 PERTURB_YAW_RANGE = 0.2
 PERTURB_LEVELS = [0.00, 0.02, 0.04, 0.06, 0.08, 0.10, 0.12]
 # During training, sample per-episode xy_range uniformly in
@@ -235,10 +236,13 @@ TRAIN_CURRICULUM = True
 
 # Reward shaping
 REWARD_ALPHA = 10.0
-# With RESIDUAL_MAX=0.1, BETA=0.5 gives max per-step residual penalty
-# ~= -0.05, comparable in magnitude to per-step approach reward.
-REWARD_BETA = 0.5
-REWARD_GAMMA = 0.05
+# With RESIDUAL_MAX=0.3, BETA=0.15 gives max per-step residual penalty
+# ~= -0.045, comparable in magnitude to per-step approach reward.
+# (Scaled down from 0.5 to compensate for 3x larger RESIDUAL_MAX.)
+# Note: residual penalty is disabled for rl_only mode since there is no
+# PD backbone — penalizing the only control signal trains it to do nothing.
+REWARD_BETA = 0.15
+REWARD_GAMMA = 0.02
 REWARD_DELTA = 50.0
 REWARD_EPSILON = 100.0
 REWARD_ZETA = 50.0
