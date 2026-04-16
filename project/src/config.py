@@ -265,6 +265,8 @@ PPO_CLIP_EPSILON = 0.2
 PPO_GAMMA = 0.99
 PPO_GAE_LAMBDA = 0.95
 PPO_ENT_COEFF = 0.01
+PPO_CRITIC_COEFF = 0.25
+PPO_MAX_GRAD_NORM = 5.0
 
 # Training stability
 PPO_LR_SCHEDULE = "linear"  # "linear" (decay to 0) or "constant"

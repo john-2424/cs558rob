@@ -143,7 +143,7 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
         critic_network=critic,
         clip_epsilon=config.PPO_CLIP_EPSILON,
         entropy_coeff=config.PPO_ENT_COEFF,
-        critic_coeff=0.5,
+        critic_coeff=config.PPO_CRITIC_COEFF,
         loss_critic_type="l2",
         clip_value=clip_value,
     )
@@ -266,7 +266,8 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
 
                 optimizer.zero_grad()
                 loss.backward()
-                grad_norm = nn.utils.clip_grad_norm_(loss_module.parameters(), 0.5)
+                grad_norm = nn.utils.clip_grad_norm_(
+                    loss_module.parameters(), config.PPO_MAX_GRAD_NORM)
                 optimizer.step()
 
                 epoch_losses.append(loss.item())
