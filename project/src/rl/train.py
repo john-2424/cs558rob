@@ -1,4 +1,5 @@
 import os
+import shutil
 import time
 from functools import partial
 
@@ -136,6 +137,7 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
     )
 
     # PPO loss
+    clip_value = bool(getattr(config, "PPO_CLIP_VALUE", False))
     loss_module = ClipPPOLoss(
         actor_network=actor,
         critic_network=critic,
@@ -143,6 +145,7 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
         entropy_coeff=config.PPO_ENT_COEFF,
         critic_coeff=0.5,
         loss_critic_type="l2",
+        clip_value=clip_value,
     )
 
     # Optimizer
@@ -180,20 +183,35 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
         batch_size=config.PPO_MINI_BATCH_SIZE,
     )
 
+    # Stability settings
+    use_lr_schedule = getattr(config, "PPO_LR_SCHEDULE", "constant") == "linear"
+    target_kl = float(getattr(config, "PPO_TARGET_KL", 0.0))
+    save_best = bool(getattr(config, "PPO_SAVE_BEST_MODEL", True))
+    es_patience = int(getattr(config, "PPO_EARLY_STOP_PATIENCE", 0))
+    es_min_peak = float(getattr(config, "PPO_EARLY_STOP_MIN_PEAK", 0.5))
+    es_drop = float(getattr(config, "PPO_EARLY_STOP_DROP", 0.25))
+
     # Training loop
     total_frames = 0
     batch_idx = 0
     episode_rewards = []
     episode_lengths = []
     episode_successes = []
-    ep_reward_acc = None  # per-env running episode-reward accumulator (lazy init)
-    ep_length_acc = None  # per-env running episode-length accumulator (lazy init)
+    ep_reward_acc = None
+    ep_length_acc = None
+    best_succ_rate = -1.0
+    best_succ_batch = 0
+    below_peak_count = 0
+    current_lr = config.PPO_LR
     start_time = time.time()
 
     print(f"Starting PPO training: mode={mode}, total_timesteps={total_timesteps}")
     print(f"Frames per batch: {config.PPO_FRAMES_PER_BATCH}")
     print(f"Mini-batch size: {config.PPO_MINI_BATCH_SIZE}")
     print(f"Epochs per batch: {config.PPO_EPOCHS}")
+    print(f"LR schedule: {config.PPO_LR_SCHEDULE}, target KL: {target_kl}")
+    print(f"Early stop: patience={es_patience}, min_peak={es_min_peak}, drop={es_drop}")
+    print(f"Best model tracking: {save_best}")
     print("Waiting for first batch from collector workers (this may take 30-120s on first run)...")
     iter_start = time.time()
 
@@ -202,6 +220,13 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
             print(f"First batch received after {time.time() - iter_start:.1f}s")
         total_frames += batch_data.numel()
         batch_idx += 1
+
+        # Linear LR decay
+        if use_lr_schedule:
+            frac = 1.0 - total_frames / total_timesteps
+            current_lr = config.PPO_LR * max(frac, 0.0)
+            for pg in optimizer.param_groups:
+                pg["lr"] = current_lr
 
         # Compute advantage
         with torch.no_grad():
@@ -214,10 +239,14 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
         # Load batch into replay buffer
         replay_buffer.extend(batch_data.reshape(-1))
 
-        # PPO update epochs
+        # PPO update epochs with KL-based early stopping
         num_mini_batches = max(1, config.PPO_FRAMES_PER_BATCH // config.PPO_MINI_BATCH_SIZE)
         epoch_losses = []
-        for _ in range(config.PPO_EPOCHS):
+        batch_kls = []
+        epochs_run = 0
+        kl_early_stop = False
+        for epoch_i in range(config.PPO_EPOCHS):
+            epoch_kls = []
             for _ in range(num_mini_batches):
                 minibatch = replay_buffer.sample()
                 loss_td = loss_module(minibatch)
@@ -235,18 +264,33 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
 
                 epoch_losses.append(loss.item())
 
+                kl_val = loss_td.get("kl_approx", None)
+                if kl_val is not None:
+                    kl_item = kl_val.mean().item() if kl_val.numel() > 1 else kl_val.item()
+                    epoch_kls.append(kl_item)
+
+            epochs_run = epoch_i + 1
+            if target_kl > 0 and epoch_kls:
+                mean_epoch_kl = float(np.mean(epoch_kls))
+                batch_kls.append(mean_epoch_kl)
+                if mean_epoch_kl > target_kl:
+                    kl_early_stop = True
+                    break
+            elif epoch_kls:
+                batch_kls.append(float(np.mean(epoch_kls)))
+
+        mean_kl = float(np.mean(batch_kls)) if batch_kls else 0.0
+
         # Logging
         mean_loss = np.mean(epoch_losses) if epoch_losses else 0.0
 
         # --- Episode tracking using TorchRL's nested "next" keys ---
-        # Rewards and dones live under ("next", "reward") and ("next", "done").
         step_rewards_t = batch_data.get(("next", "reward"))
         done_t = batch_data.get(("next", "done"))
 
         mean_step_reward = float(step_rewards_t.mean().item()) if step_rewards_t is not None else 0.0
         num_dones = int(done_t.sum().item()) if done_t is not None else 0
 
-        # Per-env accumulation so episode returns can span batches.
         batch_new_rewards = []
         batch_new_lengths = []
         if step_rewards_t is not None and done_t is not None:
@@ -290,13 +334,15 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
         mean_ep_length = float(np.mean(recent_lengths)) if recent_lengths else float("nan")
         succ_rate = float(np.mean(recent_successes)) if recent_successes else 0.0
 
-        # Per-batch worker-divergence signal (std of episode rewards completed this batch)
         batch_ep_std = float(np.std(batch_new_rewards)) if len(batch_new_rewards) > 1 else 0.0
 
         writer.add_scalar("train/loss", mean_loss, total_frames)
         writer.add_scalar("train/fps", fps, total_frames)
         writer.add_scalar("train/mean_step_reward", mean_step_reward, total_frames)
         writer.add_scalar("train/episodes_completed", len(episode_rewards), total_frames)
+        writer.add_scalar("train/learning_rate", current_lr, total_frames)
+        writer.add_scalar("train/kl_approx", mean_kl, total_frames)
+        writer.add_scalar("train/epochs_run", epochs_run, total_frames)
         if recent_rewards:
             writer.add_scalar("train/mean_episode_reward", mean_ep_reward, total_frames)
             writer.add_scalar("train/std_episode_reward", std_ep_reward, total_frames)
@@ -304,6 +350,24 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
             writer.add_scalar("train/success_rate", succ_rate, total_frames)
         if len(batch_new_rewards) > 1:
             writer.add_scalar("train/batch_episode_reward_std", batch_ep_std, total_frames)
+
+        kl_flag = " KL!" if kl_early_stop else ""
+        best_flag = ""
+
+        # Best model tracking
+        if save_best and len(recent_successes) >= 5 and succ_rate > best_succ_rate:
+            best_succ_rate = succ_rate
+            best_succ_batch = batch_idx
+            below_peak_count = 0
+            best_path = os.path.join(model_save_path, "best_model.pt")
+            torch.save({
+                "actor_state_dict": actor.state_dict(),
+                "critic_state_dict": critic.state_dict(),
+                "optimizer_state_dict": optimizer.state_dict(),
+                "total_frames": total_frames,
+                "success_rate": succ_rate,
+            }, best_path)
+            best_flag = " *BEST*"
 
         print(
             f"batch={batch_idx:4d} | "
@@ -313,8 +377,9 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
             f"ep_r={mean_ep_reward:+7.2f}±{std_ep_reward:5.2f} | "
             f"len={mean_ep_length:5.0f} | "
             f"succ={succ_rate:5.0%} | "
-            f"eps={len(episode_rewards):5d} (+{num_dones}) | "
-            f"fps={fps:.0f}"
+            f"kl={mean_kl:.4f} ep={epochs_run}/{config.PPO_EPOCHS}{kl_flag} | "
+            f"lr={current_lr:.1e} | "
+            f"fps={fps:.0f}{best_flag}"
         )
 
         # Periodic checkpoint
@@ -327,14 +392,35 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
                 "total_frames": total_frames,
             }, checkpoint_path)
 
-    # Save final model
+        # Early stopping on collapse
+        if es_patience > 0 and best_succ_rate >= es_min_peak:
+            if succ_rate < best_succ_rate - es_drop:
+                below_peak_count += 1
+                if below_peak_count >= es_patience:
+                    print(
+                        f"\n*** EARLY STOP: succ={succ_rate:.0%} has been "
+                        f">{es_drop:.0%} below peak={best_succ_rate:.0%} "
+                        f"(batch {best_succ_batch}) for {below_peak_count} "
+                        f"consecutive batches ***\n"
+                    )
+                    break
+            else:
+                below_peak_count = 0
+
+    # Save final model — use best checkpoint if available
     final_path = os.path.join(model_save_path, "final_model.pt")
-    torch.save({
-        "actor_state_dict": actor.state_dict(),
-        "critic_state_dict": critic.state_dict(),
-        "total_frames": total_frames,
-    }, final_path)
-    print(f"Training complete. Model saved to {final_path}")
+    best_path = os.path.join(model_save_path, "best_model.pt")
+    if save_best and os.path.exists(best_path):
+        shutil.copy2(best_path, final_path)
+        print(f"Training complete. Copied best model (succ={best_succ_rate:.0%}, "
+              f"batch={best_succ_batch}) to {final_path}")
+    else:
+        torch.save({
+            "actor_state_dict": actor.state_dict(),
+            "critic_state_dict": critic.state_dict(),
+            "total_frames": total_frames,
+        }, final_path)
+        print(f"Training complete. Model saved to {final_path}")
 
     collector.shutdown()
     writer.close()

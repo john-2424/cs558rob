@@ -266,6 +266,15 @@ PPO_GAMMA = 0.99
 PPO_GAE_LAMBDA = 0.95
 PPO_ENT_COEFF = 0.01
 
+# Training stability
+PPO_LR_SCHEDULE = "linear"  # "linear" (decay to 0) or "constant"
+PPO_TARGET_KL = 0.02  # stop PPO epochs early when mean approx KL exceeds this
+PPO_CLIP_VALUE = True  # clip value function updates (same epsilon as policy)
+PPO_SAVE_BEST_MODEL = True  # track and save the peak-performance checkpoint
+PPO_EARLY_STOP_PATIENCE = 15  # consecutive batches below peak before stopping
+PPO_EARLY_STOP_MIN_PEAK = 0.50  # early stop only activates after peak >= this
+PPO_EARLY_STOP_DROP = 0.25  # success must drop this much below peak to count
+
 # Parallel env workers for data collection (set to 1 to disable multiprocessing)
 PPO_NUM_COLLECTOR_WORKERS = 8
 
