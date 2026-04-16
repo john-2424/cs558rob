@@ -230,7 +230,13 @@ def plot_phase_breakdown(results, save_dir):
     x = np.arange(num_levels)
     width = 0.25
 
-    fig, ax = plt.subplots(figsize=(10, 5))
+    method_short = {
+        "planner_only": "Plan",
+        "hybrid": "Hyb",
+        "rl_only": "RL",
+    }
+
+    fig, ax = plt.subplots(figsize=(14, 6))
 
     for i, method in enumerate(methods):
         bottoms = np.zeros(num_levels)
@@ -253,22 +259,17 @@ def plot_phase_breakdown(results, save_dir):
             )
             bottoms += fracs
 
-        # Add method label below each group
-        for j in range(num_levels):
-            offset = (i - num_methods / 2 + 0.5) * width
-            ax.text(
-                x[j] + offset, -6,
-                method_labels.get(method, method).split(" ")[0][:3],
-                ha="center", va="top", fontsize=6, rotation=0,
-            )
-
-    ax.set_xlabel("Perturbation Level (XY m / Z m / Yaw rad)")
+    ax.set_xlabel("Perturbation Level (XY m / Z m / Yaw rad)", labelpad=10)
     ax.set_ylabel("Episodes (%)")
-    ax.set_title("Max Phase Reached by Episode (per method)")
+    # Bar order per perturbation group
+    bar_order = " | ".join(
+        f"{method_short.get(m, m[:3])}={method_labels.get(m, m)}" for m in methods
+    )
+    ax.set_title(f"Max Phase Reached by Episode\nBar order (L\u2192R): {bar_order}", fontsize=11)
     ax.set_xticks(x)
     ax.set_xticklabels(_perturb_tick_labels(perturb_values), fontsize=7)
     ax.set_ylim(0, 115)
-    ax.legend(loc="upper right")
+    ax.legend(loc="upper right", fontsize=8)
     ax.grid(axis="y", alpha=0.3)
 
     plt.tight_layout()
@@ -338,7 +339,7 @@ def plot_grasp_analysis(results, save_dir):
         "rl_only": "RL Only",
     }
 
-    fig, axes = plt.subplots(1, len(methods), figsize=(5 * len(methods), 5), sharey=True)
+    fig, axes = plt.subplots(1, len(methods), figsize=(6 * len(methods), 6), sharey=True)
     if len(methods) == 1:
         axes = [axes]
 
@@ -359,7 +360,7 @@ def plot_grasp_analysis(results, save_dir):
         ax.bar(x + w / 2, attached, w, label="Attached", color="#6ACC65", alpha=0.85)
 
         ax.set_title(method_labels.get(method, method))
-        ax.set_xlabel("Perturbation Level (XY m / Z m / Yaw rad)")
+        ax.set_xlabel("Perturbation Level", labelpad=10)
         ax.set_xticks(x)
         ax.set_xticklabels(_perturb_tick_labels(perturb_values), fontsize=6)
         ax.set_ylim(0, 115)
@@ -386,7 +387,7 @@ def plot_summary_table(results, save_dir):
         scale = xy / max_xy if max_xy > 0 else 0.0
         z = float(getattr(config, "PERTURB_Z_RANGE", 0.0)) * scale
         yaw = config.PERTURB_YAW_RANGE * scale
-        perturb_values.append(f"xy={xy:.2f}\nz={z:.3f}\nyaw={yaw:.2f}")
+        perturb_values.append(f"xy={xy:.2f} z={z:.3f}\nyaw={yaw:.2f}rad")
 
     method_labels = {
         "planner_only": "Planner Only",
@@ -416,9 +417,9 @@ def plot_summary_table(results, save_dir):
 
     row_labels = [method_labels.get(m, m) for m in methods]
 
-    fig, ax = plt.subplots(figsize=(max(8, len(levels) * 1.3), 1.2 + len(methods) * 0.8))
+    fig, ax = plt.subplots(figsize=(max(14, len(levels) * 2.0), 1.5 + len(methods) * 1.0))
     ax.axis("off")
-    ax.set_title("Evaluation Summary: Success Rate (Mean Reward)", fontsize=12, pad=15)
+    ax.set_title("Evaluation Summary: Success Rate (Mean Reward)", fontsize=13, pad=20)
 
     table = ax.table(
         cellText=cell_text,
@@ -429,7 +430,7 @@ def plot_summary_table(results, save_dir):
     )
     table.auto_set_font_size(False)
     table.set_fontsize(9)
-    table.scale(1.0, 1.8)
+    table.scale(1.0, 2.0)
 
     # Apply cell colors
     for i, method in enumerate(methods):
