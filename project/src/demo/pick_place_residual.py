@@ -68,20 +68,20 @@ def _draw_mode_label(mode):
         "planner_only": "PLANNER ONLY  (PD, no RL)",
         "rl_only": "RL ONLY  (no PD backbone)",
     }
-    _update_text("mode", mode_text.get(mode, mode), [0.65, 0.0, 1.00],
+    _update_text("mode", mode_text.get(mode, mode), [0.65, 0.0, 0.92],
                  color=(0.6, 0.6, 0.0), size=1.8)
 
 
 def _draw_phase_label(phase_name, phase_num=None):
     prefix = f"Phase {phase_num}: " if phase_num is not None else ""
-    _update_text("phase", f"{prefix}{phase_name}", [0.65, 0.0, 0.90],
+    _update_text("phase", f"{prefix}{phase_name}", [0.65, 0.0, 0.84],
                  color=(0.2, 0.3, 0.6), size=1.5)
 
 
 def _draw_perturbation_info(dx, dy, dz, dyaw):
     text = (f"Perturbation: dx={dx*100:+.1f}cm dy={dy*100:+.1f}cm "
             f"dz={dz*100:+.1f}cm yaw={np.degrees(dyaw):+.1f}deg")
-    _update_text("perturb", text, [0.30, 0.0, 0.80],
+    _update_text("perturb", text, [0.30, 0.0, 0.76],
                  color=(0.7, 0.3, 0.0), size=1.2)
 
 
