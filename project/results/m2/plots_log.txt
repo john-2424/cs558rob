@@ -173,3 +173,26 @@ Saved results/m2/plots/summary_table.png
   [summary_table] rendered in 0.31s
 
 All M2 plots saved to results/m2/plots (total: 2.51s)
+
+================================================================================
+Plot generation run started: 2026-04-16T21:50:25
+================================================================================
+Log file: results/m2/plots_log.txt
+Reading evaluation results from results/m2/eval_results.json
+Saving plots to results/m2/plots
+Saved results/m2/plots/success_rate_vs_perturbation.png
+  [success_rate] rendered in 0.43s
+Saved results/m2/plots/mean_reward_vs_perturbation.png
+  [mean_reward] rendered in 0.27s
+Saved results/m2/plots/episode_length_vs_perturbation.png
+  [episode_length] rendered in 0.25s
+Saved results/m2/plots/phase_breakdown.png
+  [phase_breakdown] rendered in 0.36s
+Saved results/m2/plots/residual_magnitude.png
+  [residual_magnitude] rendered in 0.26s
+Saved results/m2/plots/grasp_analysis.png
+  [grasp_analysis] rendered in 0.55s
+Saved results/m2/plots/summary_table.png
+  [summary_table] rendered in 0.31s
+
+All M2 plots saved to results/m2/plots (total: 2.42s)
