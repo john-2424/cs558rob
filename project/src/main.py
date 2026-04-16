@@ -43,9 +43,17 @@ def _build_parser():
         help="Path to rl_only .pt (default: auto-discover results/m2/models_rl_only/final_model.pt).",
     )
 
-    sub.add_parser(
+    demo_p = sub.add_parser(
         "residual-demo",
         help="M2: full pick-and-place using the trained residual policy.",
+    )
+    demo_p.add_argument(
+        "--mode", choices=["hybrid", "planner_only", "rl_only"], default="hybrid",
+        help="Control mode: hybrid (PD+residual), planner_only (PD only, residual zeroed), rl_only.",
+    )
+    demo_p.add_argument(
+        "--perturb-xy", type=float, default=None,
+        help="Cube XY perturbation range in meters (default: PERTURB_XY_RANGE from config).",
     )
 
     return parser
@@ -72,7 +80,10 @@ def main():
         )
     elif args.command == "residual-demo":
         from src.demo.pick_place_residual import run_pick_place_with_residual
-        run_pick_place_with_residual()
+        run_pick_place_with_residual(
+            mode=args.mode,
+            perturb_xy_range=args.perturb_xy,
+        )
 
 
 if __name__ == "__main__":
