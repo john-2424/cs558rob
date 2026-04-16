@@ -454,7 +454,7 @@ def run_pick_place_with_residual(
         hold_gripper_for_steps(env, robot, config.GRIPPER_OPEN_WIDTH, config.GRIPPER_SETTLE_STEPS)
 
         # Phase 2: Pre-grasp
-        rl_tag = "residual" if mode == "hybrid" else mode
+        rl_tag = "residual" if mode == "hybrid" else "classical"
         print(f"\n=== Phase 2: pre_grasp ({rl_tag}) ===")
         _draw_phase_label(f"pre_grasp ({rl_tag})", 2)
         ok = move_to_cartesian_target_residual(
