@@ -15,6 +15,18 @@ def load_results(path=None):
         return json.load(f)
 
 
+def _perturb_tick_labels(perturb_values):
+    """Build x-tick labels showing XY, Z, and yaw for each perturbation level."""
+    max_xy = config.PERTURB_XY_RANGE or 1.0
+    labels = []
+    for xy in perturb_values:
+        scale = xy / max_xy if max_xy > 0 else 0.0
+        z = float(getattr(config, "PERTURB_Z_RANGE", 0.0)) * scale
+        yaw = config.PERTURB_YAW_RANGE * scale
+        labels.append(f"xy={xy:.2f}\nz={z:.3f}\nyaw={yaw:.2f}")
+    return labels
+
+
 def plot_success_rate(results, save_dir):
     levels = sorted(results.keys())
     methods = set()
@@ -58,11 +70,11 @@ def plot_success_rate(results, save_dir):
             color=colors.get(method, None),
         )
 
-    ax.set_xlabel("Perturbation Range (m)")
+    ax.set_xlabel("Perturbation Level (XY m / Z m / Yaw rad)")
     ax.set_ylabel("Success Rate (%)")
     ax.set_title("Grasp Success Rate vs Perturbation Level")
     ax.set_xticks(x)
-    ax.set_xticklabels([f"{v:.2f}" for v in perturb_values])
+    ax.set_xticklabels(_perturb_tick_labels(perturb_values), fontsize=7)
     ax.set_ylim(0, 110)
     ax.legend()
     ax.grid(axis="y", alpha=0.3)
@@ -124,9 +136,11 @@ def plot_mean_reward(results, save_dir):
             color=colors.get(method, None),
         )
 
-    ax.set_xlabel("Perturbation Range (m)")
+    ax.set_xlabel("Perturbation Level (XY m / Z m / Yaw rad)")
     ax.set_ylabel("Mean Episode Reward")
     ax.set_title("Mean Reward vs Perturbation Level")
+    ax.set_xticks(perturb_values)
+    ax.set_xticklabels(_perturb_tick_labels(perturb_values), fontsize=7)
     ax.legend()
     ax.grid(alpha=0.3)
 
@@ -174,9 +188,11 @@ def plot_episode_length(results, save_dir):
             color=colors.get(method, None),
         )
 
-    ax.set_xlabel("Perturbation Range (m)")
+    ax.set_xlabel("Perturbation Level (XY m / Z m / Yaw rad)")
     ax.set_ylabel("Mean Episode Length (steps)")
     ax.set_title("Episode Length vs Perturbation Level")
+    ax.set_xticks(perturb_values)
+    ax.set_xticklabels(_perturb_tick_labels(perturb_values), fontsize=7)
     ax.legend()
     ax.grid(alpha=0.3)
 
@@ -246,11 +262,11 @@ def plot_phase_breakdown(results, save_dir):
                 ha="center", va="top", fontsize=6, rotation=0,
             )
 
-    ax.set_xlabel("Perturbation Range (m)")
+    ax.set_xlabel("Perturbation Level (XY m / Z m / Yaw rad)")
     ax.set_ylabel("Episodes (%)")
     ax.set_title("Max Phase Reached by Episode (per method)")
     ax.set_xticks(x)
-    ax.set_xticklabels([f"{v:.2f}" for v in perturb_values])
+    ax.set_xticklabels(_perturb_tick_labels(perturb_values), fontsize=7)
     ax.set_ylim(0, 115)
     ax.legend(loc="upper right")
     ax.grid(axis="y", alpha=0.3)
@@ -295,9 +311,11 @@ def plot_residual_magnitude(results, save_dir):
             color=colors.get(method, None),
         )
 
-    ax.set_xlabel("Perturbation Range (m)")
+    ax.set_xlabel("Perturbation Level (XY m / Z m / Yaw rad)")
     ax.set_ylabel("Mean Residual Magnitude (rad/s)")
     ax.set_title("Residual Correction Magnitude vs Perturbation")
+    ax.set_xticks(perturb_values)
+    ax.set_xticklabels(_perturb_tick_labels(perturb_values), fontsize=7)
     ax.legend()
     ax.grid(alpha=0.3)
 
@@ -341,9 +359,9 @@ def plot_grasp_analysis(results, save_dir):
         ax.bar(x + w / 2, attached, w, label="Attached", color="#6ACC65", alpha=0.85)
 
         ax.set_title(method_labels.get(method, method))
-        ax.set_xlabel("Perturbation (m)")
+        ax.set_xlabel("Perturbation Level (XY m / Z m / Yaw rad)")
         ax.set_xticks(x)
-        ax.set_xticklabels([f"{v:.2f}" for v in perturb_values], fontsize=8)
+        ax.set_xticklabels(_perturb_tick_labels(perturb_values), fontsize=6)
         ax.set_ylim(0, 115)
         ax.legend(fontsize=8)
         ax.grid(axis="y", alpha=0.3)
@@ -361,7 +379,14 @@ def plot_summary_table(results, save_dir):
     """Render a clean summary table as an image for slides."""
     levels = sorted(results.keys())
     methods = sorted({m for lvl in results.values() for m in lvl.keys()})
-    perturb_values = [f"{float(lk.split('_')[1]):.2f}m" for lk in levels]
+    perturb_values_raw = [float(lk.split("_")[1]) for lk in levels]
+    max_xy = config.PERTURB_XY_RANGE or 1.0
+    perturb_values = []
+    for xy in perturb_values_raw:
+        scale = xy / max_xy if max_xy > 0 else 0.0
+        z = float(getattr(config, "PERTURB_Z_RANGE", 0.0)) * scale
+        yaw = config.PERTURB_YAW_RANGE * scale
+        perturb_values.append(f"xy={xy:.2f}\nz={z:.3f}\nyaw={yaw:.2f}")
 
     method_labels = {
         "planner_only": "Planner Only",
