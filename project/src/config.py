@@ -234,9 +234,10 @@ PERTURB_LEVELS = [0.00, 0.02, 0.04, 0.06, 0.08, 0.10, 0.12]
 # discover the grasp cliff; still exposed to full range at train cap.
 TRAIN_CURRICULUM = True
 # Per-worker warmup: first N episodes use 0 perturbation so the policy
-# learns the nominal grasp before facing offsets. With 8 workers and 50
-# warmup episodes each, that's ~400 easy episodes across the fleet.
-CURRICULUM_WARMUP_EPISODES = 50
+# learns the nominal grasp before facing offsets. With 7 workers and 10
+# warmup episodes each, that's ~70 easy episodes (~10 batches) before
+# perturbations kick in — enough to bootstrap the value function.
+CURRICULUM_WARMUP_EPISODES = 10
 
 # Reward shaping
 REWARD_ALPHA = 10.0
@@ -253,10 +254,11 @@ REWARD_ZETA = 50.0
 # Dense proximity bonus during grasp_descend phase: linear ramp in
 # [0, REWARD_ETA] for ee_cube_dist in [PROXIMITY_RADIUS, 0.0]. Smooths
 # the cliff between "approached but didn't grasp" and the one-shot
-# REWARD_DELTA. Radius 0.15 starts pulling from further out; ETA 5.0
-# gives up to +5/step at contact — strong enough to guide random policies.
-REWARD_ETA = 5.0
-PROXIMITY_RADIUS = 0.15
+# REWARD_DELTA. Radius 0.12 starts pulling from slightly further out
+# than before; ETA 3.0 gives up to +3/step at contact — strong enough
+# to guide random policies without drowning out grasp/lift bonuses.
+REWARD_ETA = 3.0
+PROXIMITY_RADIUS = 0.12
 
 # PPO hyperparameters
 # Tuned after run #3 oscillated 60-95% on bimodal rewards. Lower LR + lower
