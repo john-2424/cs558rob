@@ -167,12 +167,28 @@ results/m1/
 
 ```text
 results/m2/
-  models/                    -- Trained model checkpoints
-  tb_logs/                   -- TensorBoard training logs
+  models/                    -- Hybrid model checkpoints (final_model.pt)
+  models_rl_only/            -- RL-only baseline checkpoints
+  tb_logs/                   -- TensorBoard training logs (hybrid)
+  tb_logs_rl_only/           -- TensorBoard training logs (rl_only)
   eval_results.json          -- Evaluation metrics across methods and perturbation levels
   plots/                     -- Comparison plots
   trajectory_log.json        -- Demo trajectory log
 ```
+
+### Grasp Success Rate (N=50 episodes per cell)
+
+| Perturbation (m) | Planner Only | Hybrid (PD + Residual) | RL Only |
+|------------------|--------------|------------------------|---------|
+| 0.000            | 100%         | 100%                   | 0%      |
+| 0.020            | 38%          | **78%**                | 0%      |
+| 0.040            | 10%          | **20%**                | 0%      |
+| 0.060            | 2%           | **10%**                | 0%      |
+| 0.080            | 2%           | **6%**                 | 0%      |
+| 0.100            | 0%           | 0%                     | 0%      |
+| 0.120            | 4%           | 2%                     | 0%      |
+
+**Takeaways.** At small-to-moderate perturbations (0.02--0.08 m), the hybrid policy roughly doubles the planner-only success rate while retaining perfect performance at nominal (0.000 m). The RL-only ablation converges to a do-nothing local optimum under the same 1M-frame training budget, confirming that the classical PD+planner backbone supplies the inductive bias that makes PPO trainable in this regime. At the largest perturbations (>= 0.10 m), both methods saturate near zero -- the cube leaves the original IK workspace and the waypoint trajectory becomes geometrically infeasible, a failure mode beyond what bounded residual corrections can fix.
 
 ---
 
