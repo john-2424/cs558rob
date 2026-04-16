@@ -254,7 +254,7 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
 
         # Entropy coefficient schedule: linear decay from ent_start to ent_end
         current_ent = ent_end + (ent_start - ent_end) * frac
-        loss_module.entropy_coeff = current_ent
+        loss_module.entropy_coeff.fill_(current_ent)
 
         # Compute advantage
         with torch.no_grad():
