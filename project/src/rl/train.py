@@ -245,6 +245,12 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
         num_mini_batches = max(1, config.PPO_FRAMES_PER_BATCH // config.PPO_MINI_BATCH_SIZE)
         epoch_losses = []
         batch_kls = []
+        batch_policy_losses = []
+        batch_value_losses = []
+        batch_entropy_losses = []
+        batch_clip_fractions = []
+        batch_grad_norms = []
+        batch_entropies = []
         epochs_run = 0
         kl_early_stop = False
         for epoch_i in range(config.PPO_EPOCHS):
@@ -253,23 +259,36 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
                 minibatch = replay_buffer.sample()
                 loss_td = loss_module(minibatch)
 
-                loss = (
-                    loss_td["loss_objective"]
-                    + loss_td["loss_critic"]
-                    + loss_td["loss_entropy"]
-                )
+                loss_obj = loss_td["loss_objective"]
+                loss_cri = loss_td["loss_critic"]
+                loss_ent = loss_td["loss_entropy"]
+                loss = loss_obj + loss_cri + loss_ent
 
                 optimizer.zero_grad()
                 loss.backward()
-                nn.utils.clip_grad_norm_(loss_module.parameters(), 0.5)
+                grad_norm = nn.utils.clip_grad_norm_(loss_module.parameters(), 0.5)
                 optimizer.step()
 
                 epoch_losses.append(loss.item())
+                batch_policy_losses.append(loss_obj.item())
+                batch_value_losses.append(loss_cri.item())
+                batch_entropy_losses.append(loss_ent.item())
+                batch_grad_norms.append(float(grad_norm))
 
                 kl_val = loss_td.get("kl_approx", None)
                 if kl_val is not None:
                     kl_item = kl_val.mean().item() if kl_val.numel() > 1 else kl_val.item()
                     epoch_kls.append(kl_item)
+
+                clip_frac = loss_td.get("clip_fraction", None)
+                if clip_frac is not None:
+                    cf = clip_frac.mean().item() if clip_frac.numel() > 1 else clip_frac.item()
+                    batch_clip_fractions.append(cf)
+
+                ent_val = loss_td.get("entropy", None)
+                if ent_val is not None:
+                    ev = ent_val.mean().item() if ent_val.numel() > 1 else ent_val.item()
+                    batch_entropies.append(ev)
 
             epochs_run = epoch_i + 1
             kl_active = target_kl > 0 and total_frames >= kl_warmup_frames
@@ -283,6 +302,19 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
                 batch_kls.append(float(np.mean(epoch_kls)))
 
         mean_kl = float(np.mean(batch_kls)) if batch_kls else 0.0
+        mean_grad_norm = float(np.mean(batch_grad_norms)) if batch_grad_norms else 0.0
+        mean_clip_frac = float(np.mean(batch_clip_fractions)) if batch_clip_fractions else 0.0
+        mean_entropy = float(np.mean(batch_entropies)) if batch_entropies else 0.0
+        mean_policy_loss = float(np.mean(batch_policy_losses)) if batch_policy_losses else 0.0
+        mean_value_loss = float(np.mean(batch_value_losses)) if batch_value_losses else 0.0
+
+        # Action and value statistics from the batch
+        actions_t = batch_data.get("action", None)
+        act_mean = float(actions_t.mean().item()) if actions_t is not None else 0.0
+        act_std = float(actions_t.std().item()) if actions_t is not None else 0.0
+
+        value_t = batch_data.get("state_value", None)
+        val_mean = float(value_t.mean().item()) if value_t is not None else 0.0
 
         # Logging
         mean_loss = np.mean(epoch_losses) if epoch_losses else 0.0
@@ -339,13 +371,22 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
 
         batch_ep_std = float(np.std(batch_new_rewards)) if len(batch_new_rewards) > 1 else 0.0
 
+        # TensorBoard scalars
         writer.add_scalar("train/loss", mean_loss, total_frames)
+        writer.add_scalar("train/loss_policy", mean_policy_loss, total_frames)
+        writer.add_scalar("train/loss_value", mean_value_loss, total_frames)
+        writer.add_scalar("train/entropy", mean_entropy, total_frames)
+        writer.add_scalar("train/grad_norm", mean_grad_norm, total_frames)
+        writer.add_scalar("train/clip_fraction", mean_clip_frac, total_frames)
         writer.add_scalar("train/fps", fps, total_frames)
         writer.add_scalar("train/mean_step_reward", mean_step_reward, total_frames)
         writer.add_scalar("train/episodes_completed", len(episode_rewards), total_frames)
         writer.add_scalar("train/learning_rate", current_lr, total_frames)
         writer.add_scalar("train/kl_approx", mean_kl, total_frames)
         writer.add_scalar("train/epochs_run", epochs_run, total_frames)
+        writer.add_scalar("train/action_mean", act_mean, total_frames)
+        writer.add_scalar("train/action_std", act_std, total_frames)
+        writer.add_scalar("train/value_mean", val_mean, total_frames)
         if recent_rewards:
             writer.add_scalar("train/mean_episode_reward", mean_ep_reward, total_frames)
             writer.add_scalar("train/std_episode_reward", std_ep_reward, total_frames)
@@ -375,13 +416,14 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
         print(
             f"batch={batch_idx:4d} | "
             f"frames={total_frames:8d}/{total_timesteps} | "
-            f"loss={mean_loss:+.3f} | "
-            f"step_r={mean_step_reward:+.3f} | "
+            f"loss={mean_loss:+.3f} (p={mean_policy_loss:+.3f} v={mean_value_loss:.3f}) | "
+            f"step_r={mean_step_reward:+.4f} | "
             f"ep_r={mean_ep_reward:+7.2f}±{std_ep_reward:5.2f} | "
-            f"len={mean_ep_length:5.0f} | "
             f"succ={succ_rate:5.0%} | "
+            f"grad={mean_grad_norm:.3f} clip={mean_clip_frac:.2f} ent={mean_entropy:.3f} | "
             f"kl={mean_kl:.4f} ep={epochs_run}/{config.PPO_EPOCHS}{kl_flag} | "
             f"lr={current_lr:.1e} | "
+            f"act={act_mean:+.3f}±{act_std:.3f} V={val_mean:+.1f} | "
             f"fps={fps:.0f}{best_flag}"
         )
 
