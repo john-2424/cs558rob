@@ -230,19 +230,16 @@ RL_MAX_STEPS_PER_WAYPOINT = 150
 # Perturbation
 # Training range: XY ±4cm, Z ±1cm, yaw ±0.2rad. Planner sees nominal pose;
 # RL must correct for the offset. Curriculum samples per-episode ranges.
-PERTURB_XY_RANGE = 0.04
+PERTURB_XY_RANGE = 0.08
 PERTURB_Z_RANGE = 0.01
 PERTURB_YAW_RANGE = 0.2
 PERTURB_LEVELS = [0.00, 0.02, 0.04, 0.06, 0.08, 0.10, 0.12]
-# During training, sample per-episode xy_range uniformly in
-# [0, PERTURB_XY_RANGE]. Gives agent easy episodes early so it can
-# discover the grasp cliff; still exposed to full range at train cap.
+# During training, sample perturbation directly from the full range
+# (no two-level sampling). Curriculum flag kept for compatibility but
+# perturbation is now uniform(-max, max) regardless.
 TRAIN_CURRICULUM = True
-# Per-worker warmup: first N episodes use 0 perturbation so the policy
-# learns the nominal grasp before facing offsets. With 7 workers and 10
-# warmup episodes each, that's ~70 easy episodes (~10 batches) before
-# perturbations kick in — enough to bootstrap the value function.
-CURRICULUM_WARMUP_EPISODES = 10
+# Per-worker warmup disabled: policy faces perturbation from episode 1.
+CURRICULUM_WARMUP_EPISODES = 0
 
 # Reward shaping
 REWARD_ALPHA = 10.0

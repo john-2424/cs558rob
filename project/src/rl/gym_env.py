@@ -23,7 +23,7 @@ PHASE_GRASP_DESCEND = 1
 PHASE_LIFT = 2
 NUM_RL_PHASES = 3
 
-OBS_DIM = 37
+OBS_DIM = 40
 ACT_DIM = 7
 
 
@@ -84,6 +84,7 @@ class PandaGraspEnv(gymnasium.Env):
         self._cube_nominal_pos = None
         self._cube_nominal_orn_euler = None
         self._grasp_orn = None
+        self._perturb_offset = np.zeros(3, dtype=np.float32)
 
         self._initialized = False
 
@@ -227,11 +228,10 @@ class PandaGraspEnv(gymnasium.Env):
             effective_xy = 0.0
             effective_yaw = 0.0
             effective_z = 0.0
-        elif self.curriculum:
-            effective_xy = float(self._rng.uniform(0.0, self.perturb_xy_range))
-            effective_yaw = float(self._rng.uniform(0.0, self.perturb_yaw_range))
-            effective_z = float(self._rng.uniform(0.0, self.perturb_z_range))
         else:
+            # Sample perturbation directly from the full range — no two-level
+            # sampling. This gives a uniform distribution over the entire
+            # perturbation space instead of concentrating near zero.
             effective_xy = self.perturb_xy_range
             effective_yaw = self.perturb_yaw_range
             effective_z = self.perturb_z_range
@@ -249,6 +249,11 @@ class PandaGraspEnv(gymnasium.Env):
 
             for _ in range(20):
                 self._env.step(sleep=False)
+
+        # Store perturbation offset for observation (option E).
+        perturbed_pos, _ = get_body_pose(self._objects.cube_id)
+        self._perturb_offset = perturbed_pos - np.array(self._cube_nominal_pos)
+
         q_home = self._robot.home_joints.copy()
 
         # Build all phase waypoints
@@ -316,6 +321,7 @@ class PandaGraspEnv(gymnasium.Env):
             ee_to_cube.astype(np.float32),  # 3
             qd_pd.astype(np.float32),       # 7
             phase_indicator,                # 1
+            self._perturb_offset.astype(np.float32),  # 3  (cube_perturbed - cube_nominal)
         ])
         return obs
 

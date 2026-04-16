@@ -140,7 +140,7 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
     print(f"TensorBoard log dir: {tb_log_dir}")
     print(f"Model checkpoint dir: {model_save_path}")
 
-    obs_dim = 37
+    obs_dim = 40
     act_dim = 7
 
     # Build actor-critic
@@ -530,7 +530,7 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
     return final_path
 
 
-def load_trained_actor(model_path, obs_dim=37, act_dim=7, device="cpu"):
+def load_trained_actor(model_path, obs_dim=40, act_dim=7, device="cpu"):
     actor = build_actor(obs_dim, act_dim, device)
     checkpoint = torch.load(model_path, map_location=device, weights_only=True)
     actor.load_state_dict(checkpoint["actor_state_dict"])
