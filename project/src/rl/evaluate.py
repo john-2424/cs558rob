@@ -302,14 +302,15 @@ def run_evaluation(model_path=None, rl_only_model_path=None, log_file_path=None,
         total_elapsed = time.time() - run_start
         print(f"\nTotal evaluation time: {total_elapsed:.1f}s")
 
-        # Strip individual results for the summary JSON (keep it compact)
+        # Aggregate diagnostics, then strip individual results for compact JSON
         summary = {}
         for level_key, methods in all_results.items():
             summary[level_key] = {}
             for method, data in methods.items():
-                summary[level_key][method] = {
-                    k: v for k, v in data.items() if k != "individual_results"
-                }
+                agg = _aggregate_diagnostics(data)
+                entry = {k: v for k, v in data.items() if k != "individual_results"}
+                entry.update(agg)
+                summary[level_key][method] = entry
 
         results_path = config.M2_EVAL_RESULTS_PATH
         with open(results_path, "w") as f:
@@ -321,6 +322,48 @@ def run_evaluation(model_path=None, rl_only_model_path=None, log_file_path=None,
         return summary
     finally:
         close_tee_log(original_stdout, log_file)
+
+
+def _aggregate_diagnostics(data):
+    """Compute aggregate diagnostic stats from individual episode results."""
+    ind = data.get("individual_results", [])
+    if not ind:
+        return {}
+
+    n = len(ind)
+
+    # Phase distribution (max phase reached per episode)
+    phase_counts = {0: 0, 1: 0, 2: 0}
+    for r in ind:
+        if "ep_max_phase" in r:
+            phase_counts[r["ep_max_phase"]] += 1
+
+    # Grasp rates
+    grasp_attempted = sum(1 for r in ind if r.get("ep_grasp_attempted"))
+    grasp_attached = sum(1 for r in ind if r.get("ep_grasp_attached"))
+
+    # Continuous metrics
+    cube_dz_vals = [r["ep_cube_dz"] for r in ind if "ep_cube_dz" in r]
+    ee_cube_vals = [r["ep_ee_cube_dist"] for r in ind if "ep_ee_cube_dist" in r]
+    forced_vals = [r["ep_forced_wp_advances"] for r in ind if "ep_forced_wp_advances" in r]
+
+    cube_fallen = sum(1 for r in ind if r.get("ep_cube_fallen"))
+    cube_lifted = sum(1 for r in ind if r.get("ep_cube_lifted"))
+
+    return {
+        "phase_distribution": {
+            "pre_grasp": phase_counts[0],
+            "grasp_descend": phase_counts[1],
+            "lift": phase_counts[2],
+        },
+        "grasp_attempted_rate": float(grasp_attempted / n) if n > 0 else 0.0,
+        "grasp_attached_rate": float(grasp_attached / n) if n > 0 else 0.0,
+        "cube_fallen_rate": float(cube_fallen / n) if n > 0 else 0.0,
+        "cube_lifted_rate": float(cube_lifted / n) if n > 0 else 0.0,
+        "mean_cube_dz": float(np.mean(cube_dz_vals)) if cube_dz_vals else 0.0,
+        "mean_ee_cube_dist": float(np.mean(ee_cube_vals)) if ee_cube_vals else 0.0,
+        "mean_forced_wp_advances": float(np.mean(forced_vals)) if forced_vals else 0.0,
+    }
 
 
 def _print_summary_table(summary):
