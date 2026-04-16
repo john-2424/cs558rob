@@ -273,6 +273,13 @@ def run_pick_place_with_residual(
               f"xy=({nominal_pos[0]:.4f}, {nominal_pos[1]:.4f}) m, "
               f"z={nominal_pos[2]:.4f} m, yaw={nominal_euler[2]:.4f} rad")
 
+        # Plan from the NOMINAL cube pose (before perturbation), matching
+        # the training env (gym_env.py). The classical planner is blind to
+        # the upcoming perturbation; residual RL corrects for the offset.
+        print("[demo] Planning trajectory from NOMINAL cube pose (before perturbation)")
+        poses = get_pick_and_place_poses_from_cube(robot, objects.cube_id, objects.table_id)
+        grasp_orn = poses["grasp_orn"]
+
         # In GUI mode, hold the scene at the nominal pose so the recorder can
         # frame the shot before the cube teleports to its perturbed pose.
         hold_seconds = float(getattr(config, "DEMO_PERTURB_HOLD_SECONDS", 0.0))
@@ -291,7 +298,7 @@ def run_pick_place_with_residual(
                     next_tick += 1.0
                 time.sleep(1.0 / 240.0)
 
-        # Perturb cube
+        # Perturb cube AFTER planning — the planner targets are now "stale"
         rng = np.random.default_rng()
         if perturb_xy_range > 0:
             new_pos, new_orn, (dx, dy, dyaw) = perturb_cube_pose(
@@ -310,6 +317,8 @@ def run_pick_place_with_residual(
             print(f"[demo] Perturbation delta: "
                   f"dx={dx:+.4f} m, dy={dy:+.4f} m, "
                   f"dyaw={dyaw:+.4f} rad ({np.degrees(dyaw):+.2f} deg)")
+            print(f"[demo] Planner targets are from NOMINAL — "
+                  f"robot will aim {float(np.sqrt(dx**2 + dy**2))*100:.1f}cm away from actual cube")
 
         robot.reset_home()
         robot.hold_home_pose()
@@ -319,10 +328,6 @@ def run_pick_place_with_residual(
             env.step()
 
         logger = TrajectoryLogger() if config.ENABLE_TRAJECTORY_LOGGING else None
-
-        # Compute targets from perturbed cube
-        poses = get_pick_and_place_poses_from_cube(robot, objects.cube_id, objects.table_id)
-        grasp_orn = poses["grasp_orn"]
 
         # === Phases 1-6: RL-augmented control ===
 
