@@ -69,20 +69,20 @@ def _draw_mode_label(mode):
         "rl_only": "RL ONLY  (no PD backbone)",
     }
     _update_text("mode", mode_text.get(mode, mode), [0.65, 0.0, 0.90],
-                 color=(1.0, 1.0, 0.4), size=1.8)
+                 color=(0.6, 0.6, 0.0), size=1.8)
 
 
 def _draw_phase_label(phase_name, phase_num=None):
     prefix = f"Phase {phase_num}: " if phase_num is not None else ""
     _update_text("phase", f"{prefix}{phase_name}", [0.65, 0.0, 0.82],
-                 color=(0.8, 0.9, 1.0), size=1.5)
+                 color=(0.2, 0.3, 0.6), size=1.5)
 
 
 def _draw_perturbation_info(dx, dy, dz, dyaw):
     text = (f"Perturbation: dx={dx*100:+.1f}cm dy={dy*100:+.1f}cm "
             f"dz={dz*100:+.1f}cm yaw={np.degrees(dyaw):+.1f}deg")
     _update_text("perturb", text, [0.30, 0.0, 0.75],
-                 color=(1.0, 0.6, 0.3), size=1.2)
+                 color=(0.7, 0.3, 0.0), size=1.2)
 
 
 def _draw_nominal_ghost(nominal_pos, cube_id):
@@ -112,18 +112,18 @@ def _draw_nominal_ghost(nominal_pos, cube_id):
     line_ids = []
     for a, b in edges:
         line_ids.append(
-            p.addUserDebugLine(c[a], c[b], [1.0, 0.3, 0.3], lineWidth=1.5, lifeTime=0)
+            p.addUserDebugLine(c[a], c[b], [0.7, 0.1, 0.1], lineWidth=1.5, lifeTime=0)
         )
     # Label
     _update_text("ghost_label", "PLANNED", [cx, cy, cz + half[2] + 0.03],
-                 color=(1.0, 0.3, 0.3), size=1.0)
+                 color=(0.7, 0.1, 0.1), size=1.0)
     return line_ids
 
 
 def _draw_residual_magnitude(residual_norm):
     bar_len = min(residual_norm / config.RESIDUAL_MAX, 1.0)
     bar_str = "|" * max(1, int(bar_len * 20))
-    color = (0.3, 1.0, 0.3) if bar_len < 0.5 else (1.0, 1.0, 0.3) if bar_len < 0.8 else (1.0, 0.3, 0.3)
+    color = (0.0, 0.5, 0.0) if bar_len < 0.5 else (0.6, 0.5, 0.0) if bar_len < 0.8 else (0.6, 0.0, 0.0)
     _update_text("residual", f"Residual: {residual_norm:.3f} {bar_str}",
                  [0.30, 0.0, 0.70], color=color, size=1.1)
 
