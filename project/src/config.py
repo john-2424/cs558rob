@@ -233,6 +233,10 @@ PERTURB_LEVELS = [0.00, 0.02, 0.04, 0.06, 0.08, 0.10, 0.12]
 # [0, PERTURB_XY_RANGE]. Gives agent easy episodes early so it can
 # discover the grasp cliff; still exposed to full range at train cap.
 TRAIN_CURRICULUM = True
+# Per-worker warmup: first N episodes use 0 perturbation so the policy
+# learns the nominal grasp before facing offsets. With 8 workers and 50
+# warmup episodes each, that's ~400 easy episodes across the fleet.
+CURRICULUM_WARMUP_EPISODES = 50
 
 # Reward shaping
 REWARD_ALPHA = 10.0
@@ -247,10 +251,12 @@ REWARD_DELTA = 50.0
 REWARD_EPSILON = 100.0
 REWARD_ZETA = 50.0
 # Dense proximity bonus during grasp_descend phase: linear ramp in
-# [0, REWARD_ETA] for ee_cube_dist in [0.10, 0.0]. Smooths the cliff
-# between "approached but didn't grasp" and the one-shot REWARD_DELTA.
-REWARD_ETA = 2.0
-PROXIMITY_RADIUS = 0.10
+# [0, REWARD_ETA] for ee_cube_dist in [PROXIMITY_RADIUS, 0.0]. Smooths
+# the cliff between "approached but didn't grasp" and the one-shot
+# REWARD_DELTA. Radius 0.15 starts pulling from further out; ETA 5.0
+# gives up to +5/step at contact — strong enough to guide random policies.
+REWARD_ETA = 5.0
+PROXIMITY_RADIUS = 0.15
 
 # PPO hyperparameters
 # Tuned after run #3 oscillated 60-95% on bimodal rewards. Lower LR + lower
@@ -265,6 +271,7 @@ PPO_CLIP_EPSILON = 0.2
 PPO_GAMMA = 0.99
 PPO_GAE_LAMBDA = 0.95
 PPO_ENT_COEFF = 0.01
+PPO_ENT_COEFF_START = 0.05  # high initial entropy for exploration; decays to PPO_ENT_COEFF
 PPO_CRITIC_COEFF = 0.25
 PPO_MAX_GRAD_NORM = 5.0
 

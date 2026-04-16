@@ -31,7 +31,8 @@ class PandaGraspEnv(gymnasium.Env):
     metadata = {"render_modes": ["human"]}
 
     def __init__(self, gui=False, mode="hybrid", perturb_xy_range=None,
-                 perturb_yaw_range=None, render_mode=None, verbose_episodes=False,
+                 perturb_yaw_range=None, perturb_z_range=None,
+                 render_mode=None, verbose_episodes=False,
                  curriculum=False):
         super().__init__()
 
@@ -43,10 +44,18 @@ class PandaGraspEnv(gymnasium.Env):
         self.perturb_yaw_range = (
             config.PERTURB_YAW_RANGE if perturb_yaw_range is None else perturb_yaw_range
         )
+        self.perturb_z_range = (
+            float(getattr(config, "PERTURB_Z_RANGE", 0.0))
+            if perturb_z_range is None else perturb_z_range
+        )
         # Curriculum: if True, each reset() samples an effective xy_range
         # uniformly in [0, self.perturb_xy_range]. Used during training so the
         # agent sees easy (~nominal) episodes early and gradually harder ones.
         self.curriculum = curriculum
+        self.curriculum_warmup_episodes = int(
+            getattr(config, "CURRICULUM_WARMUP_EPISODES", 0)
+        )
+        self._episode_count = 0
         self.verbose_episodes = verbose_episodes
 
         self.observation_space = spaces.Box(
@@ -210,15 +219,22 @@ class PandaGraspEnv(gymnasium.Env):
         # nominal target. Residual RL's job is to correct for that offset.
         q_pre_grasp, q_grasp, q_lift = self._compute_grasp_targets()
 
-        z_range = float(getattr(config, "PERTURB_Z_RANGE", 0.0))
-        if self.curriculum:
+        self._episode_count += 1
+        in_warmup = (self.curriculum
+                     and self.curriculum_warmup_episodes > 0
+                     and self._episode_count <= self.curriculum_warmup_episodes)
+        if in_warmup:
+            effective_xy = 0.0
+            effective_yaw = 0.0
+            effective_z = 0.0
+        elif self.curriculum:
             effective_xy = float(self._rng.uniform(0.0, self.perturb_xy_range))
             effective_yaw = float(self._rng.uniform(0.0, self.perturb_yaw_range))
-            effective_z = float(self._rng.uniform(0.0, z_range))
+            effective_z = float(self._rng.uniform(0.0, self.perturb_z_range))
         else:
             effective_xy = self.perturb_xy_range
             effective_yaw = self.perturb_yaw_range
-            effective_z = z_range
+            effective_z = self.perturb_z_range
 
         if effective_xy > 0 or effective_z > 0:
             perturb_cube_pose(

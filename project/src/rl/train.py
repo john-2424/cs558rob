@@ -50,12 +50,19 @@ def _make_env_worker(mode, perturb_xy_range, curriculum):
 
 
 def build_actor(obs_dim, act_dim, device="cpu"):
+    output_layer = nn.Linear(256, 2 * act_dim)
+    # Warm-start: small weights + zero bias so initial policy outputs
+    # near-zero residuals (≈ PD-only behavior). Avoids the need for
+    # lucky initialization to discover the first successful grasp.
+    nn.init.uniform_(output_layer.weight, -0.01, 0.01)
+    nn.init.zeros_(output_layer.bias)
+
     actor_net = nn.Sequential(
         nn.Linear(obs_dim, 256),
         nn.Tanh(),
         nn.Linear(256, 256),
         nn.Tanh(),
-        nn.Linear(256, 2 * act_dim),
+        output_layer,
         NormalParamExtractor(),
     )
 
@@ -147,11 +154,13 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
 
     # PPO loss
     clip_value = bool(getattr(config, "PPO_CLIP_VALUE", False))
+    ent_start = float(getattr(config, "PPO_ENT_COEFF_START", config.PPO_ENT_COEFF))
+    ent_end = config.PPO_ENT_COEFF
     loss_module = ClipPPOLoss(
         actor_network=actor,
         critic_network=critic,
         clip_epsilon=config.PPO_CLIP_EPSILON,
-        entropy_coeff=config.PPO_ENT_COEFF,
+        entropy_coeff=ent_start,
         critic_coeff=config.PPO_CRITIC_COEFF,
         loss_critic_type="l2",
         clip_value=clip_value,
@@ -224,6 +233,7 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
     print(f"Epochs per batch: {config.PPO_EPOCHS}")
     print(f"LR schedule: {config.PPO_LR_SCHEDULE}, target KL: {target_kl} "
           f"(warmup: {kl_warmup_frames} frames)")
+    print(f"Entropy schedule: {ent_start} -> {ent_end} (linear)")
     print(f"Early stop: patience={es_patience}, min_peak={es_min_peak}, drop={es_drop}")
     print(f"Best model tracking: {save_best}")
     print("Waiting for first batch from collector workers (this may take 30-120s on first run)...")
@@ -236,11 +246,15 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
         batch_idx += 1
 
         # Linear LR decay
+        frac = max(1.0 - total_frames / total_timesteps, 0.0)
         if use_lr_schedule:
-            frac = 1.0 - total_frames / total_timesteps
-            current_lr = config.PPO_LR * max(frac, 0.0)
+            current_lr = config.PPO_LR * frac
             for pg in optimizer.param_groups:
                 pg["lr"] = current_lr
+
+        # Entropy coefficient schedule: linear decay from ent_start to ent_end
+        current_ent = ent_end + (ent_start - ent_end) * frac
+        loss_module.entropy_coeff = current_ent
 
         # Compute advantage
         with torch.no_grad():
@@ -395,6 +409,7 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
         writer.add_scalar("train/mean_step_reward", mean_step_reward, total_frames)
         writer.add_scalar("train/episodes_completed", len(episode_rewards), total_frames)
         writer.add_scalar("train/learning_rate", current_lr, total_frames)
+        writer.add_scalar("train/entropy_coeff", current_ent, total_frames)
         writer.add_scalar("train/kl_approx", mean_kl, total_frames)
         writer.add_scalar("train/epochs_run", epochs_run, total_frames)
         writer.add_scalar("train/action_mean", act_mean, total_frames)
@@ -449,7 +464,7 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
             f"succ={succ_rate:5.0%} | "
             f"grad={mean_grad_norm:.3f} clip={mean_clip_frac:.2f} ent={mean_entropy:.3f} | "
             f"kl={mean_kl:.4f} ep={epochs_run}/{config.PPO_EPOCHS}{kl_flag} | "
-            f"lr={current_lr:.1e} | "
+            f"lr={current_lr:.1e} ent_c={current_ent:.3f} | "
             f"act={act_mean:+.3f}±{act_std:.3f} V={val_mean:+.1f} | "
             f"fps={fps:.0f}{best_flag}"
         )

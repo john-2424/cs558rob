@@ -69,10 +69,17 @@ def run_episode(env, actor=None, mode="hybrid", deterministic=True):
 
 def _run_episodes(mode, actor, perturb_level, num_episodes, verbose_episodes=False):
     """Serially run a batch of episodes in one PyBullet client."""
+    # Scale yaw and z proportionally to xy so all perturbation axes are tested.
+    max_xy = config.PERTURB_XY_RANGE or 1.0
+    scale = perturb_level / max_xy if max_xy > 0 else 0.0
+    scaled_yaw = config.PERTURB_YAW_RANGE * scale
+    scaled_z = float(getattr(config, "PERTURB_Z_RANGE", 0.0)) * scale
     env = PandaGraspEnv(
         gui=False,
         mode=mode,
         perturb_xy_range=perturb_level,
+        perturb_yaw_range=scaled_yaw,
+        perturb_z_range=scaled_z,
         verbose_episodes=verbose_episodes,
     )
     results = []
@@ -253,7 +260,12 @@ def run_evaluation(model_path=None, rl_only_model_path=None, log_file_path=None,
             level_key = f"perturb_{perturb_level:.3f}"
             all_results[level_key] = {}
 
-            print(f"\n=== Perturbation level: {perturb_level:.3f} m ===")
+            max_xy = config.PERTURB_XY_RANGE or 1.0
+            scale = perturb_level / max_xy if max_xy > 0 else 0.0
+            scaled_yaw = config.PERTURB_YAW_RANGE * scale
+            scaled_z = float(getattr(config, "PERTURB_Z_RANGE", 0.0)) * scale
+            print(f"\n=== Perturbation level: xy={perturb_level:.3f}m "
+                  f"z={scaled_z:.3f}m yaw={scaled_yaw:.3f}rad ===")
 
             all_results[level_key]["planner_only"] = _eval_one_method(
                 label="planner_only",
