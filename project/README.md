@@ -88,6 +88,14 @@ The expected task sequence is:
 10. Retreat
 11. Return home
 
+---
+
+## How to Generate M1 Evaluation Plots
+
+```bash
+python -m src.evaluations.plot_pick_place_results
+```
+
 ### M2: Training the Residual PPO Policy
 
 Hybrid policy (PD backbone + bounded residual -- default):
@@ -176,19 +184,9 @@ results/m2/
   trajectory_log.json        -- Demo trajectory log
 ```
 
-### Grasp Success Rate (N=50 episodes per cell)
+### Grasp Success Rate
 
-| Perturbation (m) | Planner Only | Hybrid (PD + Residual) | RL Only |
-|------------------|--------------|------------------------|---------|
-| 0.000            | 100%         | 100%                   | 0%      |
-| 0.020            | 38%          | **78%**                | 0%      |
-| 0.040            | 10%          | **20%**                | 0%      |
-| 0.060            | 2%           | **10%**                | 0%      |
-| 0.080            | 2%           | **6%**                 | 0%      |
-| 0.100            | 0%           | 0%                     | 0%      |
-| 0.120            | 4%           | 2%                     | 0%      |
-
-**Takeaways.** At small-to-moderate perturbations (0.02--0.08 m), the hybrid policy roughly doubles the planner-only success rate while retaining perfect performance at nominal (0.000 m). The RL-only ablation converges to a do-nothing local optimum under the same 1M-frame training budget, confirming that the classical PD+planner backbone supplies the inductive bias that makes PPO trainable in this regime. At the largest perturbations (>= 0.10 m), both methods saturate near zero -- the cube leaves the original IK workspace and the waypoint trajectory becomes geometrically infeasible, a failure mode beyond what bounded residual corrections can fix.
+Results will be populated after training completes. Evaluation runs N=50 episodes per method per perturbation level across planner-only, hybrid (PD + residual RL), and RL-only baselines.
 
 ---
 
@@ -228,12 +226,4 @@ project/
       logger.py                  -- Trajectory logger
   requirements.txt
   README.md
-```
-
----
-
-## How to Generate M1 Evaluation Plots
-
-```bash
-python -m src.evaluations.plot_pick_place_results
 ```
