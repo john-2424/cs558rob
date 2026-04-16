@@ -223,3 +223,49 @@ Saved results/m2/plots\summary_table.png
 
 All M2 plots saved to results/m2/plots (total: 4.13s)
 >>>>>>> 5d1800621d378a3bfbedf161918e0e02dda611f0
+
+================================================================================
+Plot generation run started: 2026-04-16T21:51:36
+================================================================================
+Log file: results/m2/plots_log.txt
+Reading evaluation results from results/m2/eval_results.json
+Saving plots to results/m2/plots
+Saved results/m2/plots/success_rate_vs_perturbation.png
+  [success_rate] rendered in 0.46s
+Saved results/m2/plots/mean_reward_vs_perturbation.png
+  [mean_reward] rendered in 0.28s
+Saved results/m2/plots/episode_length_vs_perturbation.png
+  [episode_length] rendered in 0.25s
+Saved results/m2/plots/phase_breakdown.png
+  [phase_breakdown] rendered in 0.34s
+Saved results/m2/plots/residual_magnitude.png
+  [residual_magnitude] rendered in 0.27s
+Saved results/m2/plots/grasp_analysis.png
+  [grasp_analysis] rendered in 0.54s
+Saved results/m2/plots/summary_table.png
+  [summary_table] rendered in 0.31s
+
+All M2 plots saved to results/m2/plots (total: 2.45s)
+
+================================================================================
+Plot generation run started: 2026-04-16T22:47:58
+================================================================================
+Log file: results/m2/plots_log.txt
+Reading evaluation results from results/m2/eval_results.json
+Saving plots to results/m2/plots
+Saved results/m2/plots/success_rate_vs_perturbation.png
+  [success_rate] rendered in 0.50s
+Saved results/m2/plots/mean_reward_vs_perturbation.png
+  [mean_reward] rendered in 0.33s
+Saved results/m2/plots/episode_length_vs_perturbation.png
+  [episode_length] rendered in 0.27s
+Saved results/m2/plots/phase_breakdown.png
+  [phase_breakdown] rendered in 0.35s
+Saved results/m2/plots/residual_magnitude.png
+  [residual_magnitude] rendered in 0.26s
+Saved results/m2/plots/grasp_analysis.png
+  [grasp_analysis] rendered in 0.55s
+Saved results/m2/plots/summary_table.png
+  [summary_table] rendered in 0.31s
+
+All M2 plots saved to results/m2/plots (total: 2.57s)
