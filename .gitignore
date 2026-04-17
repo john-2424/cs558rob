@@ -218,3 +218,7 @@ RaceCar/
 github-pat.txt
 **/data/**
 project/info/**
+project/results/m2/models/best_2*
+project/results/m2/models/checkpoint_*
+project/results/m2/models_rl_only/best_2*
+project/results/m2/models_rl_only/checkpoint_*
