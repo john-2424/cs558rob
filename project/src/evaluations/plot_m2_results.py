@@ -57,15 +57,26 @@ def plot_success_rate(results, save_dir):
 
     for i, method in enumerate(methods):
         success_rates = []
+        ci_errors_lo = []
+        ci_errors_hi = []
         for lk in levels:
             if method in results[lk]:
-                success_rates.append(results[lk][method]["success_rate"] * 100)
+                sr = results[lk][method]["success_rate"] * 100
+                lo = results[lk][method].get("success_ci_lo", sr / 100) * 100
+                hi = results[lk][method].get("success_ci_hi", sr / 100) * 100
+                success_rates.append(sr)
+                ci_errors_lo.append(sr - lo)
+                ci_errors_hi.append(hi - sr)
             else:
                 success_rates.append(0)
+                ci_errors_lo.append(0)
+                ci_errors_hi.append(0)
 
         offset = (i - len(methods) / 2 + 0.5) * width
         bars = ax.bar(
             x + offset, success_rates, width,
+            yerr=[ci_errors_lo, ci_errors_hi],
+            capsize=3, ecolor="gray",
             label=method_labels.get(method, method),
             color=colors.get(method, None),
         )

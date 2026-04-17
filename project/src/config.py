@@ -213,9 +213,13 @@ RESIDUAL_PHASE_GATE = True
 RESIDUAL_ACTIVE_PHASES = {0, 1, 2}  # PHASE_PRE_GRASP, PHASE_GRASP_DESCEND, PHASE_LIFT
 
 # Residual bounds
-# 0.5 rad/s (~20% of PD max). Planner targets are computed from the nominal
-# (pre-perturbation) cube pose, so the PD drives toward the wrong spot.
-# Needs enough authority to overcome PD pull toward stale targets.
+# Position-target residual: RL outputs a joint-space offset (rad) added to
+# the PD waypoint target. PD then drives toward the corrected target,
+# cooperating with the residual instead of fighting it.
+# 0.15 rad ≈ 8.6° per joint — enough to shift the EE several cm at
+# typical arm configurations.
+RESIDUAL_MAX_POS = 0.15
+# Legacy velocity-additive bound kept for rl_only mode (no PD backbone).
 RESIDUAL_MAX = 0.5
 
 # RL simulation
@@ -246,16 +250,14 @@ TRAIN_CURRICULUM = True
 CURRICULUM_WARMUP_EPISODES = 0
 
 # Reward shaping
+# Scaled so dense per-step rewards (~0.01-0.1) and terminal bonuses (~10-20)
+# are in a similar range, making value function estimation much easier.
 REWARD_ALPHA = 10.0
-# With RESIDUAL_MAX=0.5, BETA=0.10 gives max per-step residual penalty
-# ~= -0.05, comparable in magnitude to per-step approach reward.
-# Note: residual penalty is disabled for rl_only mode since there is no
-# PD backbone — penalizing the only control signal trains it to do nothing.
 REWARD_BETA = 0.10
 REWARD_GAMMA = 0.02
-REWARD_DELTA = 50.0
-REWARD_EPSILON = 100.0
-REWARD_ZETA = 50.0
+REWARD_DELTA = 10.0   # grasp bonus (was 50)
+REWARD_EPSILON = 20.0  # lift success bonus (was 100)
+REWARD_ZETA = 10.0    # failure penalty (was 50)
 # Dense proximity bonus during grasp_descend phase: linear ramp in
 # [0, REWARD_ETA] for ee_cube_dist in [PROXIMITY_RADIUS, 0.0]. Smooths
 # the cliff between "approached but didn't grasp" and the one-shot
@@ -272,15 +274,15 @@ PROXIMITY_RADIUS = 0.10
 PPO_TOTAL_TIMESTEPS = 1_000_000
 PPO_LR = 5e-5
 PPO_FRAMES_PER_BATCH = 8192
-PPO_MINI_BATCH_SIZE = 64
+PPO_MINI_BATCH_SIZE = 256
 PPO_EPOCHS = 4
 PPO_CLIP_EPSILON = 0.2
 PPO_GAMMA = 0.99
 PPO_GAE_LAMBDA = 0.95
 PPO_ENT_COEFF = 0.001
 PPO_ENT_COEFF_START = 0.005  # mild initial entropy; decays to PPO_ENT_COEFF
-PPO_CRITIC_COEFF = 0.25
-PPO_MAX_GRAD_NORM = 5.0
+PPO_CRITIC_COEFF = 0.5
+PPO_MAX_GRAD_NORM = 0.5
 
 # Training stability
 PPO_LR_SCHEDULE = "linear"  # "linear" (decay to 0) or "constant"
@@ -296,9 +298,9 @@ PPO_EARLY_STOP_DROP = 0.25  # success must drop this much below peak to count
 PPO_NUM_COLLECTOR_WORKERS = 8
 
 # Episode-reward threshold for counting an episode as a "success" in training logs.
-# Lift bonus is REWARD_EPSILON (100); grasp bonus is REWARD_DELTA (50). Set at 90
+# Lift bonus is REWARD_EPSILON (20); grasp bonus is REWARD_DELTA (10). Set at 15
 # so only episodes that received the lift terminal bonus count.
-EP_SUCCESS_REWARD_THRESHOLD = 90.0
+EP_SUCCESS_REWARD_THRESHOLD = 15.0
 
 # Evaluation
 EVAL_EPISODES_PER_LEVEL = 50

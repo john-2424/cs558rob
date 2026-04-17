@@ -8,10 +8,22 @@ import torch
 from tensordict import TensorDict
 from torchrl.envs.utils import ExplorationType, set_exploration_type
 
+import math
+
 from src import config
 from src.rl.gym_env import PandaGraspEnv
 from src.rl.train import load_trained_actor
 from src.utils.run_log import open_tee_log, close_tee_log
+
+
+def _wilson_ci(p_hat, n, z=1.96):
+    """Wilson score 95% confidence interval for a binomial proportion."""
+    if n == 0:
+        return 0.0, 0.0
+    denom = 1 + z * z / n
+    center = (p_hat + z * z / (2 * n)) / denom
+    half = z * math.sqrt((p_hat * (1 - p_hat) + z * z / (4 * n)) / n) / denom
+    return float(max(0.0, center - half)), float(min(1.0, center + half))
 
 
 def run_episode(env, actor=None, mode="hybrid", deterministic=False):
@@ -151,13 +163,19 @@ def evaluate_method(mode, model_path, perturb_level, num_episodes, num_workers=N
     steps = [r["step_count"] for r in results]
     residuals = [r["mean_residual"] for r in results]
 
+    n = len(successes)
+    sr = float(np.mean(successes)) if successes else 0.0
+    ci_lo, ci_hi = _wilson_ci(sr, n) if n > 0 else (0.0, 0.0)
+
     return {
-        "success_rate": float(np.mean(successes)) if successes else 0.0,
+        "success_rate": sr,
+        "success_ci_lo": ci_lo,
+        "success_ci_hi": ci_hi,
         "mean_reward": float(np.mean(rewards)) if rewards else 0.0,
         "std_reward": float(np.std(rewards)) if len(rewards) > 1 else 0.0,
         "mean_steps": float(np.mean(steps)) if steps else 0.0,
         "mean_residual": float(np.mean(residuals)) if residuals else 0.0,
-        "num_episodes": len(results),
+        "num_episodes": n,
         "individual_results": results,
     }
 
@@ -176,8 +194,11 @@ def _eval_one_method(label, mode, model_path, perturb_level, num_episodes, num_w
         verbose_episodes=verbose_episodes,
     )
     elapsed = time.time() - t0
+    ci_lo = result.get("success_ci_lo", 0.0)
+    ci_hi = result.get("success_ci_hi", 0.0)
     print(
-        f"    {label:<13} | succ={result['success_rate']:6.2%} | "
+        f"    {label:<13} | succ={result['success_rate']:6.2%} "
+        f"[{ci_lo:.2%},{ci_hi:.2%}] | "
         f"reward={result['mean_reward']:+7.2f}±{result['std_reward']:5.2f} | "
         f"steps={result['mean_steps']:6.1f} | "
         f"residual={result['mean_residual']:.3f} | "

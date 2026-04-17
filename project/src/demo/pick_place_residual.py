@@ -17,6 +17,7 @@ from src.sim.state import (
     get_body_top_z,
     quat_to_euler,
 )
+from src.rl.gym_env import _normalize_obs
 from src.rl.perturbation import perturb_cube_pose
 from src.rl.residual_policy import ResidualActionWrapper
 from src.rl.train import load_trained_actor
@@ -121,7 +122,7 @@ def _draw_nominal_ghost(nominal_pos, cube_id):
 
 
 def _draw_residual_magnitude(residual_norm):
-    bar_len = min(residual_norm / config.RESIDUAL_MAX, 1.0)
+    bar_len = min(residual_norm / config.RESIDUAL_MAX_POS, 1.0)
     bar_str = "|" * max(1, int(bar_len * 20))
     color = (0.0, 0.5, 0.0) if bar_len < 0.5 else (0.6, 0.5, 0.0) if bar_len < 0.8 else (0.6, 0.0, 0.0)
     _update_text("residual", f"Residual: {residual_norm:.3f} {bar_str}",
@@ -154,24 +155,20 @@ def execute_residual_trajectory(
             cube_euler = quat_to_euler(cube_orn)
             ee_to_cube = cube_pos - ee_pos
 
-            # Compute PD nominal
+            # Compute PD nominal (from unmodified target, for observation)
             qd_pd = robot.pd_controller.compute_velocity_command(
                 q_des=q_target, q=q, qd_des=np.zeros(7), qd=qd,
             )
 
-            # Build observation for the policy (must match gym_env OBS_DIM=40)
-            obs = np.concatenate([
-                q.astype(np.float32),
-                qd.astype(np.float32),
-                ee_pos.astype(np.float32),
-                ee_euler.astype(np.float32),
-                cube_pos.astype(np.float32),
-                cube_euler.astype(np.float32),
-                ee_to_cube.astype(np.float32),
-                qd_pd.astype(np.float32),
-                np.array([float(phase_id)], dtype=np.float32),
-                perturb_offset.astype(np.float32),
-            ])
+            # Build normalized observation (must match gym_env exactly)
+            phase_indicator = np.array([float(phase_id)], dtype=np.float32)
+            num_waypoints = max(1, len(waypoints))
+            wp_progress = np.array([float(i) / num_waypoints], dtype=np.float32)
+            obs = _normalize_obs(
+                q, qd, ee_pos, ee_euler, cube_pos, cube_euler,
+                ee_to_cube, qd_pd, phase_indicator, perturb_offset,
+                wp_progress,
+            )
 
             # Get action from policy (deterministic: TanhNormal has no analytical mode)
             obs_tensor = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
@@ -180,11 +177,16 @@ def execute_residual_trajectory(
                 td = actor(td)
             raw_action = td["action"].squeeze(0).numpy()
 
-            # Apply residual
-            qd_total = action_wrapper.compute_action(qd_pd, raw_action)
+            # Position-target residual: shift the waypoint, then PD tracks it
+            q_target_corrected = action_wrapper.correct_target(q_target, raw_action)
+            qd_total = robot.pd_controller.compute_velocity_command(
+                q_des=q_target_corrected, q=q, qd_des=np.zeros(7), qd=qd,
+            )
+            max_vel = np.asarray(config.PD_MAX_JOINT_VEL, dtype=float)
+            qd_total = np.clip(qd_total, -max_vel, max_vel)
 
             # Debug overlay: show residual magnitude (skip for planner_only)
-            qd_residual = qd_total - qd_pd
+            qd_residual = action_wrapper.get_residual(raw_action)
             if action_wrapper.mode != "planner_only":
                 _draw_residual_magnitude(float(np.linalg.norm(qd_residual)))
 
@@ -206,14 +208,15 @@ def execute_residual_trajectory(
             env.step()
             total_steps += 1
 
-            q_error = np.asarray(q_target) - robot.get_joint_positions()
+            # Convergence against corrected target (matches gym_env behavior)
+            q_error = np.asarray(q_target_corrected) - robot.get_joint_positions()
 
             if logger is not None:
                 logger.log(
                     phase=label,
                     waypoint_index=i,
                     sim_step=total_steps,
-                    q_target=q_target,
+                    q_target=q_target_corrected,
                     q_actual=robot.get_joint_positions(),
                     q_error=q_error,
                     ee_pos=ee_pos,

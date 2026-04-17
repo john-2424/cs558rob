@@ -18,11 +18,12 @@ def compute_reward(ee_pos, cube_pos, qd_residual,
     # Smoothness penalty
     r_smooth = -config.REWARD_GAMMA * float(np.mean(residual ** 2))
 
-    # Dense proximity bonus during grasp_descend phase. Linear ramp in
-    # [0, REWARD_ETA] for ee_cube_dist in [PROXIMITY_RADIUS, 0]. Removes the
-    # hard cliff between "close but no grasp" and the REWARD_DELTA bonus.
+    # Dense proximity bonus during pre_grasp and grasp_descend phases.
+    # Linear ramp in [0, REWARD_ETA] for ee_cube_dist in [PROXIMITY_RADIUS, 0].
+    # Active in both phases so the policy gets a guiding signal during approach,
+    # not only during the final descent.
     r_proximity = 0.0
-    if phase is not None and phase == 1:  # PHASE_GRASP_DESCEND
+    if phase is not None and phase in (0, 1):  # PRE_GRASP or GRASP_DESCEND
         proximity = max(0.0, config.PROXIMITY_RADIUS - ee_cube_dist) / config.PROXIMITY_RADIUS
         r_proximity = config.REWARD_ETA * proximity
 

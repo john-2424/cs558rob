@@ -57,7 +57,7 @@ class ActorWithLearnableStd(nn.Module):
     unlike NormalParamExtractor whose scale saturates around 0.58.
     """
 
-    def __init__(self, obs_dim, act_dim, init_log_std=-2.0, warm_start=True):
+    def __init__(self, obs_dim, act_dim, init_log_std=-0.5, warm_start=True):
         super().__init__()
         output_layer = nn.Linear(256, act_dim)
         if warm_start:
@@ -71,7 +71,7 @@ class ActorWithLearnableStd(nn.Module):
             nn.Tanh(),
             output_layer,
         )
-        # State-independent log-std: init_log_std=-2.0 -> std=exp(-2)≈0.135
+        # State-independent log-std: init_log_std=-0.5 -> std=exp(-0.5)≈0.61
         self.log_std = nn.Parameter(torch.full((act_dim,), init_log_std))
 
     def forward(self, observation):
@@ -82,7 +82,7 @@ class ActorWithLearnableStd(nn.Module):
 
 def build_actor(obs_dim, act_dim, device="cpu", warm_start=True):
     actor_net = ActorWithLearnableStd(
-        obs_dim, act_dim, init_log_std=-2.0, warm_start=warm_start,
+        obs_dim, act_dim, init_log_std=-0.5, warm_start=warm_start,
     )
 
     actor_module = TensorDictModule(
@@ -104,9 +104,9 @@ def build_actor(obs_dim, act_dim, device="cpu", warm_start=True):
 
 def build_critic(obs_dim, device="cpu"):
     critic_net = nn.Sequential(
-        nn.Linear(obs_dim, 256),
+        nn.Linear(obs_dim, 512),
         nn.Tanh(),
-        nn.Linear(256, 256),
+        nn.Linear(512, 256),
         nn.Tanh(),
         nn.Linear(256, 1),
     )
@@ -157,7 +157,7 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
     print(f"TensorBoard log dir: {tb_log_dir}")
     print(f"Model checkpoint dir: {model_save_path}")
 
-    obs_dim = 40
+    obs_dim = 41
     act_dim = 7
 
     # Build actor-critic
@@ -574,7 +574,7 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
     return final_path
 
 
-def load_trained_actor(model_path, obs_dim=40, act_dim=7, device="cpu"):
+def load_trained_actor(model_path, obs_dim=41, act_dim=7, device="cpu"):
     actor = build_actor(obs_dim, act_dim, device)
     checkpoint = torch.load(model_path, map_location=device, weights_only=True)
     actor.load_state_dict(checkpoint["actor_state_dict"])

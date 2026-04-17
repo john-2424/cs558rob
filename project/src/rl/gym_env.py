@@ -23,8 +23,33 @@ PHASE_GRASP_DESCEND = 1
 PHASE_LIFT = 2
 NUM_RL_PHASES = 3
 
-OBS_DIM = 40
+OBS_DIM = 41  # added waypoint_progress (1)
 ACT_DIM = 7
+
+# Fixed normalization scales so all observation components are roughly [-1, 1].
+_MAX_JOINT_VEL = np.asarray(config.PD_MAX_JOINT_VEL, dtype=np.float32)
+_WORKSPACE_CENTER = np.array([0.5, 0.0, 0.4], dtype=np.float32)
+_WORKSPACE_HALF = np.array([0.5, 0.5, 0.4], dtype=np.float32)
+_PERTURB_SCALE = max(config.PERTURB_XY_RANGE, 0.01)
+
+
+def _normalize_obs(q, qd, ee_pos, ee_euler, cube_pos, cube_euler,
+                   ee_to_cube, qd_pd, phase_indicator, perturb_offset,
+                   wp_progress):
+    """Fixed-scale normalization — all components mapped to roughly [-1, 1]."""
+    return np.concatenate([
+        (q / np.pi).astype(np.float32),                           # 7
+        (qd / _MAX_JOINT_VEL).astype(np.float32),                # 7
+        ((ee_pos - _WORKSPACE_CENTER) / _WORKSPACE_HALF).astype(np.float32),   # 3
+        (ee_euler / np.pi).astype(np.float32),                    # 3
+        ((cube_pos - _WORKSPACE_CENTER) / _WORKSPACE_HALF).astype(np.float32), # 3
+        (cube_euler / np.pi).astype(np.float32),                  # 3
+        (ee_to_cube / _WORKSPACE_HALF).astype(np.float32),        # 3
+        (qd_pd / _MAX_JOINT_VEL).astype(np.float32),             # 7
+        (phase_indicator / NUM_RL_PHASES).astype(np.float32),     # 1
+        (perturb_offset / _PERTURB_SCALE).astype(np.float32),    # 3
+        wp_progress.astype(np.float32),                           # 1  (already 0-1)
+    ])
 
 
 class PandaGraspEnv(gymnasium.Env):
@@ -310,19 +335,15 @@ class PandaGraspEnv(gymnasium.Env):
         )
 
         phase_indicator = np.array([float(self._phase)], dtype=np.float32)
+        wp_progress = np.array([
+            float(self._waypoint_idx) / max(1, len(self._waypoints))
+        ], dtype=np.float32)
 
-        obs = np.concatenate([
-            q.astype(np.float32),           # 7
-            qd.astype(np.float32),          # 7
-            ee_pos.astype(np.float32),      # 3
-            ee_euler.astype(np.float32),    # 3
-            cube_pos.astype(np.float32),    # 3
-            cube_euler.astype(np.float32),  # 3
-            ee_to_cube.astype(np.float32),  # 3
-            qd_pd.astype(np.float32),       # 7
-            phase_indicator,                # 1
-            self._perturb_offset.astype(np.float32),  # 3  (cube_perturbed - cube_nominal)
-        ])
+        obs = _normalize_obs(
+            q, qd, ee_pos, ee_euler, cube_pos, cube_euler,
+            ee_to_cube, qd_pd, phase_indicator, self._perturb_offset,
+            wp_progress,
+        )
         return obs
 
     def _advance_phase(self):
@@ -402,21 +423,24 @@ class PandaGraspEnv(gymnasium.Env):
         else:
             q_target = self._robot.get_joint_positions()
 
-        # Compute PD nominal
         q = self._robot.get_joint_positions()
         qd = self._robot.get_joint_velocities()
-        qd_pd = self._robot.pd_controller.compute_velocity_command(
-            q_des=q_target, q=q, qd_des=np.zeros(7), qd=qd,
-        )
 
-        # Apply action through residual wrapper
-        qd_total = self.action_wrapper.compute_action(qd_pd, action)
-        qd_residual = self.action_wrapper.get_residual(action)
-
-        # For rl_only mode, don't penalize the policy for using its actions --
-        # there is no PD backbone, so the "residual" IS the entire command.
         if self.mode == "rl_only":
+            # rl_only: action directly controls velocity, no PD
+            qd_total = self.action_wrapper.compute_action(np.zeros(ACT_DIM), action)
             qd_residual = np.zeros(ACT_DIM, dtype=np.float32)
+        else:
+            # hybrid / planner_only: RL shifts the PD position target,
+            # then PD drives toward the corrected target (cooperating).
+            q_target_corrected = self.action_wrapper.correct_target(q_target, action)
+            qd_total = self._robot.pd_controller.compute_velocity_command(
+                q_des=q_target_corrected, q=q, qd_des=np.zeros(7), qd=qd,
+            )
+            # Clip to max joint velocity
+            max_vel = np.asarray(config.PD_MAX_JOINT_VEL, dtype=float)
+            qd_total = np.clip(qd_total, -max_vel, max_vel)
+            qd_residual = self.action_wrapper.get_residual(action)
 
         # Apply velocity command + maintain gripper
         forces = self._robot.arm_max_forces
@@ -437,13 +461,16 @@ class PandaGraspEnv(gymnasium.Env):
         for _ in range(config.RL_SIM_SUBSTEPS):
             p.stepSimulation()
 
-        # Check waypoint convergence (or force-advance on timeout)
+        # Check waypoint convergence (or force-advance on timeout).
+        # For hybrid mode, check against the corrected target so the robot
+        # converges to where the RL wants it, not the stale nominal waypoint.
         if self._waypoint_idx < len(self._waypoints):
             tol = getattr(config, "RL_WAYPOINT_TOL", config.WAYPOINT_TOL)
             if self._phase == PHASE_GRASP_DESCEND:
                 tol = config.GRASP_DESCEND_WAYPOINT_TOL
             self._waypoint_step_count += 1
-            converged = self._robot.is_at_joint_target(q_target, tol=tol)
+            conv_target = q_target_corrected if self.mode not in ("rl_only",) else q_target
+            converged = self._robot.is_at_joint_target(conv_target, tol=tol)
             timed_out = self._waypoint_step_count >= config.RL_MAX_STEPS_PER_WAYPOINT
             if converged or timed_out:
                 if timed_out and not converged:
