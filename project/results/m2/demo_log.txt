@@ -1559,3 +1559,1933 @@ Grasp check failed (no retry -- matches eval framework).
 Grasp validation failed.
 
 Demo total time: 105.9s
+
+================================================================================
+Residual demo run started: 2026-04-16T18:55:56
+================================================================================
+Log file: results/m2\demo_log.txt
+Loaded model from results/m2/models\final_model.pt, mode=planner_only, perturb_xy_range=0.0
+[demo] Cube NOMINAL pose: xy=(0.7000, 0.0000) m, z=0.0790 m, yaw=0.0000 rad
+[demo] Planning trajectory from NOMINAL cube pose (before perturbation)
+[demo] Cube PERTURBED pose: xy=(0.7000, 0.0000) m, z=0.0738 m, yaw=-0.0007 rad
+[demo] Perturbation delta: dx=+0.0000 m, dy=+0.0000 m, dz=-0.0052 m, dyaw=-0.0007 rad (-0.04 deg)
+[demo] Planner targets are from NOMINAL — robot will aim 0.5cm away from actual cube
+
+=== Phase 1: home ===
+
+=== Phase 2: pre_grasp (residual) ===
+
+Demo total time: 4.2s
+
+================================================================================
+Residual demo run started: 2026-04-16T19:00:05
+================================================================================
+Log file: results/m2\demo_log.txt
+Loaded model from results/m2/models\final_model.pt, mode=planner_only, perturb_xy_range=0.0
+[demo] Cube NOMINAL pose: xy=(0.7000, 0.0000) m, z=0.0790 m, yaw=0.0000 rad
+[demo] Planning trajectory from NOMINAL cube pose (before perturbation)
+[demo] Cube PERTURBED pose: xy=(0.7000, 0.0000) m, z=0.0768 m, yaw=0.0447 rad
+[demo] Perturbation delta: dx=+0.0000 m, dy=+0.0000 m, dz=-0.0022 m, dyaw=+0.0447 rad (+2.56 deg)
+[demo] Planner targets are from NOMINAL — robot will aim 0.2cm away from actual cube
+
+=== Phase 1: home ===
+
+=== Phase 2: pre_grasp (residual) ===
+
+=== Phase 3: grasp_descend (residual) ===
+
+=== Phase 4: close_gripper ===
+
+=== Phase 5: validate_and_attach ===
+grasp_check | ee_to_cube_dist=0.02267 | min_finger_to_cube_dist=0.04967 | total_contacts=3 | finger_contacts=3 | dist_ok=True | finger_dist_ok=True | total_contact_ok=True | finger_contact_ok=True | ready=True
+left_finger_pos=[0.72562903 0.00100402 0.14385638]
+right_finger_pos=[0.67639232 0.00100111 0.14383633]
+Grasp validated. Object attached.
+
+=== Phase 6: lift (residual) ===
+
+=== Phase 7: transfer_pre_place ===
+transfer_pre_place IK target joints: [ 0.12114495  0.35098117 -0.01148859 -1.84367416  0.00486347  2.19460062
+  0.8929138 ]
+
+=== Planner result: transfer_pre_place ===
+success: True
+num_nodes: 2
+message: Direct path found.
+Sparse path nodes before smoothing: 2
+Sparse path nodes after smoothing:  2
+Sparse path length before smoothing: 0.9281
+Sparse path length after smoothing:  0.9281
+Planner path waypoints: 13
+
+=== Executing transfer_pre_place ===
+Num waypoints: 13
+waypoint=00/12 | reached=True | final_err=[-4.26177066e-10  1.81174499e-06 -3.45593544e-06  1.52063322e-05
+  2.34951301e-07  2.11321876e-06 -7.49122452e-06] | final_max_err=0.000015 | last_max_vel_cmd=0.00209
+waypoint=01/12 | reached=True | final_err=[ 0.00256642 -0.00591419  0.00020174 -0.00995962 -0.00034229  0.00713521
+  0.00390896] | final_max_err=0.009960 | last_max_vel_cmd=0.03421
+waypoint=02/12 | reached=True | final_err=[ 0.00262214 -0.00604232  0.00014805 -0.00991659 -0.00035019  0.00777199
+  0.00436967] | final_max_err=0.009917 | last_max_vel_cmd=0.03422
+waypoint=03/12 | reached=True | final_err=[ 0.00263125 -0.00606794  0.00012778 -0.00997372 -0.00035032  0.00790189
+  0.00446541] | final_max_err=0.009974 | last_max_vel_cmd=0.03456
+waypoint=04/12 | reached=True | final_err=[ 0.00259634 -0.00599192  0.00010716 -0.00988415 -0.00034177  0.00783139
+  0.00442007] | final_max_err=0.009884 | last_max_vel_cmd=0.03436
+waypoint=05/12 | reached=True | final_err=[ 2.59071022e-03 -5.98340324e-03  9.36701087e-05 -9.91560506e-03
+ -3.37847828e-04  7.81221143e-03  4.39876532e-03] | final_max_err=0.009916 | last_max_vel_cmd=0.03457
+waypoint=06/12 | reached=True | final_err=[ 2.58981004e-03 -5.98527235e-03  8.17234875e-05 -9.95570518e-03
+ -3.36010483e-04  7.80418790e-03  4.38825390e-03] | final_max_err=0.009956 | last_max_vel_cmd=0.03479
+waypoint=07/12 | reached=True | final_err=[ 2.58967662e-03 -5.98832087e-03  7.02524332e-05 -9.98933441e-03
+ -3.36347857e-04  7.79891348e-03  4.38526636e-03] | final_max_err=0.009989 | last_max_vel_cmd=0.03497
+waypoint=08/12 | reached=True | final_err=[ 2.55386748e-03 -5.90803055e-03  5.24887444e-05 -9.86634699e-03
+ -3.33246020e-04  7.70265059e-03  4.33553880e-03] | final_max_err=0.009866 | last_max_vel_cmd=0.03458
+waypoint=09/12 | reached=True | final_err=[ 2.54818239e-03 -5.89712893e-03  4.00872741e-05 -9.86479553e-03
+ -3.37857586e-04  7.67986596e-03  4.33249430e-03] | final_max_err=0.009865 | last_max_vel_cmd=0.03461
+waypoint=10/12 | reached=True | final_err=[ 2.54729496e-03 -5.89692154e-03  2.82743110e-05 -9.87599214e-03
+ -3.46500981e-04  7.67258023e-03  4.34518909e-03] | final_max_err=0.009876 | last_max_vel_cmd=0.03468
+waypoint=11/12 | reached=True | final_err=[ 2.54717325e-03 -5.89812560e-03  1.61803732e-05 -9.88551640e-03
+ -3.58409244e-04  7.66873602e-03  4.36603375e-03] | final_max_err=0.009886 | last_max_vel_cmd=0.03473
+waypoint=12/12 | reached=True | final_err=[ 2.54717582e-03 -5.89932036e-03  3.54972730e-06 -9.89213378e-03
+ -3.73331009e-04  7.66578465e-03  4.39304377e-03] | final_max_err=0.009892 | last_max_vel_cmd=0.03476
+Completed transfer_pre_place in 1564 simulation steps.
+
+=== Phase 8: place_descend ===
+place_descend IK target joints: [ 0.1194206   0.59819746 -0.00910977 -1.88642594  0.00839545  2.4845615
+  0.89064305]
+
+=== Planner result: place_descend ===
+success: True
+num_nodes: 2
+message: Direct path found.
+Sparse path nodes before smoothing: 2
+Sparse path nodes after smoothing:  2
+Sparse path length before smoothing: 0.3868
+Sparse path length after smoothing:  0.3868
+Planner path waypoints: 6
+
+=== Executing place_descend ===
+Num waypoints: 6
+waypoint=00/05 | reached=True | final_err=[ 8.61656968e-09  1.86357519e-07 -6.71324090e-06  1.59864613e-06
+  1.38593329e-06  3.94268493e-07 -5.58050228e-06] | final_max_err=0.000007 | last_max_vel_cmd=0.00084
+waypoint=01/05 | reached=True | final_err=[ 2.50889266e-05  7.34871948e-03 -2.78806011e-04 -1.36172337e-03
+  2.33666332e-04  1.18589010e-02 -2.15993208e-04] | final_max_err=0.011859 | last_max_vel_cmd=0.03379
+waypoint=02/05 | reached=True | final_err=[ 2.35763502e-05  6.87239171e-03 -3.04723218e-04 -1.22456071e-03
+  2.52310891e-04  1.18972790e-02 -2.86252708e-04] | final_max_err=0.011897 | last_max_vel_cmd=0.03390
+waypoint=03/05 | reached=True | final_err=[ 2.34692353e-05  6.81033049e-03 -2.75805850e-04 -1.20895377e-03
+  2.48417359e-04  1.19029444e-02 -2.98914401e-04] | final_max_err=0.011903 | last_max_vel_cmd=0.03391
+waypoint=04/05 | reached=True | final_err=[ 2.35086291e-05  6.79983840e-03 -2.41157852e-04 -1.20661648e-03
+  2.38146907e-04  1.19029191e-02 -2.98245796e-04] | final_max_err=0.011903 | last_max_vel_cmd=0.03391
+waypoint=05/05 | reached=False | final_err=[ 5.18764015e-05  1.40827900e-02 -8.45842735e-03 -3.94054853e-03
+  3.96670601e-03  2.09903149e-02 -4.99387181e-03] | final_max_err=0.020990 | last_max_vel_cmd=0.07342
+Stopped early at waypoint 5 because target was not reached in time.
+
+=== Phase 9: detach_object ===
+
+=== Phase 10: open_gripper ===
+
+=== Phase 11: post_place_retreat ===
+post_place_retreat IK target joints: [ 1.14765393e-01  3.90569862e-01 -4.47142413e-03 -1.86737939e+00
+  2.19861033e-03  2.25797146e+00  8.94634221e-01]
+
+=== Planner result: post_place_retreat ===
+success: True
+num_nodes: 2
+message: Direct path found.
+Sparse path nodes before smoothing: 2
+Sparse path nodes after smoothing:  2
+Sparse path length before smoothing: 0.3083
+Sparse path length after smoothing:  0.3083
+Planner path waypoints: 5
+
+=== Executing post_place_retreat ===
+Num waypoints: 5
+waypoint=00/04 | reached=True | final_err=[-4.94093551e-08  3.09363120e-08  1.40603593e-06  6.15685465e-07
+ -2.61680004e-07 -2.96889402e-09 -2.99222636e-09] | final_max_err=0.000001 | last_max_vel_cmd=0.00018
+waypoint=01/04 | reached=True | final_err=[-1.38402200e-04 -6.00612218e-03 -5.78216057e-05  3.40216965e-04
+ -2.19724832e-05 -9.97627278e-03 -7.01745510e-05] | final_max_err=0.009976 | last_max_vel_cmd=0.02841
+waypoint=02/04 | reached=True | final_err=[-1.29751439e-04 -5.63274136e-03 -3.68936748e-05  3.08988380e-04
+ -1.98494937e-05 -9.96837517e-03 -7.29855012e-05] | final_max_err=0.009968 | last_max_vel_cmd=0.02838
+waypoint=03/04 | reached=True | final_err=[-1.29101870e-04 -5.59373760e-03 -1.58598845e-05  3.07165443e-04
+ -1.93093590e-05 -9.96733887e-03 -7.34385940e-05] | final_max_err=0.009967 | last_max_vel_cmd=0.02838
+waypoint=04/04 | reached=True | final_err=[-1.29403399e-04 -5.58924513e-03  5.51636446e-06  3.07852965e-04
+ -1.90630548e-05 -9.96736306e-03 -7.33697328e-05] | final_max_err=0.009967 | last_max_vel_cmd=0.02838
+Completed post_place_retreat in 640 simulation steps.
+
+=== Phase 12: return_home ===
+
+=== Planner result: return_home ===
+success: True
+num_nodes: 2
+message: Direct path found.
+Sparse path nodes before smoothing: 2
+Sparse path nodes after smoothing:  2
+Sparse path length before smoothing: 1.4644
+Sparse path length after smoothing:  1.4644
+Planner path waypoints: 20
+
+=== Executing return_home ===
+Num waypoints: 20
+waypoint=00/19 | reached=True | final_err=[-3.20009638e-08  1.53960498e-08  1.96240305e-06  2.19665990e-07
+ -4.38933275e-08 -1.85604065e-09 -9.75881598e-10] | final_max_err=0.000002 | last_max_vel_cmd=0.00025
+waypoint=01/19 | reached=True | final_err=[-9.59682209e-04 -9.91069185e-03  1.52396996e-04 -3.60848868e-03
+ -2.53163839e-05 -7.56401188e-03 -1.37842139e-03] | final_max_err=0.009911 | last_max_vel_cmd=0.03288
+waypoint=02/19 | reached=True | final_err=[-9.67988711e-04 -9.99402477e-03  1.77744874e-04 -3.55176193e-03
+ -2.68145092e-05 -8.10210660e-03 -1.53304883e-03] | final_max_err=0.009994 | last_max_vel_cmd=0.03316
+waypoint=03/19 | reached=True | final_err=[-9.55490206e-04 -9.86554716e-03  1.75367697e-04 -3.49391606e-03
+ -2.65122043e-05 -8.10360141e-03 -1.54939036e-03] | final_max_err=0.009866 | last_max_vel_cmd=0.03273
+waypoint=04/19 | reached=True | final_err=[-9.66731053e-04 -9.98419590e-03  1.52251854e-04 -3.54035561e-03
+ -2.67467714e-05 -8.20113574e-03 -1.56977053e-03] | final_max_err=0.009984 | last_max_vel_cmd=0.03313
+waypoint=05/19 | reached=True | final_err=[-9.68010940e-04 -9.99783596e-03  1.12514901e-04 -3.53846031e-03
+ -3.02968054e-05 -8.21866862e-03 -1.57429842e-03] | final_max_err=0.009998 | last_max_vel_cmd=0.03317
+waypoint=06/19 | reached=True | final_err=[-9.73877943e-04 -9.87753618e-03  4.64998138e-05 -3.49713162e-03
+  1.41625179e-05 -7.99817697e-03 -1.59214314e-03] | final_max_err=0.009878 | last_max_vel_cmd=0.03281
+waypoint=07/19 | reached=True | final_err=[-9.72562514e-04 -9.98117116e-03 -3.22629728e-05 -3.54250321e-03
+ -1.57468292e-05 -8.16680697e-03 -1.58306568e-03] | final_max_err=0.009981 | last_max_vel_cmd=0.03312
+waypoint=08/19 | reached=True | final_err=[-9.68551591e-04 -9.99125543e-03 -8.30058658e-05 -3.54777935e-03
+ -2.66408634e-05 -8.21260140e-03 -1.57701521e-03] | final_max_err=0.009991 | last_max_vel_cmd=0.03315
+waypoint=09/19 | reached=True | final_err=[-9.68424620e-04 -9.99000571e-03 -9.45263441e-05 -3.54837970e-03
+ -2.90175427e-05 -8.22099816e-03 -1.57571520e-03] | final_max_err=0.009990 | last_max_vel_cmd=0.03315
+waypoint=10/19 | reached=True | final_err=[-9.68747013e-04 -9.98705603e-03 -7.50559766e-05 -3.54873540e-03
+ -2.93613072e-05 -8.22215902e-03 -1.57553918e-03] | final_max_err=0.009987 | last_max_vel_cmd=0.03314
+waypoint=11/19 | reached=True | final_err=[-9.68782222e-04 -9.98360212e-03 -4.08089701e-05 -3.54933216e-03
+ -2.92204301e-05 -8.22277403e-03 -1.57538681e-03] | final_max_err=0.009984 | last_max_vel_cmd=0.03312
+waypoint=12/19 | reached=True | final_err=[-1.02423424e-03 -9.98183015e-03  2.55955688e-05 -3.55183152e-03
+ -8.87499206e-06 -8.21412739e-03 -1.59229059e-03] | final_max_err=0.009982 | last_max_vel_cmd=0.03312
+waypoint=13/19 | reached=True | final_err=[-1.03330175e-03 -9.98157202e-03  3.54713913e-05 -3.55209309e-03
+  4.90199785e-06 -8.18985639e-03 -1.60274704e-03] | final_max_err=0.009982 | last_max_vel_cmd=0.03313
+waypoint=14/19 | reached=True | final_err=[-1.03155808e-03 -9.98790325e-03  3.72533021e-05 -3.55196048e-03
+  3.24998982e-05 -8.11694281e-03 -1.61822856e-03] | final_max_err=0.009988 | last_max_vel_cmd=0.03317
+waypoint=15/19 | reached=True | final_err=[-1.00930258e-03 -9.98926840e-03  3.76462131e-05 -3.55165464e-03
+  4.24369774e-05 -8.07367009e-03 -1.61901907e-03] | final_max_err=0.009989 | last_max_vel_cmd=0.03318
+waypoint=16/19 | reached=True | final_err=[-9.85877713e-04 -9.98159678e-03  3.77006389e-05 -3.55147816e-03
+  2.86942314e-05 -8.09214772e-03 -1.60630099e-03] | final_max_err=0.009982 | last_max_vel_cmd=0.03315
+waypoint=17/19 | reached=True | final_err=[-9.75675038e-04 -9.98014789e-03  3.77081779e-05 -3.55144480e-03
+  3.33697668e-05 -8.07250998e-03 -1.60317050e-03] | final_max_err=0.009980 | last_max_vel_cmd=0.03315
+waypoint=18/19 | reached=True | final_err=[-9.70398207e-04 -9.97172637e-03  3.77092222e-05 -3.55147180e-03
+  2.34595924e-05 -8.09613905e-03 -1.59580907e-03] | final_max_err=0.009972 | last_max_vel_cmd=0.03311
+waypoint=19/19 | reached=True | final_err=[-9.69122869e-04 -9.97128441e-03  3.77093668e-05 -3.55151556e-03
+  3.17131579e-05 -8.07624627e-03 -1.59565306e-03] | final_max_err=0.009971 | last_max_vel_cmd=0.03312
+Completed return_home in 2691 simulation steps.
+
+=== Final Cube Pose ===
+Cube position: [ 0.56588744 -0.12881821  0.07598935]
+Saved trajectory log to results/m2/trajectory_log.json
+
+Stopping simulation...
+
+Demo total time: 325.2s
+
+================================================================================
+Residual demo run started: 2026-04-16T19:05:48
+================================================================================
+Log file: results/m2\demo_log.txt
+Loaded model from results/m2/models\final_model.pt, mode=planner_only, perturb_xy_range=0.0
+[demo] Cube NOMINAL pose: xy=(0.7000, 0.0000) m, z=0.0790 m, yaw=0.0000 rad
+[demo] Planning trajectory from NOMINAL cube pose (before perturbation)
+[demo] Cube PERTURBED pose: xy=(0.7000, 0.0000) m, z=0.0758 m, yaw=-0.1871 rad
+[demo] Perturbation delta: dx=+0.0000 m, dy=+0.0000 m, dz=-0.0032 m, dyaw=-0.1871 rad (-10.72 deg)
+[demo] Planner targets are from NOMINAL — robot will aim 0.3cm away from actual cube
+
+=== Phase 1: home ===
+
+=== Phase 2: pre_grasp (residual) ===
+
+=== Phase 3: grasp_descend (residual) ===
+
+=== Phase 4: close_gripper ===
+
+=== Phase 5: validate_and_attach ===
+grasp_check | ee_to_cube_dist=0.02263 | min_finger_to_cube_dist=0.05059 | total_contacts=2 | finger_contacts=2 | dist_ok=True | finger_dist_ok=True | total_contact_ok=True | finger_contact_ok=True | ready=True
+left_finger_pos=[0.72555923 0.00078809 0.14364739]
+right_finger_pos=[0.67410672 0.00075289 0.14362967]
+Grasp validated. Object attached.
+
+=== Phase 6: lift (residual) ===
+
+=== Phase 7: transfer_pre_place ===
+transfer_pre_place IK target joints: [ 0.12167456  0.35098346 -0.01206858 -1.84367376  0.00510918  2.19459971
+  0.89275525]
+
+=== Planner result: transfer_pre_place ===
+success: True
+num_nodes: 2
+message: Direct path found.
+Sparse path nodes before smoothing: 2
+Sparse path nodes after smoothing:  2
+Sparse path length before smoothing: 0.9286
+Sparse path length after smoothing:  0.9286
+Planner path waypoints: 13
+
+=== Executing transfer_pre_place ===
+Num waypoints: 13
+waypoint=00/12 | reached=True | final_err=[-4.34816472e-08  1.52984867e-06 -1.64961560e-06  1.38039160e-05
+ -1.24082178e-06  1.73522995e-06  1.57132010e-05] | final_max_err=0.000016 | last_max_vel_cmd=0.00190
+waypoint=01/12 | reached=True | final_err=[ 0.00257155 -0.00591314  0.00036841 -0.00997332 -0.00049596  0.00712985
+  0.00516578] | final_max_err=0.009973 | last_max_vel_cmd=0.03428
+waypoint=02/12 | reached=True | final_err=[ 0.00262718 -0.0060399   0.00035218 -0.0099324  -0.00054799  0.00776575
+  0.00597825] | final_max_err=0.009932 | last_max_vel_cmd=0.03430
+waypoint=03/12 | reached=True | final_err=[ 0.00263646 -0.00606529  0.00034252 -0.00999375 -0.00056163  0.00789447
+  0.0061643 ] | final_max_err=0.009994 | last_max_vel_cmd=0.03467
+waypoint=04/12 | reached=True | final_err=[ 0.00260172 -0.00598935  0.00032874 -0.00990859 -0.00055927  0.0078226
+  0.00614349] | final_max_err=0.009909 | last_max_vel_cmd=0.03450
+waypoint=05/12 | reached=True | final_err=[ 0.0025964  -0.00598103  0.00032198 -0.00994426 -0.00055913  0.00780197
+  0.00613029] | final_max_err=0.009944 | last_max_vel_cmd=0.03473
+waypoint=06/12 | reached=True | final_err=[ 0.0025959  -0.00598317  0.00031745 -0.00998826 -0.00055982  0.00779244
+  0.00612334] | final_max_err=0.009988 | last_max_vel_cmd=0.03497
+waypoint=07/12 | reached=True | final_err=[ 0.00256033 -0.00590348  0.00030797 -0.0098764  -0.00055562  0.00769362
+  0.00606843] | final_max_err=0.009876 | last_max_vel_cmd=0.03464
+waypoint=08/12 | reached=True | final_err=[ 0.00255515 -0.00589337  0.00030495 -0.00988465 -0.00055783  0.0076687
+  0.00606001] | final_max_err=0.009885 | last_max_vel_cmd=0.03472
+waypoint=09/12 | reached=True | final_err=[ 0.00255486 -0.00589393  0.00030374 -0.00990413 -0.00056286  0.00765943
+  0.00606675] | final_max_err=0.009904 | last_max_vel_cmd=0.03483
+waypoint=10/12 | reached=True | final_err=[ 0.00255542 -0.00589584  0.00030353 -0.00992054 -0.00057002  0.00765369
+  0.00608086] | final_max_err=0.009921 | last_max_vel_cmd=0.03492
+waypoint=11/12 | reached=True | final_err=[ 0.00255616 -0.00589766  0.00030407 -0.00993283 -0.00057905  0.00764895
+  0.00610017] | final_max_err=0.009933 | last_max_vel_cmd=0.03499
+waypoint=12/12 | reached=True | final_err=[ 0.00255699 -0.00589922  0.00030521 -0.00994166 -0.00058972  0.00764462
+  0.00612385] | final_max_err=0.009942 | last_max_vel_cmd=0.03503
+Completed transfer_pre_place in 1565 simulation steps.
+
+=== Phase 8: place_descend ===
+place_descend IK target joints: [ 0.12026553  0.59820254 -0.00998778 -1.88642418  0.00920505  2.48455744
+  0.89012138]
+
+=== Planner result: place_descend ===
+success: True
+num_nodes: 2
+message: Direct path found.
+Sparse path nodes before smoothing: 2
+Sparse path nodes after smoothing:  2
+Sparse path length before smoothing: 0.3868
+Sparse path length after smoothing:  0.3868
+Planner path waypoints: 6
+
+=== Executing place_descend ===
+Num waypoints: 6
+waypoint=00/05 | reached=True | final_err=[ 6.29036391e-08  2.74375350e-07 -2.27808744e-06  9.15012643e-07
+ -1.29596905e-06  4.17130885e-07  1.03411419e-05] | final_max_err=0.000010 | last_max_vel_cmd=0.00090
+waypoint=01/05 | reached=True | final_err=[ 3.68790673e-05  7.45069250e-03 -3.81721718e-05 -1.43473947e-03
+  1.14439754e-04  1.19885392e-02  7.61834538e-04] | final_max_err=0.011989 | last_max_vel_cmd=0.03414
+waypoint=02/05 | reached=True | final_err=[ 3.42725251e-05  6.88390366e-03 -5.47473005e-05 -1.28909757e-03
+  1.04626424e-04  1.19031530e-02  9.15899666e-04] | final_max_err=0.011903 | last_max_vel_cmd=0.03389
+waypoint=03/05 | reached=True | final_err=[ 3.39308581e-05  6.81087350e-03 -5.06345497e-05 -1.27474144e-03
+  9.74903799e-05  1.18862476e-02  9.42996298e-04] | final_max_err=0.011886 | last_max_vel_cmd=0.03384
+waypoint=04/05 | reached=True | final_err=[ 3.39295854e-05  6.79928127e-03 -4.40082590e-05 -1.27448271e-03
+  9.02316726e-05  1.18807568e-02  9.45062491e-04] | final_max_err=0.011881 | last_max_vel_cmd=0.03382
+waypoint=05/05 | reached=False | final_err=[-4.64942813e-05  1.45769968e-02  4.85529511e-03 -4.17060919e-03
+  8.25269012e-03  2.28709327e-02  3.13807359e-04] | final_max_err=0.022871 | last_max_vel_cmd=0.06097
+Stopped early at waypoint 5 because target was not reached in time.
+
+=== Phase 9: detach_object ===
+
+=== Phase 10: open_gripper ===
+
+=== Phase 11: post_place_retreat ===
+post_place_retreat IK target joints: [ 0.12008279  0.39058902 -0.01025483 -1.86737673  0.00504698  2.25796848
+  0.89279695]
+
+=== Planner result: post_place_retreat ===
+success: True
+num_nodes: 2
+message: Direct path found.
+Sparse path nodes before smoothing: 2
+Sparse path nodes after smoothing:  2
+Sparse path length before smoothing: 0.2829
+Sparse path length after smoothing:  0.2829
+Planner path waypoints: 5
+
+=== Executing post_place_retreat ===
+Num waypoints: 5
+waypoint=00/04 | reached=True | final_err=[ 1.00289282e-06 -2.79478232e-07  0.00000000e+00 -1.03689271e-08
+  1.10834300e-06  1.70129415e-06 -1.21781792e-06] | final_max_err=0.000002 | last_max_vel_cmd=0.00017
+waypoint=01/04 | reached=True | final_err=[-2.40976511e-06 -7.08601612e-03  2.16694335e-04  3.48869244e-04
+  3.30089171e-04 -9.90998054e-03  1.31345999e-04] | final_max_err=0.009910 | last_max_vel_cmd=0.02822
+waypoint=02/04 | reached=True | final_err=[-2.17371573e-06 -6.59267664e-03  2.16077154e-04  3.10751379e-04
+  3.32336276e-04 -9.88194057e-03  1.37068934e-04] | final_max_err=0.009882 | last_max_vel_cmd=0.02814
+waypoint=03/04 | reached=True | final_err=[-2.23724388e-06 -6.62531391e-03  2.31251010e-04  3.10355367e-04
+  3.37889497e-04 -9.99601745e-03  1.39678263e-04] | final_max_err=0.009996 | last_max_vel_cmd=0.02846
+waypoint=04/04 | reached=True | final_err=[-2.47412504e-06 -6.53709794e-03  2.48411221e-04  3.06532023e-04
+  3.35006494e-04 -9.89579406e-03  1.38667489e-04] | final_max_err=0.009896 | last_max_vel_cmd=0.02818
+Completed post_place_retreat in 597 simulation steps.
+
+=== Phase 12: return_home ===
+
+=== Planner result: return_home ===
+success: True
+num_nodes: 2
+message: Direct path found.
+Sparse path nodes before smoothing: 2
+Sparse path nodes after smoothing:  2
+Sparse path length before smoothing: 1.4655
+Sparse path length after smoothing:  1.4655
+Planner path waypoints: 20
+
+=== Executing return_home ===
+Num waypoints: 20
+waypoint=00/19 | reached=True | final_err=[-2.96411058e-08  1.51596828e-08  1.78042410e-06  2.17804157e-07
+ -4.59258501e-08 -1.63105396e-09 -9.96920213e-10] | final_max_err=0.000002 | last_max_vel_cmd=0.00022
+waypoint=01/19 | reached=True | final_err=[-1.00286322e-03 -9.91891541e-03  1.92638741e-04 -3.60859287e-03
+ -5.25175821e-05 -7.56318932e-03 -1.35267526e-03] | final_max_err=0.009919 | last_max_vel_cmd=0.03291
+waypoint=02/19 | reached=True | final_err=[-9.97573422e-04 -9.86403688e-03  2.15748587e-04 -3.49950877e-03
+ -5.53095005e-05 -8.00511408e-03 -1.48820933e-03] | final_max_err=0.009864 | last_max_vel_cmd=0.03273
+waypoint=03/19 | reached=True | final_err=[-1.01055488e-03 -9.99299811e-03  2.15576238e-04 -3.53983610e-03
+ -5.61917100e-05 -8.18235750e-03 -1.53352561e-03] | final_max_err=0.009993 | last_max_vel_cmd=0.03315
+waypoint=04/19 | reached=True | final_err=[-9.97992781e-04 -9.87063302e-03  1.92410599e-04 -3.49377547e-03
+ -5.56520363e-05 -8.11741338e-03 -1.52663471e-03] | final_max_err=0.009871 | last_max_vel_cmd=0.03275
+waypoint=05/19 | reached=True | final_err=[-9.96110785e-04 -9.99369286e-03  1.43681171e-04 -3.53671923e-03
+ -4.69415107e-05 -8.17423447e-03 -1.55213435e-03] | final_max_err=0.009994 | last_max_vel_cmd=0.03319
+waypoint=06/19 | reached=True | final_err=[-1.01811916e-03 -9.88419497e-03  9.31903105e-05 -3.49697764e-03
+ -1.25428205e-05 -7.98827203e-03 -1.56451996e-03] | final_max_err=0.009884 | last_max_vel_cmd=0.03283
+waypoint=07/19 | reached=True | final_err=[-1.01653481e-03 -9.98918080e-03  1.75821485e-05 -3.54248752e-03
+ -4.48817784e-05 -8.16478949e-03 -1.55384795e-03] | final_max_err=0.009989 | last_max_vel_cmd=0.03314
+waypoint=08/19 | reached=True | final_err=[-1.01229949e-03 -9.99951225e-03 -3.18242624e-05 -3.54777779e-03
+ -5.60111536e-05 -8.21151360e-03 -1.54763354e-03] | final_max_err=0.010000 | last_max_vel_cmd=0.03318
+waypoint=09/19 | reached=True | final_err=[-1.01213568e-03 -9.99829547e-03 -4.30179040e-05 -3.54836795e-03
+ -5.84258378e-05 -8.22008131e-03 -1.54629829e-03] | final_max_err=0.009998 | last_max_vel_cmd=0.03317
+waypoint=10/19 | reached=True | final_err=[-1.01247893e-03 -9.99534985e-03 -2.38109283e-05 -3.54871587e-03
+ -5.87749465e-05 -8.22127114e-03 -1.54611930e-03] | final_max_err=0.009995 | last_max_vel_cmd=0.03316
+waypoint=11/19 | reached=True | final_err=[-1.01249548e-03 -9.99189535e-03  1.00483227e-05 -3.54931369e-03
+ -5.86483079e-05 -8.22189328e-03 -1.54596182e-03] | final_max_err=0.009992 | last_max_vel_cmd=0.03315
+waypoint=12/19 | reached=True | final_err=[-1.06797285e-03 -9.99011685e-03  7.63704562e-05 -3.55188174e-03
+ -3.82714736e-05 -8.21315400e-03 -1.56286785e-03] | final_max_err=0.009990 | last_max_vel_cmd=0.03315
+waypoint=13/19 | reached=True | final_err=[-1.07709990e-03 -9.98980933e-03  8.62375667e-05 -3.55215390e-03
+ -2.45950921e-05 -8.18918992e-03 -1.57326173e-03] | final_max_err=0.009990 | last_max_vel_cmd=0.03316
+waypoint=14/19 | reached=True | final_err=[-1.07566544e-03 -9.99609539e-03  8.80150708e-05 -3.55202204e-03
+  2.92733317e-06 -8.11666951e-03 -1.58871653e-03] | final_max_err=0.009996 | last_max_vel_cmd=0.03320
+waypoint=15/19 | reached=True | final_err=[-1.05362085e-03 -9.99754231e-03  8.84061576e-05 -3.55170370e-03
+  1.31394366e-05 -8.07282396e-03 -1.58970903e-03] | final_max_err=0.009998 | last_max_vel_cmd=0.03321
+waypoint=16/19 | reached=True | final_err=[-1.02997899e-03 -9.98987340e-03  8.84603307e-05 -3.55151348e-03
+ -6.43023650e-07 -8.09125714e-03 -1.57696375e-03] | final_max_err=0.009990 | last_max_vel_cmd=0.03317
+waypoint=17/19 | reached=True | final_err=[-1.01961383e-03 -9.98841556e-03  8.84678348e-05 -3.55147415e-03
+  3.97256272e-06 -8.07164185e-03 -1.57377915e-03] | final_max_err=0.009988 | last_max_vel_cmd=0.03318
+waypoint=18/19 | reached=True | final_err=[-1.01425126e-03 -9.97998640e-03  8.84688742e-05 -3.55149948e-03
+ -5.90597715e-06 -8.09514259e-03 -1.56643488e-03] | final_max_err=0.009980 | last_max_vel_cmd=0.03314
+waypoint=19/19 | reached=True | final_err=[-1.01287205e-03 -9.97944437e-03  8.84690182e-05 -3.55154400e-03
+  2.29217360e-06 -8.07535071e-03 -1.56623442e-03] | final_max_err=0.009979 | last_max_vel_cmd=0.03315
+Completed return_home in 2692 simulation steps.
+
+=== Final Cube Pose ===
+Cube position: [ 0.5852773  -0.12861996  0.07598935]
+Saved trajectory log to results/m2/trajectory_log.json
+
+Stopping simulation...
+
+Demo total time: 270.2s
+
+================================================================================
+Residual demo run started: 2026-04-16T19:10:59
+================================================================================
+Log file: results/m2\demo_log.txt
+Loaded model from results/m2/models\final_model.pt, mode=planner_only, perturb_xy_range=0.0
+[demo] Cube NOMINAL pose: xy=(0.7000, 0.0000) m, z=0.0790 m, yaw=0.0000 rad
+[demo] Planning trajectory from NOMINAL cube pose (before perturbation)
+[demo] Cube PERTURBED pose: xy=(0.7000, 0.0000) m, z=0.0757 m, yaw=0.1742 rad
+[demo] Perturbation delta: dx=+0.0000 m, dy=+0.0000 m, dz=-0.0033 m, dyaw=+0.1742 rad (+9.98 deg)
+[demo] Planner targets are from NOMINAL — robot will aim 0.3cm away from actual cube
+
+=== Phase 1: home ===
+
+=== Phase 2: pre_grasp (planner_only) ===
+
+=== Phase 3: grasp_descend (planner_only) ===
+
+=== Phase 4: close_gripper ===
+
+=== Phase 5: validate_and_attach ===
+grasp_check | ee_to_cube_dist=0.02267 | min_finger_to_cube_dist=0.05048 | total_contacts=3 | finger_contacts=3 | dist_ok=True | finger_dist_ok=True | total_contact_ok=True | finger_contact_ok=True | ready=True
+left_finger_pos=[0.72727114 0.00103221 0.14387016]
+right_finger_pos=[0.67484903 0.00101139 0.14384872]
+Grasp validated. Object attached.
+
+=== Phase 6: lift (planner_only) ===
+
+=== Phase 7: transfer_pre_place ===
+transfer_pre_place IK target joints: [ 0.12135435  0.35098206 -0.01171791 -1.84367401  0.00496062  2.19460027
+  0.89285111]
+
+=== Planner result: transfer_pre_place ===
+success: True
+num_nodes: 2
+message: Direct path found.
+Sparse path nodes before smoothing: 2
+Sparse path nodes after smoothing:  2
+Sparse path length before smoothing: 0.9284
+Sparse path length after smoothing:  0.9284
+Planner path waypoints: 13
+
+=== Executing transfer_pre_place ===
+Num waypoints: 13
+waypoint=00/12 | reached=True | final_err=[-1.44736365e-08  2.27113954e-06 -3.13901874e-06  1.65827615e-05
+ -4.31342082e-07  2.67339962e-06 -8.26536065e-06] | final_max_err=0.000017 | last_max_vel_cmd=0.00228
+waypoint=01/12 | reached=True | final_err=[ 0.00256884 -0.00590463  0.00023463 -0.00994461 -0.00037124  0.00715694
+  0.00365503] | final_max_err=0.009945 | last_max_vel_cmd=0.03412
+waypoint=02/12 | reached=True | final_err=[ 0.00262449 -0.00603226  0.00019054 -0.00990286 -0.0003858   0.00779784
+  0.00403312] | final_max_err=0.009903 | last_max_vel_cmd=0.03414
+waypoint=03/12 | reached=True | final_err=[ 0.00263363 -0.00605823  0.00017399 -0.00996147 -0.0003871   0.00792855
+  0.00410894] | final_max_err=0.009961 | last_max_vel_cmd=0.03449
+waypoint=04/12 | reached=True | final_err=[ 0.00259874 -0.0059827   0.00015628 -0.00987323 -0.00037841  0.00785819
+  0.00405893] | final_max_err=0.009873 | last_max_vel_cmd=0.03430
+waypoint=05/12 | reached=True | final_err=[ 0.0025932  -0.00597468  0.0001456  -0.0099059  -0.00037377  0.00783907
+  0.00403665] | final_max_err=0.009906 | last_max_vel_cmd=0.03452
+waypoint=06/12 | reached=True | final_err=[ 0.00259242 -0.00597705  0.00013655 -0.00994714 -0.00037077  0.00783112
+  0.00402558] | final_max_err=0.009947 | last_max_vel_cmd=0.03474
+waypoint=07/12 | reached=True | final_err=[ 0.00259243 -0.00598061  0.0001281  -0.00998186 -0.0003695   0.00782595
+  0.00402161] | final_max_err=0.009982 | last_max_vel_cmd=0.03493
+waypoint=08/12 | reached=True | final_err=[ 0.00255676 -0.00590085  0.00011352 -0.00985989 -0.00036432  0.0077298
+  0.00396997] | final_max_err=0.009860 | last_max_vel_cmd=0.03455
+waypoint=09/12 | reached=True | final_err=[ 0.00255129 -0.00589046  0.00010437 -0.0098593  -0.00036634  0.00770721
+  0.00396446] | final_max_err=0.009859 | last_max_vel_cmd=0.03458
+waypoint=10/12 | reached=True | final_err=[ 2.55064545e-03 -5.89075658e-03  9.58587435e-05 -9.87142010e-03
+ -3.71852375e-04  7.70016729e-03  3.97394765e-03] | final_max_err=0.009871 | last_max_vel_cmd=0.03465
+waypoint=11/12 | reached=True | final_err=[ 2.55080559e-03 -5.89245851e-03  8.70769287e-05 -9.88181503e-03
+ -3.80041698e-04  7.69661444e-03  3.99076119e-03] | final_max_err=0.009882 | last_max_vel_cmd=0.03471
+waypoint=12/12 | reached=True | final_err=[ 2.55112397e-03 -5.89414468e-03  7.76699591e-05 -9.88925324e-03
+ -3.90624687e-04  7.69399812e-03  4.01287482e-03] | final_max_err=0.009889 | last_max_vel_cmd=0.03474
+Completed transfer_pre_place in 1564 simulation steps.
+
+=== Phase 8: place_descend ===
+place_descend IK target joints: [ 0.11957172  0.59819832 -0.0092668  -1.88642567  0.00854025  2.48456082
+  0.89054975]
+
+=== Planner result: place_descend ===
+success: True
+num_nodes: 2
+message: Direct path found.
+Sparse path nodes before smoothing: 2
+Sparse path nodes after smoothing:  2
+Sparse path length before smoothing: 0.3868
+Sparse path length after smoothing:  0.3868
+Planner path waypoints: 6
+
+=== Executing place_descend ===
+Num waypoints: 6
+waypoint=00/05 | reached=True | final_err=[ 2.45674099e-08  2.19864933e-07 -5.50352287e-06  1.48144861e-06
+  1.35305891e-06  6.70663579e-07 -1.03545508e-05] | final_max_err=0.000010 | last_max_vel_cmd=0.00091
+waypoint=01/05 | reached=True | final_err=[ 2.41156328e-05  7.35023531e-03 -2.06985336e-04 -1.36610853e-03
+  2.26179943e-04  1.18736666e-02 -4.74586138e-04] | final_max_err=0.011874 | last_max_vel_cmd=0.03385
+waypoint=02/05 | reached=True | final_err=[ 2.27960307e-05  6.87394490e-03 -2.26735365e-04 -1.22993590e-03
+  2.45545483e-04  1.19154028e-02 -6.01040830e-04] | final_max_err=0.011915 | last_max_vel_cmd=0.03397
+waypoint=03/05 | reached=True | final_err=[ 2.27082206e-05  6.81177551e-03 -2.02322476e-04 -1.21452778e-03
+  2.45078868e-04  1.19223358e-02 -6.22994619e-04] | final_max_err=0.011922 | last_max_vel_cmd=0.03399
+waypoint=04/05 | reached=True | final_err=[ 2.27610108e-05  6.80116120e-03 -1.74370569e-04 -1.21222355e-03
+  2.39549737e-04  1.19232469e-02 -6.23124478e-04] | final_max_err=0.011923 | last_max_vel_cmd=0.03399
+waypoint=05/05 | reached=False | final_err=[ 4.46944000e-07  1.54475021e-02 -3.58514021e-03 -3.94283740e-03
+  1.25525193e-03  3.94467953e-02  6.26090202e-04] | final_max_err=0.039447 | last_max_vel_cmd=0.10557
+Stopped early at waypoint 5 because target was not reached in time.
+
+=== Phase 9: detach_object ===
+
+=== Phase 10: open_gripper ===
+
+=== Phase 11: post_place_retreat ===
+post_place_retreat IK target joints: [ 0.11850829  0.39058713 -0.0085425  -1.8673769   0.00420377  2.25797498
+  0.89334066]
+
+=== Planner result: post_place_retreat ===
+success: True
+num_nodes: 2
+message: Direct path found.
+Sparse path nodes before smoothing: 2
+Sparse path nodes after smoothing:  2
+Sparse path length before smoothing: 0.2772
+Sparse path length after smoothing:  0.2772
+Planner path waypoints: 5
+
+=== Executing post_place_retreat ===
+Num waypoints: 5
+waypoint=00/04 | reached=True | final_err=[-4.00530627e-08  2.62374285e-08  1.28429466e-06  4.82245170e-07
+ -1.90926688e-07 -2.56076271e-09 -2.38657105e-09] | final_max_err=0.000001 | last_max_vel_cmd=0.00016
+waypoint=01/04 | reached=True | final_err=[-3.36043930e-05 -7.35125764e-03 -5.50158401e-05  4.00181428e-04
+ -5.47978850e-05 -9.92936948e-03  2.02490608e-04] | final_max_err=0.009929 | last_max_vel_cmd=0.02827
+waypoint=02/04 | reached=True | final_err=[-3.13538549e-05 -6.87662162e-03 -3.51013752e-05  3.61426247e-04
+ -5.28342627e-05 -9.95923817e-03  2.12054958e-04] | final_max_err=0.009959 | last_max_vel_cmd=0.02836
+waypoint=03/04 | reached=True | final_err=[-3.14554618e-05 -6.81734949e-03 -1.65968585e-05  3.57826017e-04
+ -5.23356715e-05 -9.96438261e-03  2.14132500e-04] | final_max_err=0.009964 | last_max_vel_cmd=0.02837
+waypoint=04/04 | reached=True | final_err=[-3.16929424e-05 -6.80949382e-03  2.11031100e-06  3.58109168e-04
+ -5.19810215e-05 -9.96511582e-03  2.14451077e-04] | final_max_err=0.009965 | last_max_vel_cmd=0.02837
+Completed post_place_retreat in 586 simulation steps.
+
+=== Phase 12: return_home ===
+
+=== Planner result: return_home ===
+success: True
+num_nodes: 2
+message: Direct path found.
+Sparse path nodes before smoothing: 2
+Sparse path nodes after smoothing:  2
+Sparse path length before smoothing: 1.4656
+Sparse path length after smoothing:  1.4656
+Planner path waypoints: 20
+
+=== Executing return_home ===
+Num waypoints: 20
+waypoint=00/19 | reached=True | final_err=[-3.03486849e-08  1.52166724e-08  1.83493852e-06  2.18203561e-07
+ -4.52063993e-08 -1.70582792e-09 -9.87191773e-10] | final_max_err=0.000002 | last_max_vel_cmd=0.00023
+waypoint=01/19 | reached=True | final_err=[-9.90007891e-04 -9.92119940e-03  1.79266166e-04 -3.60819339e-03
+ -4.75216459e-05 -7.56401651e-03 -1.35855363e-03] | final_max_err=0.009921 | last_max_vel_cmd=0.03292
+waypoint=02/19 | reached=True | final_err=[-9.84789304e-04 -9.86630833e-03  2.02981915e-04 -3.49912299e-03
+ -5.00172253e-05 -8.00598958e-03 -1.49467668e-03] | final_max_err=0.009866 | last_max_vel_cmd=0.03273
+waypoint=03/19 | reached=True | final_err=[-9.97595748e-04 -9.99530012e-03  2.02553116e-04 -3.53945108e-03
+ -5.07864971e-05 -8.18325154e-03 -1.54019000e-03] | final_max_err=0.009995 | last_max_vel_cmd=0.03316
+waypoint=04/19 | reached=True | final_err=[-9.85182186e-04 -9.87290787e-03  1.79238412e-04 -3.49340072e-03
+ -5.02964446e-05 -8.11829940e-03 -1.53326930e-03] | final_max_err=0.009873 | last_max_vel_cmd=0.03276
+waypoint=05/19 | reached=True | final_err=[-9.87297394e-04 -9.99438388e-03  1.33358473e-04 -3.53516428e-03
+ -4.60923988e-05 -8.18572868e-03 -1.55512871e-03] | final_max_err=0.009994 | last_max_vel_cmd=0.03319
+waypoint=06/19 | reached=True | final_err=[-1.00443972e-03 -9.88613694e-03  7.81784599e-05 -3.49639125e-03
+ -8.23469014e-06 -7.99191788e-03 -1.57027507e-03] | final_max_err=0.009886 | last_max_vel_cmd=0.03284
+waypoint=07/19 | reached=True | final_err=[-1.00293475e-03 -9.99139435e-03  1.21494072e-06 -3.54194684e-03
+ -3.98232344e-05 -8.16641355e-03 -1.56033602e-03] | final_max_err=0.009991 | last_max_vel_cmd=0.03315
+waypoint=08/19 | reached=True | final_err=[-9.85392964e-04 -9.86353868e-03 -4.95726347e-05 -3.49517593e-03
+ -5.01221983e-05 -8.11510657e-03 -1.53756035e-03] | final_max_err=0.009864 | last_max_vel_cmd=0.03273
+waypoint=09/19 | reached=True | final_err=[-9.97198100e-04 -9.98144610e-03 -5.99799608e-05 -3.54163370e-03
+ -5.29532503e-05 -8.20310698e-03 -1.54940993e-03] | final_max_err=0.009981 | last_max_vel_cmd=0.03312
+waypoint=10/19 | reached=True | final_err=[-9.99192971e-04 -9.99500487e-03 -4.06307575e-05 -3.54757689e-03
+ -5.33804295e-05 -8.21888426e-03 -1.55206222e-03] | final_max_err=0.009995 | last_max_vel_cmd=0.03316
+waypoint=11/19 | reached=True | final_err=[-9.99445098e-04 -9.99383702e-03 -6.63900367e-06 -3.54885561e-03
+ -5.32655925e-05 -8.22218502e-03 -1.55251411e-03] | final_max_err=0.009994 | last_max_vel_cmd=0.03316
+waypoint=12/19 | reached=True | final_err=[-1.05501045e-03 -9.99237945e-03  5.98424357e-05 -3.55148769e-03
+ -3.29018918e-05 -8.21397901e-03 -1.56954182e-03] | final_max_err=0.009992 | last_max_vel_cmd=0.03316
+waypoint=13/19 | reached=True | final_err=[-1.06407192e-03 -9.99211395e-03  6.97304179e-05 -3.55176609e-03
+ -1.92374381e-05 -8.19012542e-03 -1.57996285e-03] | final_max_err=0.009992 | last_max_vel_cmd=0.03316
+waypoint=14/19 | reached=True | final_err=[-1.06259756e-03 -9.99841777e-03  7.15150453e-05 -3.55163591e-03
+  8.32659194e-06 -8.11750981e-03 -1.59545266e-03] | final_max_err=0.009998 | last_max_vel_cmd=0.03320
+waypoint=15/19 | reached=True | final_err=[-1.04049107e-03 -9.99985506e-03  7.19082598e-05 -3.55132149e-03
+  1.85024056e-05 -8.07372570e-03 -1.59641579e-03] | final_max_err=0.010000 | last_max_vel_cmd=0.03321
+waypoint=16/19 | reached=True | final_err=[-1.01687815e-03 -9.99218570e-03  7.19627276e-05 -3.55113520e-03
+  4.72638138e-06 -8.09215420e-03 -1.58367122e-03] | final_max_err=0.009992 | last_max_vel_cmd=0.03318
+waypoint=17/19 | reached=True | final_err=[-1.00654273e-03 -9.99072953e-03  7.19702725e-05 -3.55109760e-03
+  9.35376571e-06 -8.07252973e-03 -1.58049558e-03] | final_max_err=0.009991 | last_max_vel_cmd=0.03318
+waypoint=18/19 | reached=True | final_err=[-1.00121381e-03 -9.98230117e-03  7.19713176e-05 -3.55112332e-03
+ -5.20445174e-07 -8.09603153e-03 -1.57315581e-03] | final_max_err=0.009982 | last_max_vel_cmd=0.03315
+waypoint=19/19 | reached=True | final_err=[-9.99849719e-04 -9.98172837e-03  7.19714624e-05 -3.55116775e-03
+  7.67714504e-06 -8.07624193e-03 -1.57295524e-03] | final_max_err=0.009982 | last_max_vel_cmd=0.03315
+Completed return_home in 2693 simulation steps.
+
+=== Final Cube Pose ===
+Cube position: [ 0.57338626 -0.13627303  0.07598935]
+Saved trajectory log to results/m2/trajectory_log.json
+
+Stopping simulation...
+
+Demo total time: 381.3s
+
+================================================================================
+Residual demo run started: 2026-04-16T19:18:29
+================================================================================
+Log file: results/m2\demo_log.txt
+Loaded model from results/m2/models\final_model.pt, mode=planner_only, perturb_xy_range=0.06
+[demo] Cube NOMINAL pose: xy=(0.7000, 0.0000) m, z=0.0790 m, yaw=0.0000 rad
+[demo] Planning trajectory from NOMINAL cube pose (before perturbation)
+[demo] Holding at nominal for 10.0s -- start your recorder now. Perturbation will be applied after the countdown.
+[demo]   ... perturbing in  9.0s
+[demo]   ... perturbing in  8.0s
+[demo]   ... perturbing in  7.0s
+[demo]   ... perturbing in  6.0s
+[demo]   ... perturbing in  5.0s
+[demo]   ... perturbing in  4.0s
+[demo]   ... perturbing in  3.0s
+[demo]   ... perturbing in  2.0s
+[demo]   ... perturbing in  1.0s
+[demo] Cube PERTURBED pose: xy=(0.7455, 0.0341) m, z=0.0776 m, yaw=-0.0305 rad
+[demo] Perturbation delta: dx=+0.0455 m, dy=+0.0341 m, dz=-0.0014 m, dyaw=-0.0305 rad (-1.75 deg)
+[demo] Planner targets are from NOMINAL — robot will aim 5.7cm away from actual cube
+
+=== Phase 1: home ===
+
+=== Phase 2: pre_grasp (planner_only) ===
+
+=== Phase 3: grasp_descend (planner_only) ===
+
+=== Phase 4: close_gripper ===
+
+=== Phase 5: validate_and_attach ===
+grasp_check | ee_to_cube_dist=0.05212 | min_finger_to_cube_dist=0.06114 | total_contacts=1 | finger_contacts=1 | dist_ok=True | finger_dist_ok=False | total_contact_ok=True | finger_contact_ok=True | ready=False
+left_finger_pos=[ 7.00300753e-01 -3.48869100e-04  1.42045841e-01]
+right_finger_pos=[ 7.00301170e-01 -3.48869886e-04  1.42045841e-01]
+Initial grasp check failed. Trying deeper descend retry...
+grasp_descend_retry IK target joints: [-0.04316772  0.97444296 -0.03353062 -1.24547817  0.03480904  2.21939225
+  0.70236198]
+
+=== Planner result: grasp_descend_retry ===
+success: False
+num_nodes: 0
+message: Start is in collision.
+Planner failed. Falling back to interpolated joint trajectory.
+Fallback interpolated waypoints: 20
+
+=== Executing grasp_descend_retry ===
+Num waypoints: 20
+waypoint=00/19 | reached=True | final_err=[-2.11773062e-06  4.03667285e-06  1.00706595e-05 -4.68574075e-06
+  3.61573872e-06  3.31043791e-05 -3.81512585e-05] | final_max_err=0.000038 | last_max_vel_cmd=0.00334
+waypoint=01/19 | reached=True | final_err=[-7.78776652e-05  2.79373747e-03  8.36514121e-05  6.07631197e-04
+  1.43997049e-04  2.39696139e-03 -5.42798803e-05] | final_max_err=0.002794 | last_max_vel_cmd=0.00663
+waypoint=02/19 | reached=True | final_err=[-1.55985402e-04  5.55795040e-03  2.33353752e-04  1.21110300e-03
+  2.87143767e-04  4.75638551e-03 -8.90626433e-05] | final_max_err=0.005558 | last_max_vel_cmd=0.01739
+waypoint=03/19 | reached=True | final_err=[-0.00023141  0.0082773   0.00034724  0.00180536  0.00042729  0.00707772
+ -0.00011612] | final_max_err=0.008277 | last_max_vel_cmd=0.02561
+waypoint=04/19 | reached=True | final_err=[-0.0003065   0.01096244  0.00047194  0.00239098  0.00056613  0.0093756
+ -0.00014548] | final_max_err=0.010962 | last_max_vel_cmd=0.03493
+waypoint=05/19 | reached=True | final_err=[-0.0003328   0.01184693  0.00052901  0.00260135  0.00061747  0.01033674
+ -0.00015586] | final_max_err=0.011847 | last_max_vel_cmd=0.03934
+waypoint=06/19 | reached=True | final_err=[-0.00033679  0.01192081  0.00055215  0.00263594  0.0006287   0.01065672
+ -0.00015822] | final_max_err=0.011921 | last_max_vel_cmd=0.03958
+waypoint=07/19 | reached=True | final_err=[-0.00034003  0.01198078  0.00057081  0.00266374  0.00063809  0.01092426
+ -0.00016024] | final_max_err=0.011981 | last_max_vel_cmd=0.03978
+waypoint=08/19 | reached=True | final_err=[-0.00033811  0.01186342  0.00057926  0.00265097  0.00063752  0.01101567
+ -0.00016021] | final_max_err=0.011863 | last_max_vel_cmd=0.03939
+waypoint=09/19 | reached=True | final_err=[-0.00034109  0.0119342   0.00059252  0.00267597  0.00064538  0.01122437
+ -0.00016194] | final_max_err=0.011934 | last_max_vel_cmd=0.03963
+waypoint=10/19 | reached=True | final_err=[-0.00034351  0.01199164  0.00060314  0.0026961   0.00065191  0.01139886
+ -0.0001634 ] | final_max_err=0.011992 | last_max_vel_cmd=0.03982
+waypoint=11/19 | reached=True | final_err=[-0.00034088  0.01187212  0.00060468  0.00267683  0.0006488   0.01140777
+ -0.00016287] | final_max_err=0.011872 | last_max_vel_cmd=0.03942
+waypoint=12/19 | reached=True | final_err=[-0.00034332  0.01194126  0.00061272  0.00269699  0.00065469  0.0115522
+ -0.0001642 ] | final_max_err=0.011941 | last_max_vel_cmd=0.03965
+waypoint=13/19 | reached=True | final_err=[-0.00034531  0.01199738  0.0006191   0.00271323  0.00065956  0.01167295
+ -0.00016532] | final_max_err=0.011997 | last_max_vel_cmd=0.03984
+waypoint=14/19 | reached=True | final_err=[-0.00034231  0.01187672  0.000617    0.00269066  0.00065499  0.01163422
+ -0.00016449] | final_max_err=0.011877 | last_max_vel_cmd=0.03944
+waypoint=15/19 | reached=True | final_err=[-0.00034447  0.011945    0.00062228  0.00270836  0.00065973  0.01174152
+ -0.00016557] | final_max_err=0.011945 | last_max_vel_cmd=0.03966
+waypoint=16/19 | reached=True | final_err=[-0.00034163  0.0118348   0.00061924  0.00268703  0.00065504  0.01169087
+ -0.0001647 ] | final_max_err=0.011835 | last_max_vel_cmd=0.03930
+waypoint=17/19 | reached=True | final_err=[-0.00034391  0.01191098  0.00062381  0.00270565  0.00065969  0.01178889
+ -0.00016575] | final_max_err=0.011911 | last_max_vel_cmd=0.03955
+waypoint=18/19 | reached=True | final_err=[-0.00034576  0.01197281  0.00062738  0.00272066  0.00066353  0.01187084
+ -0.00016664] | final_max_err=0.011973 | last_max_vel_cmd=0.03976
+waypoint=19/19 | reached=True | final_err=[-0.00034264  0.01185706  0.00062286  0.00269703  0.00065805  0.01179771
+ -0.0001656 ] | final_max_err=0.011857 | last_max_vel_cmd=0.03937
+Completed grasp_descend_retry in 231 simulation steps.
+grasp_check | ee_to_cube_dist=0.20328 | min_finger_to_cube_dist=0.20342 | total_contacts=0 | finger_contacts=0 | dist_ok=False | finger_dist_ok=False | total_contact_ok=False | finger_contact_ok=False | ready=False
+left_finger_pos=[ 7.00054467e-01 -3.82502156e-04  1.13434665e-01]
+right_finger_pos=[ 7.00054407e-01 -3.82503436e-04  1.13434665e-01]
+Grasp validation failed even after retry. Object will NOT be attached.
+Grasp validation failed — demo ending early.
+Saved trajectory log to results/m2/trajectory_log.json
+
+Demo total time: 128.3s
+
+================================================================================
+Residual demo run started: 2026-04-16T19:30:56
+================================================================================
+Log file: results/m2\demo_log.txt
+Loaded model from results/m2/models\final_model.pt, mode=planner_only
+Perturbation ranges: xy=0.0, z=0.0, yaw=0.0
+[demo] Cube NOMINAL pose: xy=(0.7000, 0.0000) m, z=0.0790 m, yaw=0.0000 rad
+[demo] Planning trajectory from NOMINAL cube pose (before perturbation)
+
+=== Phase 1: home ===
+
+=== Phase 2: pre_grasp (planner_only) ===
+
+Demo total time: 27.7s
+
+================================================================================
+Residual demo run started: 2026-04-16T19:33:48
+================================================================================
+Log file: results/m2\demo_log.txt
+Loaded model from results/m2/models\final_model.pt, mode=planner_only
+Perturbation ranges: xy=0.0, z=0.0, yaw=0.0
+[demo] Cube NOMINAL pose: xy=(0.7000, 0.0000) m, z=0.0790 m, yaw=0.0000 rad
+[demo] Planning trajectory from NOMINAL cube pose (before perturbation)
+
+=== Phase 1: home ===
+
+=== Phase 2: pre_grasp (planner_only) ===
+
+Demo total time: 45.0s
+
+================================================================================
+Residual demo run started: 2026-04-16T19:35:13
+================================================================================
+Log file: results/m2\demo_log.txt
+Loaded model from results/m2/models\final_model.pt, mode=planner_only
+Perturbation ranges: xy=0.0, z=0.0, yaw=0.0
+[demo] Cube NOMINAL pose: xy=(0.7000, 0.0000) m, z=0.0790 m, yaw=0.0000 rad
+[demo] Planning trajectory from NOMINAL cube pose (before perturbation)
+
+=== Phase 1: home ===
+
+=== Phase 2: pre_grasp (planner_only) ===
+
+=== Phase 3: grasp_descend (planner_only) ===
+
+=== Phase 4: close_gripper ===
+
+=== Phase 5: validate_and_attach ===
+grasp_check | ee_to_cube_dist=0.02266 | min_finger_to_cube_dist=0.04960 | total_contacts=4 | finger_contacts=4 | dist_ok=True | finger_dist_ok=True | total_contact_ok=True | finger_contact_ok=True | ready=True
+left_finger_pos=[0.72338778 0.00081252 0.14368451]
+right_finger_pos=[0.67583287 0.00080405 0.14366995]
+Grasp validated. Object attached.
+
+=== Phase 6: lift (planner_only) ===
+
+=== Phase 7: transfer_pre_place ===
+transfer_pre_place IK target joints: [ 0.12134505  0.35098208 -0.01170772 -1.84367391  0.0049563   2.19460023
+  0.8928539 ]
+
+=== Planner result: transfer_pre_place ===
+success: True
+num_nodes: 2
+message: Direct path found.
+Sparse path nodes before smoothing: 2
+Sparse path nodes after smoothing:  2
+Sparse path length before smoothing: 0.9284
+Sparse path length after smoothing:  0.9284
+Planner path waypoints: 13
+
+=== Executing transfer_pre_place ===
+Num waypoints: 13
+waypoint=00/12 | reached=True | final_err=[ 9.72292897e-09  1.20129723e-06 -2.56328900e-06  1.34815396e-05
+ -1.31710278e-07  1.43527696e-06  4.63190475e-06] | final_max_err=0.000013 | last_max_vel_cmd=0.00185
+waypoint=01/12 | reached=True | final_err=[ 0.00256886 -0.0059277   0.00027372 -0.00999303 -0.00039847  0.00711352
+  0.00454964] | final_max_err=0.009993 | last_max_vel_cmd=0.03439
+waypoint=02/12 | reached=True | final_err=[ 0.00262466 -0.00605669  0.00023526 -0.0099538  -0.00042169  0.00774572
+  0.00518792] | final_max_err=0.009954 | last_max_vel_cmd=0.03442
+waypoint=03/12 | reached=True | final_err=[ 0.0025974  -0.00599706  0.00021264 -0.00986085 -0.00041989  0.00778175
+  0.00527274] | final_max_err=0.009861 | last_max_vel_cmd=0.03424
+waypoint=04/12 | reached=True | final_err=[ 0.00259302 -0.00599084  0.00020028 -0.00990243 -0.0004176   0.00778438
+  0.00527754] | final_max_err=0.009902 | last_max_vel_cmd=0.03451
+
+================================================================================
+Residual demo run started: 2026-04-16T19:38:17
+================================================================================
+Log file: results/m2\demo_log.txt
+Loaded model from results/m2/models\final_model.pt, mode=planner_only
+Perturbation ranges: xy=0.0, z=0.0, yaw=0.0
+[demo] Cube NOMINAL pose: xy=(0.7000, 0.0000) m, z=0.0790 m, yaw=0.0000 rad
+[demo] Planning trajectory from NOMINAL cube pose (before perturbation)
+
+=== Phase 1: home ===
+
+=== Phase 2: pre_grasp (planner_only) ===
+
+=== Phase 3: grasp_descend (planner_only) ===
+
+=== Phase 4: close_gripper ===
+
+=== Phase 5: validate_and_attach ===
+grasp_check | ee_to_cube_dist=0.02266 | min_finger_to_cube_dist=0.04960 | total_contacts=4 | finger_contacts=4 | dist_ok=True | finger_dist_ok=True | total_contact_ok=True | finger_contact_ok=True | ready=True
+left_finger_pos=[0.72338778 0.00081252 0.14368451]
+right_finger_pos=[0.67583287 0.00080405 0.14366995]
+Grasp validated. Object attached.
+
+=== Phase 6: lift (planner_only) ===
+
+=== Phase 7: transfer_pre_place ===
+transfer_pre_place IK target joints: [ 0.12134505  0.35098208 -0.01170772 -1.84367391  0.0049563   2.19460023
+  0.8928539 ]
+
+=== Planner result: transfer_pre_place ===
+success: True
+num_nodes: 2
+message: Direct path found.
+Sparse path nodes before smoothing: 2
+Sparse path nodes after smoothing:  2
+Sparse path length before smoothing: 0.9284
+Sparse path length after smoothing:  0.9284
+Planner path waypoints: 13
+
+=== Executing transfer_pre_place ===
+Num waypoints: 13
+waypoint=00/12 | reached=True | final_err=[ 9.72292897e-09  1.20129723e-06 -2.56328900e-06  1.34815396e-05
+ -1.31710278e-07  1.43527696e-06  4.63190475e-06] | final_max_err=0.000013 | last_max_vel_cmd=0.00185
+waypoint=01/12 | reached=True | final_err=[ 0.00256886 -0.0059277   0.00027372 -0.00999303 -0.00039847  0.00711352
+  0.00454964] | final_max_err=0.009993 | last_max_vel_cmd=0.03439
+waypoint=02/12 | reached=True | final_err=[ 0.00262466 -0.00605669  0.00023526 -0.0099538  -0.00042169  0.00774572
+  0.00518792] | final_max_err=0.009954 | last_max_vel_cmd=0.03442
+waypoint=03/12 | reached=True | final_err=[ 0.0025974  -0.00599706  0.00021264 -0.00986085 -0.00041989  0.00778175
+  0.00527274] | final_max_err=0.009861 | last_max_vel_cmd=0.03424
+waypoint=04/12 | reached=True | final_err=[ 0.00259302 -0.00599084  0.00020028 -0.00990243 -0.0004176   0.00778438
+  0.00527754] | final_max_err=0.009902 | last_max_vel_cmd=0.03451
+waypoint=05/12 | reached=True | final_err=[ 0.00259233 -0.0059929   0.00019061 -0.00995405 -0.00041509  0.0077802
+  0.00526793] | final_max_err=0.009954 | last_max_vel_cmd=0.03479
+waypoint=06/12 | reached=True | final_err=[ 0.00259224 -0.00599592  0.00018228 -0.00999854 -0.00041331  0.00777482
+  0.00526035] | final_max_err=0.009999 | last_max_vel_cmd=0.03503
+waypoint=07/12 | reached=True | final_err=[ 0.00255641 -0.00591564  0.00016857 -0.00988532 -0.00040701  0.00767746
+  0.00520524] | final_max_err=0.009885 | last_max_vel_cmd=0.03469
+waypoint=08/12 | reached=True | final_err=[ 0.00255072 -0.00590477  0.0001611  -0.00989228 -0.0004076   0.0076533
+  0.00519759] | final_max_err=0.009892 | last_max_vel_cmd=0.03477
+waypoint=09/12 | reached=True | final_err=[ 0.00254982 -0.0059046   0.00015517 -0.00991079 -0.00041157  0.00764451
+  0.00520656] | final_max_err=0.009911 | last_max_vel_cmd=0.03487
+waypoint=10/12 | reached=True | final_err=[ 0.00254967 -0.00590582  0.00015001 -0.00992655 -0.00041824  0.00763907
+  0.00522452] | final_max_err=0.009927 | last_max_vel_cmd=0.03495
+waypoint=11/12 | reached=True | final_err=[ 0.00254962 -0.005907    0.00014544 -0.00993846 -0.00042742  0.00763447
+  0.00524935] | final_max_err=0.009938 | last_max_vel_cmd=0.03502
+waypoint=12/12 | reached=True | final_err=[ 0.00254957 -0.00590794  0.0001414  -0.00994716 -0.00043893  0.00763015
+  0.00528028] | final_max_err=0.009947 | last_max_vel_cmd=0.03506
+Completed transfer_pre_place in 1566 simulation steps.
+
+=== Phase 8: place_descend ===
+place_descend IK target joints: [ 0.11977933  0.59819977 -0.00948255 -1.88642485  0.00873919  2.48455965
+  0.89042156]
+
+=== Planner result: place_descend ===
+success: True
+num_nodes: 2
+message: Direct path found.
+Sparse path nodes before smoothing: 2
+Sparse path nodes after smoothing:  2
+Sparse path length before smoothing: 0.3868
+Sparse path length after smoothing:  0.3868
+Planner path waypoints: 6
+
+=== Executing place_descend ===
+Num waypoints: 6
+waypoint=00/05 | reached=True | final_err=[ 1.18338717e-08  9.32287315e-08 -4.68942233e-06  7.59376526e-07
+  4.57199075e-07  4.59818321e-08  3.79351837e-06] | final_max_err=0.000005 | last_max_vel_cmd=0.00059
+waypoint=01/05 | reached=True | final_err=[ 3.05483498e-05  7.44744250e-03 -1.69005647e-04 -1.42044946e-03
+  1.88211301e-04  1.19805294e-02  3.29188349e-04] | final_max_err=0.011981 | last_max_vel_cmd=0.03411
+waypoint=02/05 | reached=True | final_err=[ 2.83053658e-05  6.88067710e-03 -1.92851163e-04 -1.27128549e-03
+  1.95435463e-04  1.18951167e-02  3.81103882e-04] | final_max_err=0.011895 | last_max_vel_cmd=0.03386
+waypoint=03/05 | reached=True | final_err=[ 2.80686494e-05  6.80790933e-03 -1.75947236e-04 -1.25593738e-03
+  1.90942579e-04  1.18791935e-02  3.87630419e-04] | final_max_err=0.011879 | last_max_vel_cmd=0.03381
+waypoint=04/05 | reached=True | final_err=[ 2.80719801e-05  6.79659245e-03 -1.53964908e-04 -1.25510927e-03
+  1.82629797e-04  1.18747877e-02  3.86197176e-04] | final_max_err=0.011875 | last_max_vel_cmd=0.03380
+waypoint=05/05 | reached=False | final_err=[ 2.03651361e-06  1.31841367e-02  5.57641620e-03 -5.01936879e-03
+  6.30888702e-03  1.49577521e-02  1.94402265e-03] | final_max_err=0.014958 | last_max_vel_cmd=0.07224
+Stopped early at waypoint 5 because target was not reached in time.
+
+=== Phase 9: detach_object ===
+
+=== Phase 10: open_gripper ===
+
+=== Phase 11: post_place_retreat ===
+post_place_retreat IK target joints: [ 0.12100787  0.39059397 -0.01126085 -1.86736853  0.00554237  2.25795903
+  0.89247761]
+
+=== Planner result: post_place_retreat ===
+success: True
+num_nodes: 2
+message: Direct path found.
+Sparse path nodes before smoothing: 2
+Sparse path nodes after smoothing:  2
+Sparse path length before smoothing: 0.3104
+Sparse path length after smoothing:  0.3104
+Planner path waypoints: 5
+
+=== Executing post_place_retreat ===
+Num waypoints: 5
+waypoint=00/04 | reached=True | final_err=[ 9.33184571e-07 -3.58495394e-07  0.00000000e+00 -5.81376169e-09
+  1.25992507e-06  2.20371068e-06 -1.45467442e-06] | final_max_err=0.000002 | last_max_vel_cmd=0.00022
+waypoint=01/04 | reached=True | final_err=[ 4.40313222e-05 -5.95250817e-03  1.60972928e-04  3.13661806e-04
+  1.93463883e-04 -9.93004195e-03  1.96836734e-04] | final_max_err=0.009930 | last_max_vel_cmd=0.02827
+waypoint=02/04 | reached=True | final_err=[ 3.88608054e-05 -5.57344785e-03  1.69654432e-04  2.82195653e-04
+  1.92717987e-04 -9.91038840e-03  2.08923731e-04] | final_max_err=0.009910 | last_max_vel_cmd=0.02822
+waypoint=03/04 | reached=True | final_err=[ 3.84313072e-05 -5.53466395e-03  1.80939323e-04  2.76358894e-04
+  1.95020787e-04 -9.90761132e-03  2.11001436e-04] | final_max_err=0.009908 | last_max_vel_cmd=0.02821
+waypoint=04/04 | reached=True | final_err=[ 3.81131623e-05 -5.53027598e-03  2.00966333e-04  2.76556929e-04
+  1.95700423e-04 -9.90721582e-03  2.11350198e-04] | final_max_err=0.009907 | last_max_vel_cmd=0.02821
+Completed post_place_retreat in 644 simulation steps.
+
+=== Phase 12: return_home ===
+
+=== Planner result: return_home ===
+success: True
+num_nodes: 2
+message: Direct path found.
+Sparse path nodes before smoothing: 2
+Sparse path nodes after smoothing:  2
+Sparse path length before smoothing: 1.4647
+Sparse path length after smoothing:  1.4647
+Planner path waypoints: 20
+
+=== Executing return_home ===
+Num waypoints: 20
+waypoint=00/19 | reached=True | final_err=[-2.92130356e-08  1.51281933e-08  1.74943028e-06  2.17470727e-07
+ -4.63844667e-08 -1.58536517e-09 -1.00279740e-09] | final_max_err=0.000002 | last_max_vel_cmd=0.00022
+waypoint=01/19 | reached=True | final_err=[-1.01022001e-03 -9.91043234e-03  1.99011760e-04 -3.60889232e-03
+ -5.94324901e-05 -7.56320803e-03 -1.34775016e-03] | final_max_err=0.009910 | last_max_vel_cmd=0.03288
+waypoint=02/19 | reached=True | final_err=[-1.01895524e-03 -9.99376411e-03  2.22989775e-04 -3.55214774e-03
+ -6.33715285e-05 -8.10124604e-03 -1.49893700e-03] | final_max_err=0.009994 | last_max_vel_cmd=0.03316
+waypoint=03/19 | reached=True | final_err=[-1.00583192e-03 -9.86528845e-03  2.20266061e-04 -3.49426802e-03
+ -6.30649353e-05 -8.10274361e-03 -1.51491457e-03] | final_max_err=0.009865 | last_max_vel_cmd=0.03273
+waypoint=04/19 | reached=True | final_err=[-1.01772276e-03 -9.98393146e-03  1.99480966e-04 -3.54068309e-03
+ -6.37119020e-05 -8.20027139e-03 -1.53484076e-03] | final_max_err=0.009984 | last_max_vel_cmd=0.03312
+waypoint=05/19 | reached=True | final_err=[-9.87722153e-04 -9.86523622e-03  1.45146007e-04 -3.49148445e-03
+ -4.96918921e-05 -8.08222505e-03 -1.53627931e-03] | final_max_err=0.009865 | last_max_vel_cmd=0.03276
+waypoint=06/19 | reached=True | final_err=[-1.03876646e-03 -9.99729183e-03  1.01416018e-04 -3.54389865e-03
+ -2.00299299e-05 -8.06918611e-03 -1.57312956e-03] | final_max_err=0.009997 | last_max_vel_cmd=0.03321
+waypoint=07/19 | reached=True | final_err=[-1.02566309e-03 -9.99742306e-03  2.48251713e-05 -3.54847017e-03
+ -5.24895687e-05 -8.18004621e-03 -1.55117591e-03] | final_max_err=0.009997 | last_max_vel_cmd=0.03317
+waypoint=08/19 | reached=True | final_err=[-1.01998439e-03 -9.99327015e-03 -2.40739464e-05 -3.54873796e-03
+ -6.35301504e-05 -8.21433402e-03 -1.54263972e-03] | final_max_err=0.009993 | last_max_vel_cmd=0.03316
+waypoint=09/19 | reached=True | final_err=[-1.01961941e-03 -9.99004681e-03 -3.48264941e-05 -3.54871808e-03
+ -6.59239117e-05 -8.22061812e-03 -1.54080564e-03] | final_max_err=0.009990 | last_max_vel_cmd=0.03315
+waypoint=10/19 | reached=True | final_err=[-1.01993279e-03 -9.98682356e-03 -1.54398486e-05 -3.54899495e-03
+ -6.62656367e-05 -8.22138914e-03 -1.54051943e-03] | final_max_err=0.009987 | last_max_vel_cmd=0.03313
+waypoint=11/19 | reached=True | final_err=[-1.01994362e-03 -9.98333130e-03  1.84016878e-05 -3.54958697e-03
+ -6.61354076e-05 -8.22193401e-03 -1.54033892e-03] | final_max_err=0.009983 | last_max_vel_cmd=0.03312
+waypoint=12/19 | reached=True | final_err=[-1.07541405e-03 -9.98155849e-03  8.44870438e-05 -3.55216305e-03
+ -4.57139003e-05 -8.21309123e-03 -1.55726921e-03] | final_max_err=0.009982 | last_max_vel_cmd=0.03312
+waypoint=13/19 | reached=True | final_err=[-1.08464261e-03 -9.98128598e-03  9.43211736e-05 -3.55243718e-03
+ -3.19185731e-05 -8.18887359e-03 -1.56774217e-03] | final_max_err=0.009981 | last_max_vel_cmd=0.03313
+waypoint=14/19 | reached=True | final_err=[-1.08318971e-03 -9.98758814e-03  9.60916812e-05 -3.55230446e-03
+ -4.34317330e-06 -8.11619309e-03 -1.58322744e-03] | final_max_err=0.009988 | last_max_vel_cmd=0.03317
+waypoint=15/19 | reached=True | final_err=[-1.06106213e-03 -9.98898576e-03  9.64806369e-05 -3.55198358e-03
+  5.69428065e-06 -8.07272958e-03 -1.58410112e-03] | final_max_err=0.009989 | last_max_vel_cmd=0.03318
+waypoint=16/19 | reached=True | final_err=[-1.03743638e-03 -9.98131054e-03  9.65345148e-05 -3.55179188e-03
+ -8.11777142e-06 -8.09124571e-03 -1.57133897e-03] | final_max_err=0.009981 | last_max_vel_cmd=0.03314
+waypoint=17/19 | reached=True | final_err=[-1.02707893e-03 -9.97985229e-03  9.65419779e-05 -3.55175188e-03
+ -3.50836270e-06 -8.07165091e-03 -1.56815212e-03] | final_max_err=0.009980 | last_max_vel_cmd=0.03315
+waypoint=18/19 | reached=True | final_err=[-1.02170967e-03 -9.97142322e-03  9.65430117e-05 -3.55177703e-03
+ -1.33890838e-05 -8.09515447e-03 -1.56080759e-03] | final_max_err=0.009971 | last_max_vel_cmd=0.03311
+waypoint=19/19 | reached=True | final_err=[-1.02032517e-03 -9.97098852e-03  9.65431549e-05 -3.55182158e-03
+ -5.19478698e-06 -8.07537077e-03 -1.56060561e-03] | final_max_err=0.009971 | last_max_vel_cmd=0.03312
+Completed return_home in 2691 simulation steps.
+
+=== Final Cube Pose ===
+Cube position: [ 0.58829384 -0.12560256  0.0759894 ]
+Saved trajectory log to results/m2/trajectory_log.json
+
+Stopping simulation...
+
+Demo total time: 315.5s
+
+================================================================================
+Residual demo run started: 2026-04-16T19:45:05
+================================================================================
+Log file: results/m2\demo_log.txt
+Loaded model from results/m2/models\final_model.pt, mode=planner_only
+Perturbation ranges: xy=0.0, z=0.0, yaw=0.0
+[demo] Cube NOMINAL pose: xy=(0.7000, 0.0000) m, z=0.0790 m, yaw=0.0000 rad
+[demo] Planning trajectory from NOMINAL cube pose (before perturbation)
+
+=== Phase 1: home ===
+
+=== Phase 2: pre_grasp (classical) ===
+
+=== Phase 3: grasp_descend (classical) ===
+
+=== Phase 4: close_gripper ===
+
+=== Phase 5: validate_and_attach ===
+grasp_check | ee_to_cube_dist=0.02266 | min_finger_to_cube_dist=0.04960 | total_contacts=4 | finger_contacts=4 | dist_ok=True | finger_dist_ok=True | total_contact_ok=True | finger_contact_ok=True | ready=True
+left_finger_pos=[0.72338778 0.00081252 0.14368451]
+right_finger_pos=[0.67583287 0.00080405 0.14366995]
+Grasp validated. Object attached.
+
+=== Phase 6: lift (classical) ===
+
+=== Phase 7: transfer_pre_place ===
+transfer_pre_place IK target joints: [ 0.12134505  0.35098208 -0.01170772 -1.84367391  0.0049563   2.19460023
+  0.8928539 ]
+
+=== Planner result: transfer_pre_place ===
+success: True
+num_nodes: 2
+message: Direct path found.
+Sparse path nodes before smoothing: 2
+Sparse path nodes after smoothing:  2
+Sparse path length before smoothing: 0.9284
+Sparse path length after smoothing:  0.9284
+Planner path waypoints: 13
+
+=== Executing transfer_pre_place ===
+Num waypoints: 13
+waypoint=00/12 | reached=True | final_err=[ 9.72292897e-09  1.20129723e-06 -2.56328900e-06  1.34815396e-05
+ -1.31710278e-07  1.43527696e-06  4.63190475e-06] | final_max_err=0.000013 | last_max_vel_cmd=0.00185
+waypoint=01/12 | reached=True | final_err=[ 0.00256886 -0.0059277   0.00027372 -0.00999303 -0.00039847  0.00711352
+  0.00454964] | final_max_err=0.009993 | last_max_vel_cmd=0.03439
+waypoint=02/12 | reached=True | final_err=[ 0.00262466 -0.00605669  0.00023526 -0.0099538  -0.00042169  0.00774572
+  0.00518792] | final_max_err=0.009954 | last_max_vel_cmd=0.03442
+waypoint=03/12 | reached=True | final_err=[ 0.0025974  -0.00599706  0.00021264 -0.00986085 -0.00041989  0.00778175
+  0.00527274] | final_max_err=0.009861 | last_max_vel_cmd=0.03424
+waypoint=04/12 | reached=True | final_err=[ 0.00259302 -0.00599084  0.00020028 -0.00990243 -0.0004176   0.00778438
+  0.00527754] | final_max_err=0.009902 | last_max_vel_cmd=0.03451
+waypoint=05/12 | reached=True | final_err=[ 0.00259233 -0.0059929   0.00019061 -0.00995405 -0.00041509  0.0077802
+  0.00526793] | final_max_err=0.009954 | last_max_vel_cmd=0.03479
+waypoint=06/12 | reached=True | final_err=[ 0.00259224 -0.00599592  0.00018228 -0.00999854 -0.00041331  0.00777482
+  0.00526035] | final_max_err=0.009999 | last_max_vel_cmd=0.03503
+waypoint=07/12 | reached=True | final_err=[ 0.00255641 -0.00591564  0.00016857 -0.00988532 -0.00040701  0.00767746
+  0.00520524] | final_max_err=0.009885 | last_max_vel_cmd=0.03469
+waypoint=08/12 | reached=True | final_err=[ 0.00255072 -0.00590477  0.0001611  -0.00989228 -0.0004076   0.0076533
+  0.00519759] | final_max_err=0.009892 | last_max_vel_cmd=0.03477
+waypoint=09/12 | reached=True | final_err=[ 0.00254982 -0.0059046   0.00015517 -0.00991079 -0.00041157  0.00764451
+  0.00520656] | final_max_err=0.009911 | last_max_vel_cmd=0.03487
+waypoint=10/12 | reached=True | final_err=[ 0.00254967 -0.00590582  0.00015001 -0.00992655 -0.00041824  0.00763907
+  0.00522452] | final_max_err=0.009927 | last_max_vel_cmd=0.03495
+waypoint=11/12 | reached=True | final_err=[ 0.00254962 -0.005907    0.00014544 -0.00993846 -0.00042742  0.00763447
+  0.00524935] | final_max_err=0.009938 | last_max_vel_cmd=0.03502
+waypoint=12/12 | reached=True | final_err=[ 0.00254957 -0.00590794  0.0001414  -0.00994716 -0.00043893  0.00763015
+  0.00528028] | final_max_err=0.009947 | last_max_vel_cmd=0.03506
+Completed transfer_pre_place in 1566 simulation steps.
+
+=== Phase 8: place_descend ===
+place_descend IK target joints: [ 0.11977933  0.59819977 -0.00948255 -1.88642485  0.00873919  2.48455965
+  0.89042156]
+
+=== Planner result: place_descend ===
+success: True
+num_nodes: 2
+message: Direct path found.
+Sparse path nodes before smoothing: 2
+Sparse path nodes after smoothing:  2
+Sparse path length before smoothing: 0.3868
+Sparse path length after smoothing:  0.3868
+Planner path waypoints: 6
+
+=== Executing place_descend ===
+Num waypoints: 6
+waypoint=00/05 | reached=True | final_err=[ 1.18338717e-08  9.32287315e-08 -4.68942233e-06  7.59376526e-07
+  4.57199075e-07  4.59818321e-08  3.79351837e-06] | final_max_err=0.000005 | last_max_vel_cmd=0.00059
+waypoint=01/05 | reached=True | final_err=[ 3.05483498e-05  7.44744250e-03 -1.69005647e-04 -1.42044946e-03
+  1.88211301e-04  1.19805294e-02  3.29188349e-04] | final_max_err=0.011981 | last_max_vel_cmd=0.03411
+waypoint=02/05 | reached=True | final_err=[ 2.83053658e-05  6.88067710e-03 -1.92851163e-04 -1.27128549e-03
+  1.95435463e-04  1.18951167e-02  3.81103882e-04] | final_max_err=0.011895 | last_max_vel_cmd=0.03386
+waypoint=03/05 | reached=True | final_err=[ 2.80686494e-05  6.80790933e-03 -1.75947236e-04 -1.25593738e-03
+  1.90942579e-04  1.18791935e-02  3.87630419e-04] | final_max_err=0.011879 | last_max_vel_cmd=0.03381
+waypoint=04/05 | reached=True | final_err=[ 2.80719801e-05  6.79659245e-03 -1.53964908e-04 -1.25510927e-03
+  1.82629797e-04  1.18747877e-02  3.86197176e-04] | final_max_err=0.011875 | last_max_vel_cmd=0.03380
+waypoint=05/05 | reached=False | final_err=[ 2.03651361e-06  1.31841367e-02  5.57641620e-03 -5.01936879e-03
+  6.30888702e-03  1.49577521e-02  1.94402265e-03] | final_max_err=0.014958 | last_max_vel_cmd=0.07224
+Stopped early at waypoint 5 because target was not reached in time.
+
+=== Phase 9: detach_object ===
+
+=== Phase 10: open_gripper ===
+
+=== Phase 11: post_place_retreat ===
+post_place_retreat IK target joints: [ 0.12100787  0.39059397 -0.01126085 -1.86736853  0.00554237  2.25795903
+  0.89247761]
+
+=== Planner result: post_place_retreat ===
+success: True
+num_nodes: 2
+message: Direct path found.
+Sparse path nodes before smoothing: 2
+Sparse path nodes after smoothing:  2
+Sparse path length before smoothing: 0.3104
+Sparse path length after smoothing:  0.3104
+Planner path waypoints: 5
+
+=== Executing post_place_retreat ===
+Num waypoints: 5
+waypoint=00/04 | reached=True | final_err=[ 9.33184571e-07 -3.58495394e-07  0.00000000e+00 -5.81376169e-09
+  1.25992507e-06  2.20371068e-06 -1.45467442e-06] | final_max_err=0.000002 | last_max_vel_cmd=0.00022
+waypoint=01/04 | reached=True | final_err=[ 4.40313222e-05 -5.95250817e-03  1.60972928e-04  3.13661806e-04
+  1.93463883e-04 -9.93004195e-03  1.96836734e-04] | final_max_err=0.009930 | last_max_vel_cmd=0.02827
+waypoint=02/04 | reached=True | final_err=[ 3.88608054e-05 -5.57344785e-03  1.69654432e-04  2.82195653e-04
+  1.92717987e-04 -9.91038840e-03  2.08923731e-04] | final_max_err=0.009910 | last_max_vel_cmd=0.02822
+waypoint=03/04 | reached=True | final_err=[ 3.84313072e-05 -5.53466395e-03  1.80939323e-04  2.76358894e-04
+  1.95020787e-04 -9.90761132e-03  2.11001436e-04] | final_max_err=0.009908 | last_max_vel_cmd=0.02821
+waypoint=04/04 | reached=True | final_err=[ 3.81131623e-05 -5.53027598e-03  2.00966333e-04  2.76556929e-04
+  1.95700423e-04 -9.90721582e-03  2.11350198e-04] | final_max_err=0.009907 | last_max_vel_cmd=0.02821
+Completed post_place_retreat in 644 simulation steps.
+
+=== Phase 12: return_home ===
+
+=== Planner result: return_home ===
+success: True
+num_nodes: 2
+message: Direct path found.
+Sparse path nodes before smoothing: 2
+Sparse path nodes after smoothing:  2
+Sparse path length before smoothing: 1.4647
+Sparse path length after smoothing:  1.4647
+Planner path waypoints: 20
+
+=== Executing return_home ===
+Num waypoints: 20
+waypoint=00/19 | reached=True | final_err=[-2.92130356e-08  1.51281933e-08  1.74943028e-06  2.17470727e-07
+ -4.63844667e-08 -1.58536517e-09 -1.00279740e-09] | final_max_err=0.000002 | last_max_vel_cmd=0.00022
+waypoint=01/19 | reached=True | final_err=[-1.01022001e-03 -9.91043234e-03  1.99011760e-04 -3.60889232e-03
+ -5.94324901e-05 -7.56320803e-03 -1.34775016e-03] | final_max_err=0.009910 | last_max_vel_cmd=0.03288
+waypoint=02/19 | reached=True | final_err=[-1.01895524e-03 -9.99376411e-03  2.22989775e-04 -3.55214774e-03
+ -6.33715285e-05 -8.10124604e-03 -1.49893700e-03] | final_max_err=0.009994 | last_max_vel_cmd=0.03316
+waypoint=03/19 | reached=True | final_err=[-1.00583192e-03 -9.86528845e-03  2.20266061e-04 -3.49426802e-03
+ -6.30649353e-05 -8.10274361e-03 -1.51491457e-03] | final_max_err=0.009865 | last_max_vel_cmd=0.03273
+waypoint=04/19 | reached=True | final_err=[-1.01772276e-03 -9.98393146e-03  1.99480966e-04 -3.54068309e-03
+ -6.37119020e-05 -8.20027139e-03 -1.53484076e-03] | final_max_err=0.009984 | last_max_vel_cmd=0.03312
+waypoint=05/19 | reached=True | final_err=[-9.87722153e-04 -9.86523622e-03  1.45146007e-04 -3.49148445e-03
+ -4.96918921e-05 -8.08222505e-03 -1.53627931e-03] | final_max_err=0.009865 | last_max_vel_cmd=0.03276
+waypoint=06/19 | reached=True | final_err=[-1.03876646e-03 -9.99729183e-03  1.01416018e-04 -3.54389865e-03
+ -2.00299299e-05 -8.06918611e-03 -1.57312956e-03] | final_max_err=0.009997 | last_max_vel_cmd=0.03321
+waypoint=07/19 | reached=True | final_err=[-1.02566309e-03 -9.99742306e-03  2.48251713e-05 -3.54847017e-03
+ -5.24895687e-05 -8.18004621e-03 -1.55117591e-03] | final_max_err=0.009997 | last_max_vel_cmd=0.03317
+waypoint=08/19 | reached=True | final_err=[-1.01998439e-03 -9.99327015e-03 -2.40739464e-05 -3.54873796e-03
+ -6.35301504e-05 -8.21433402e-03 -1.54263972e-03] | final_max_err=0.009993 | last_max_vel_cmd=0.03316
+waypoint=09/19 | reached=True | final_err=[-1.01961941e-03 -9.99004681e-03 -3.48264941e-05 -3.54871808e-03
+ -6.59239117e-05 -8.22061812e-03 -1.54080564e-03] | final_max_err=0.009990 | last_max_vel_cmd=0.03315
+waypoint=10/19 | reached=True | final_err=[-1.01993279e-03 -9.98682356e-03 -1.54398486e-05 -3.54899495e-03
+ -6.62656367e-05 -8.22138914e-03 -1.54051943e-03] | final_max_err=0.009987 | last_max_vel_cmd=0.03313
+waypoint=11/19 | reached=True | final_err=[-1.01994362e-03 -9.98333130e-03  1.84016878e-05 -3.54958697e-03
+ -6.61354076e-05 -8.22193401e-03 -1.54033892e-03] | final_max_err=0.009983 | last_max_vel_cmd=0.03312
+waypoint=12/19 | reached=True | final_err=[-1.07541405e-03 -9.98155849e-03  8.44870438e-05 -3.55216305e-03
+ -4.57139003e-05 -8.21309123e-03 -1.55726921e-03] | final_max_err=0.009982 | last_max_vel_cmd=0.03312
+waypoint=13/19 | reached=True | final_err=[-1.08464261e-03 -9.98128598e-03  9.43211736e-05 -3.55243718e-03
+ -3.19185731e-05 -8.18887359e-03 -1.56774217e-03] | final_max_err=0.009981 | last_max_vel_cmd=0.03313
+waypoint=14/19 | reached=True | final_err=[-1.08318971e-03 -9.98758814e-03  9.60916812e-05 -3.55230446e-03
+ -4.34317330e-06 -8.11619309e-03 -1.58322744e-03] | final_max_err=0.009988 | last_max_vel_cmd=0.03317
+waypoint=15/19 | reached=True | final_err=[-1.06106213e-03 -9.98898576e-03  9.64806369e-05 -3.55198358e-03
+  5.69428065e-06 -8.07272958e-03 -1.58410112e-03] | final_max_err=0.009989 | last_max_vel_cmd=0.03318
+waypoint=16/19 | reached=True | final_err=[-1.03743638e-03 -9.98131054e-03  9.65345148e-05 -3.55179188e-03
+ -8.11777142e-06 -8.09124571e-03 -1.57133897e-03] | final_max_err=0.009981 | last_max_vel_cmd=0.03314
+waypoint=17/19 | reached=True | final_err=[-1.02707893e-03 -9.97985229e-03  9.65419779e-05 -3.55175188e-03
+ -3.50836270e-06 -8.07165091e-03 -1.56815212e-03] | final_max_err=0.009980 | last_max_vel_cmd=0.03315
+waypoint=18/19 | reached=True | final_err=[-1.02170967e-03 -9.97142322e-03  9.65430117e-05 -3.55177703e-03
+ -1.33890838e-05 -8.09515447e-03 -1.56080759e-03] | final_max_err=0.009971 | last_max_vel_cmd=0.03311
+waypoint=19/19 | reached=True | final_err=[-1.02032517e-03 -9.97098852e-03  9.65431549e-05 -3.55182158e-03
+ -5.19478698e-06 -8.07537077e-03 -1.56060561e-03] | final_max_err=0.009971 | last_max_vel_cmd=0.03312
+Completed return_home in 2691 simulation steps.
+
+=== Final Cube Pose ===
+Cube position: [ 0.58829384 -0.12560256  0.0759894 ]
+Saved trajectory log to results/m2/trajectory_log.json
+
+Stopping simulation...
+
+Demo total time: 343.3s
+
+================================================================================
+Residual demo run started: 2026-04-16T19:51:45
+================================================================================
+Log file: results/m2\demo_log.txt
+Loaded model from results/m2/models\final_model.pt, mode=planner_only
+Perturbation ranges: xy=0.06, z=0.01, yaw=0.2
+[demo] Cube NOMINAL pose: xy=(0.7000, 0.0000) m, z=0.0790 m, yaw=0.0000 rad
+[demo] Planning trajectory from NOMINAL cube pose (before perturbation)
+[demo] Holding at nominal for 10.0s -- start your recorder now. Perturbation will be applied after the countdown.
+[demo]   ... perturbing in  9.0s
+[demo]   ... perturbing in  8.0s
+[demo]   ... perturbing in  7.0s
+[demo]   ... perturbing in  6.0s
+[demo]   ... perturbing in  5.0s
+[demo]   ... perturbing in  4.0s
+[demo]   ... perturbing in  3.0s
+[demo]   ... perturbing in  2.0s
+[demo]   ... perturbing in  1.0s
+[demo]   ... perturbing in -0.0s
+[demo] Cube PERTURBED pose: xy=(0.7553, -0.0174) m, z=0.0864 m, yaw=-0.1990 rad
+[demo] Perturbation delta: dx=+0.0553 m, dy=-0.0174 m, dz=+0.0074 m, dyaw=-0.1990 rad (-11.40 deg)
+[demo] Planner targets are from NOMINAL — robot will aim 5.8cm away from actual cube
+
+=== Phase 1: home ===
+
+=== Phase 2: pre_grasp (classical) ===
+
+================================================================================
+Residual demo run started: 2026-04-16T19:52:39
+================================================================================
+Log file: results/m2\demo_log.txt
+Loaded model from results/m2/models\final_model.pt, mode=planner_only
+Perturbation ranges: xy=0.06, z=0.01, yaw=0.2
+[demo] Cube NOMINAL pose: xy=(0.7000, 0.0000) m, z=0.0790 m, yaw=0.0000 rad
+[demo] Planning trajectory from NOMINAL cube pose (before perturbation)
+[demo] Holding at nominal for 10.0s -- start your recorder now. Perturbation will be applied after the countdown.
+[demo]   ... perturbing in  9.0s
+[demo]   ... perturbing in  8.0s
+[demo]   ... perturbing in  7.0s
+[demo]   ... perturbing in  6.0s
+[demo]   ... perturbing in  5.0s
+[demo]   ... perturbing in  4.0s
+[demo]   ... perturbing in  3.0s
+[demo]   ... perturbing in  2.0s
+[demo]   ... perturbing in  1.0s
+[demo] Cube PERTURBED pose: xy=(0.6635, 0.0305) m, z=0.0841 m, yaw=0.1214 rad
+[demo] Perturbation delta: dx=-0.0365 m, dy=+0.0305 m, dz=+0.0051 m, dyaw=+0.1214 rad (+6.96 deg)
+[demo] Planner targets are from NOMINAL — robot will aim 4.8cm away from actual cube
+
+=== Phase 1: home ===
+
+=== Phase 2: pre_grasp (classical) ===
+
+=== Phase 3: grasp_descend (classical) ===
+
+=== Phase 4: close_gripper ===
+
+=== Phase 5: validate_and_attach ===
+grasp_check | ee_to_cube_dist=0.04586 | min_finger_to_cube_dist=0.05336 | total_contacts=2 | finger_contacts=2 | dist_ok=True | finger_dist_ok=True | total_contact_ok=True | finger_contact_ok=True | ready=True
+left_finger_pos=[0.69386744 0.00271235 0.14547813]
+right_finger_pos=[0.66312808 0.00359317 0.14709495]
+Grasp validated. Object attached.
+
+=== Phase 6: lift (classical) ===
+
+================================================================================
+Residual demo run started: 2026-04-16T19:54:49
+================================================================================
+Log file: results/m2\demo_log.txt
+Loaded model from results/m2/models\final_model.pt, mode=planner_only
+Perturbation ranges: xy=0.06, z=0.01, yaw=0.2
+[demo] Cube NOMINAL pose: xy=(0.7000, 0.0000) m, z=0.0790 m, yaw=0.0000 rad
+[demo] Planning trajectory from NOMINAL cube pose (before perturbation)
+[demo] Holding at nominal for 10.0s -- start your recorder now. Perturbation will be applied after the countdown.
+[demo]   ... perturbing in  9.0s
+[demo]   ... perturbing in  8.0s
+[demo]   ... perturbing in  7.0s
+[demo]   ... perturbing in  6.0s
+[demo]   ... perturbing in  5.0s
+[demo]   ... perturbing in  4.0s
+[demo]   ... perturbing in  3.0s
+[demo]   ... perturbing in  2.0s
+[demo]   ... perturbing in  1.0s
+[demo] Cube PERTURBED pose: xy=(0.7458, 0.0396) m, z=0.0887 m, yaw=-0.1274 rad
+[demo] Perturbation delta: dx=+0.0458 m, dy=+0.0396 m, dz=+0.0097 m, dyaw=-0.1274 rad (-7.30 deg)
+[demo] Planner targets are from NOMINAL — robot will aim 6.1cm away from actual cube
+
+=== Phase 1: home ===
+
+=== Phase 2: pre_grasp (classical) ===
+
+=== Phase 3: grasp_descend (classical) ===
+
+=== Phase 4: close_gripper ===
+
+=== Phase 5: validate_and_attach ===
+grasp_check | ee_to_cube_dist=0.06399 | min_finger_to_cube_dist=0.07354 | total_contacts=0 | finger_contacts=0 | dist_ok=True | finger_dist_ok=False | total_contact_ok=False | finger_contact_ok=False | ready=False
+left_finger_pos=[ 7.00045168e-01 -5.78599102e-05  1.42443478e-01]
+right_finger_pos=[ 7.00045109e-01 -5.78584331e-05  1.42443478e-01]
+Initial grasp check failed. Trying deeper descend retry...
+grasp_descend_retry IK target joints: [-0.04244777  0.97447321 -0.03456288 -1.24545649  0.03588081  2.21936575
+  0.70185541]
+
+=== Planner result: grasp_descend_retry ===
+success: True
+num_nodes: 2
+message: Direct path found.
+Sparse path nodes before smoothing: 2
+Sparse path nodes after smoothing:  2
+Sparse path length before smoothing: 0.0719
+Sparse path length after smoothing:  0.0719
+Planner path waypoints: 2
+
+=== Executing grasp_descend_retry ===
+Num waypoints: 2
+waypoint=00/01 | reached=True | final_err=[-2.73410982e-07  4.04914747e-07  2.09947557e-06  6.64123960e-06
+ -1.01119966e-06 -3.93942345e-09  0.00000000e+00] | final_max_err=0.000007 | last_max_vel_cmd=0.00091
+waypoint=01/01 | reached=True | final_err=[-0.00017961  0.0112212   0.00035875  0.00228279  0.00027291  0.01189724
+ -0.00016881] | final_max_err=0.011897 | last_max_vel_cmd=0.03726
+Completed grasp_descend_retry in 114 simulation steps.
+grasp_check | ee_to_cube_dist=0.06176 | min_finger_to_cube_dist=0.06221 | total_contacts=0 | finger_contacts=0 | dist_ok=True | finger_dist_ok=False | total_contact_ok=False | finger_contact_ok=False | ready=False
+left_finger_pos=[ 7.00018823e-01 -3.93145718e-04  1.13292515e-01]
+right_finger_pos=[ 7.00018823e-01 -3.93145281e-04  1.13292523e-01]
+Grasp validation failed even after retry. Object will NOT be attached.
+Grasp validation failed — demo ending early.
+Saved trajectory log to results/m2/trajectory_log.json
+
+Demo total time: 87.4s
+
+================================================================================
+Residual demo run started: 2026-04-16T19:58:13
+================================================================================
+Log file: results/m2\demo_log.txt
+Loaded model from results/m2/models\final_model.pt, mode=planner_only
+Perturbation ranges: xy=0.06, z=0.01, yaw=0.2
+[demo] Cube NOMINAL pose: xy=(0.7000, 0.0000) m, z=0.0790 m, yaw=0.0000 rad
+[demo] Planning trajectory from NOMINAL cube pose (before perturbation)
+[demo] Holding at nominal for 10.0s -- start your recorder now. Perturbation will be applied after the countdown.
+[demo]   ... perturbing in  9.0s
+[demo]   ... perturbing in  8.0s
+[demo]   ... perturbing in  7.0s
+[demo]   ... perturbing in  6.0s
+[demo]   ... perturbing in  5.0s
+[demo]   ... perturbing in  4.0s
+[demo]   ... perturbing in  3.0s
+[demo]   ... perturbing in  2.0s
+[demo]   ... perturbing in  1.0s
+[demo] Cube PERTURBED pose: xy=(0.7491, 0.0212) m, z=0.0880 m, yaw=0.1310 rad
+[demo] Perturbation delta: dx=+0.0491 m, dy=+0.0212 m, dz=+0.0090 m, dyaw=+0.1310 rad (+7.51 deg)
+[demo] Planner targets are from NOMINAL — robot will aim 5.4cm away from actual cube
+
+=== Phase 1: home ===
+
+=== Phase 2: pre_grasp (classical) ===
+
+=== Phase 3: grasp_descend (classical) ===
+
+=== Phase 4: close_gripper ===
+
+=== Phase 5: validate_and_attach ===
+grasp_check | ee_to_cube_dist=0.04306 | min_finger_to_cube_dist=0.05661 | total_contacts=5 | finger_contacts=5 | dist_ok=True | finger_dist_ok=False | total_contact_ok=True | finger_contact_ok=True | ready=False
+left_finger_pos=[0.73050696 0.00305491 0.14881206]
+right_finger_pos=[0.71631724 0.00150157 0.14652485]
+Initial grasp check failed. Trying deeper descend retry...
+grasp_descend_retry IK target joints: [-0.09212649  0.97451659  0.03661482 -1.24544681 -0.03801793  2.2193276
+  0.73680956]
+
+=== Planner result: grasp_descend_retry ===
+success: False
+num_nodes: 0
+message: Start is in collision.
+Planner failed. Falling back to interpolated joint trajectory.
+Fallback interpolated waypoints: 20
+
+=== Executing grasp_descend_retry ===
+Num waypoints: 20
+waypoint=00/19 | reached=True | final_err=[-9.43182253e-07  5.64062865e-07  2.19372662e-05  9.04342866e-06
+ -1.48079835e-06 -1.48399946e-08  0.00000000e+00] | final_max_err=0.000022 | last_max_vel_cmd=0.00274
+waypoint=01/19 | reached=True | final_err=[-0.0025939   0.00281073  0.00369425  0.00029643  0.00633626  0.00230731
+  0.00159481] | final_max_err=0.006336 | last_max_vel_cmd=0.01500
+waypoint=02/19 | reached=True | final_err=[-0.00480414  0.00520739  0.00670003  0.00031081  0.01197285  0.004266
+  0.0030314 ] | final_max_err=0.011973 | last_max_vel_cmd=0.03610
+waypoint=03/19 | reached=True | final_err=[-0.00398646  0.00422725  0.0063185  -0.00177547  0.01196978  0.00367046
+  0.00234924] | final_max_err=0.011970 | last_max_vel_cmd=0.03800
+waypoint=04/19 | reached=True | final_err=[-0.00332198  0.00337391  0.00677586 -0.00389791  0.01198559  0.00320151
+  0.00092663] | final_max_err=0.011986 | last_max_vel_cmd=0.03954
+waypoint=05/19 | reached=True | final_err=[-0.00272743  0.00259212  0.00741166 -0.00606905  0.01195287  0.00271679
+ -0.00080101] | final_max_err=0.011953 | last_max_vel_cmd=0.04092
+waypoint=06/19 | reached=True | final_err=[-0.00219203  0.00188124  0.0080206  -0.00829285  0.01194788  0.00215394
+ -0.00251501] | final_max_err=0.011948 | last_max_vel_cmd=0.04940
+waypoint=07/19 | reached=False | final_err=[-0.00011401 -0.00033797  0.00565128 -0.01259609  0.01720416 -0.00086352
+ -0.00474283] | final_max_err=0.017204 | last_max_vel_cmd=0.06996
+Stopped early at waypoint 7 because target was not reached in time.
+Retry descend motion failed.
+Grasp validation failed — demo ending early.
+Saved trajectory log to results/m2/trajectory_log.json
+
+Demo total time: 94.7s
+
+================================================================================
+Residual demo run started: 2026-04-16T20:01:02
+================================================================================
+Log file: results/m2\demo_log.txt
+Loaded model from results/m2/models\final_model.pt, mode=hybrid
+Perturbation ranges: xy=0.06, z=0.01, yaw=0.2
+[demo] Cube NOMINAL pose: xy=(0.7000, 0.0000) m, z=0.0790 m, yaw=0.0000 rad
+[demo] Planning trajectory from NOMINAL cube pose (before perturbation)
+[demo] Holding at nominal for 10.0s -- start your recorder now. Perturbation will be applied after the countdown.
+[demo]   ... perturbing in  9.0s
+[demo]   ... perturbing in  8.0s
+[demo]   ... perturbing in  7.0s
+[demo]   ... perturbing in  6.0s
+[demo]   ... perturbing in  5.0s
+[demo]   ... perturbing in  4.0s
+[demo]   ... perturbing in  3.0s
+[demo]   ... perturbing in  2.0s
+[demo]   ... perturbing in  1.0s
+[demo] Cube PERTURBED pose: xy=(0.6857, -0.0402) m, z=0.0810 m, yaw=-0.1618 rad
+[demo] Perturbation delta: dx=-0.0143 m, dy=-0.0402 m, dz=+0.0020 m, dyaw=-0.1618 rad (-9.27 deg)
+[demo] Planner targets are from NOMINAL — robot will aim 4.3cm away from actual cube
+
+=== Phase 1: home ===
+
+=== Phase 2: pre_grasp (residual) ===
+
+=== Phase 3: grasp_descend (residual) ===
+
+=== Phase 4: close_gripper ===
+
+=== Phase 5: validate_and_attach ===
+grasp_check | ee_to_cube_dist=0.05035 | min_finger_to_cube_dist=0.06307 | total_contacts=0 | finger_contacts=0 | dist_ok=True | finger_dist_ok=False | total_contact_ok=False | finger_contact_ok=False | ready=False
+left_finger_pos=[0.70087194 0.00179477 0.14574203]
+right_finger_pos=[0.70087194 0.00179477 0.14574203]
+Initial grasp check failed. Trying deeper descend retry...
+grasp_descend_retry IK target joints: [-0.0434623   0.97443591 -0.03310848 -1.24547767  0.03437075  2.21939844
+  0.70256925]
+
+=== Planner result: grasp_descend_retry ===
+success: True
+num_nodes: 2
+message: Direct path found.
+Sparse path nodes before smoothing: 2
+Sparse path nodes after smoothing:  2
+Sparse path length before smoothing: 0.0717
+Sparse path length after smoothing:  0.0717
+Planner path waypoints: 2
+
+=== Executing grasp_descend_retry ===
+Num waypoints: 2
+waypoint=00/01 | reached=True | final_err=[-2.79283463e-07  4.10994407e-07  2.16444690e-06  6.76452762e-06
+ -1.03040963e-06 -3.95998834e-09  0.00000000e+00] | final_max_err=0.000007 | last_max_vel_cmd=0.00093
+waypoint=01/01 | reached=True | final_err=[-0.00038621  0.01192723  0.00082118  0.00159525  0.00079748  0.01164462
+ -0.00069308] | final_max_err=0.011927 | last_max_vel_cmd=0.03961
+Completed grasp_descend_retry in 112 simulation steps.
+grasp_check | ee_to_cube_dist=0.04257 | min_finger_to_cube_dist=0.04355 | total_contacts=1 | finger_contacts=1 | dist_ok=True | finger_dist_ok=True | total_contact_ok=True | finger_contact_ok=True | ready=True
+left_finger_pos=[ 7.00123489e-01 -1.94447712e-04  1.13696143e-01]
+right_finger_pos=[ 7.00127304e-01 -1.94449822e-04  1.13696143e-01]
+Retry grasp validated. Object attached.
+
+=== Phase 6: lift (residual) ===
+
+=== Phase 7: transfer_pre_place ===
+transfer_pre_place IK target joints: [ 0.11871504  0.35096072 -0.00882748 -1.84369528  0.00373603  2.19461359
+  0.89364132]
+
+=== Planner result: transfer_pre_place ===
+success: True
+num_nodes: 2
+message: Direct path found.
+Sparse path nodes before smoothing: 2
+Sparse path nodes after smoothing:  2
+Sparse path length before smoothing: 0.9318
+Sparse path length after smoothing:  0.9318
+Planner path waypoints: 13
+
+=== Executing transfer_pre_place ===
+Num waypoints: 13
+waypoint=00/12 | reached=True | final_err=[ 4.45263084e-08  4.61770816e-07  5.84440043e-07  1.08069372e-05
+ -1.49347641e-06  3.10528005e-07 -3.19466640e-06] | final_max_err=0.000011 | last_max_vel_cmd=0.00149
+waypoint=01/12 | reached=True | final_err=[ 0.00251127 -0.00594294  0.00047868 -0.0098953  -0.0005186   0.0070402
+  0.00396572] | final_max_err=0.009895 | last_max_vel_cmd=0.03411
+waypoint=02/12 | reached=True | final_err=[ 0.00259626 -0.00614435  0.0004854  -0.00998782 -0.00057313  0.00773987
+  0.00449872] | final_max_err=0.009988 | last_max_vel_cmd=0.03460
+waypoint=03/12 | reached=True | final_err=[ 0.00257404 -0.00609504  0.00047144 -0.00991292 -0.00057051  0.00779249
+  0.00457108] | final_max_err=0.009913 | last_max_vel_cmd=0.03448
+waypoint=04/12 | reached=True | final_err=[ 0.00257034 -0.00609007  0.00046243 -0.00995597 -0.00056025  0.00780139
+  0.00458378] | final_max_err=0.009956 | last_max_vel_cmd=0.03475
+waypoint=05/12 | reached=True | final_err=[ 0.00253411 -0.00600754  0.000449   -0.009857   -0.00054187  0.00770884
+  0.00453056] | final_max_err=0.009857 | last_max_vel_cmd=0.03449
+waypoint=06/12 | reached=True | final_err=[ 0.00252817 -0.00599653  0.00044267 -0.00987855 -0.0005281   0.00768794
+  0.00451423] | final_max_err=0.009879 | last_max_vel_cmd=0.03465
+
+================================================================================
+Residual demo run started: 2026-04-16T20:04:21
+================================================================================
+Log file: results/m2\demo_log.txt
+Loaded model from results/m2/models\final_model.pt, mode=hybrid
+Perturbation ranges: xy=0.06, z=0.01, yaw=0.2
+[demo] Cube NOMINAL pose: xy=(0.7000, 0.0000) m, z=0.0790 m, yaw=0.0000 rad
+[demo] Planning trajectory from NOMINAL cube pose (before perturbation)
+[demo] Holding at nominal for 10.0s -- start your recorder now. Perturbation will be applied after the countdown.
+[demo]   ... perturbing in  9.0s
+[demo]   ... perturbing in  8.0s
+[demo]   ... perturbing in  7.0s
+[demo]   ... perturbing in  6.0s
+[demo]   ... perturbing in  5.0s
+[demo]   ... perturbing in  4.0s
+[demo]   ... perturbing in  3.0s
+[demo]   ... perturbing in  2.0s
+[demo]   ... perturbing in  1.0s
+[demo] Cube PERTURBED pose: xy=(0.7076, 0.0036) m, z=0.0870 m, yaw=-0.1174 rad
+[demo] Perturbation delta: dx=+0.0076 m, dy=+0.0036 m, dz=+0.0080 m, dyaw=-0.1174 rad (-6.73 deg)
+[demo] Planner targets are from NOMINAL — robot will aim 1.2cm away from actual cube
+
+=== Phase 1: home ===
+
+=== Phase 2: pre_grasp (residual) ===
+
+Demo total time: 25.7s
+
+================================================================================
+Residual demo run started: 2026-04-16T20:05:04
+================================================================================
+Log file: results/m2\demo_log.txt
+Loaded model from results/m2/models\final_model.pt, mode=hybrid
+Perturbation ranges: xy=0.07, z=0.01, yaw=0.2
+[demo] Cube NOMINAL pose: xy=(0.7000, 0.0000) m, z=0.0790 m, yaw=0.0000 rad
+[demo] Planning trajectory from NOMINAL cube pose (before perturbation)
+[demo] Holding at nominal for 10.0s -- start your recorder now. Perturbation will be applied after the countdown.
+[demo]   ... perturbing in  9.0s
+[demo]   ... perturbing in  8.0s
+[demo]   ... perturbing in  7.0s
+[demo]   ... perturbing in  6.0s
+[demo]   ... perturbing in  5.0s
+[demo]   ... perturbing in  4.0s
+[demo]   ... perturbing in  3.0s
+[demo]   ... perturbing in  2.0s
+[demo]   ... perturbing in  1.0s
+[demo]   ... perturbing in -0.0s
+[demo] Cube PERTURBED pose: xy=(0.7668, -0.0350) m, z=0.0868 m, yaw=-0.0689 rad
+[demo] Perturbation delta: dx=+0.0668 m, dy=-0.0350 m, dz=+0.0078 m, dyaw=-0.0689 rad (-3.95 deg)
+[demo] Planner targets are from NOMINAL — robot will aim 7.6cm away from actual cube
+
+=== Phase 1: home ===
+
+=== Phase 2: pre_grasp (residual) ===
+
+=== Phase 3: grasp_descend (residual) ===
+
+=== Phase 4: close_gripper ===
+
+=== Phase 5: validate_and_attach ===
+grasp_check | ee_to_cube_dist=0.06309 | min_finger_to_cube_dist=0.06449 | total_contacts=0 | finger_contacts=0 | dist_ok=True | finger_dist_ok=False | total_contact_ok=False | finger_contact_ok=False | ready=False
+left_finger_pos=[ 0.69806325 -0.00347706  0.13366741]
+right_finger_pos=[ 0.69806319 -0.00347706  0.13366741]
+Initial grasp check failed. Trying deeper descend retry...
+grasp_descend_retry IK target joints: [-0.04370252  0.97443057 -0.03276427 -1.24547663  0.03401337  2.21940312
+  0.70273826]
+
+=== Planner result: grasp_descend_retry ===
+success: False
+num_nodes: 0
+message: Goal is in collision.
+Planner failed. Falling back to interpolated joint trajectory.
+Fallback interpolated waypoints: 20
+
+=== Executing grasp_descend_retry ===
+Num waypoints: 20
+waypoint=00/19 | reached=True | final_err=[-2.67949908e-07  3.92666341e-07  2.04982519e-06  6.41188466e-06
+ -9.85636133e-07 -3.93577793e-09  0.00000000e+00] | final_max_err=0.000006 | last_max_vel_cmd=0.00088
+waypoint=01/19 | reached=True | final_err=[-1.26729401e-04  2.39548746e-03  3.52635493e-05  9.19516895e-04
+ -8.19766059e-05  2.33781702e-03 -3.91639553e-04] | final_max_err=0.002395 | last_max_vel_cmd=0.00588
+waypoint=02/19 | reached=True | final_err=[-2.48735199e-04  4.76617284e-03 -8.82746830e-05  1.78425304e-03
+ -1.48367691e-04 -2.80248916e-03 -7.53214704e-04] | final_max_err=0.004766 | last_max_vel_cmd=0.73291
+waypoint=03/19 | reached=True | final_err=[-0.00037087  0.0071001  -0.0001767   0.00264648 -0.00019917 -0.01151638
+ -0.0010769 ] | final_max_err=0.011516 | last_max_vel_cmd=1.11083
+waypoint=04/19 | reached=True | final_err=[ 8.83791294e-05  1.86821866e-03 -2.46933912e-03 -5.73143089e-03
+  3.25475457e-03 -1.19330327e-02  5.43513212e-03] | final_max_err=0.011933 | last_max_vel_cmd=0.03883
+waypoint=05/19 | reached=True | final_err=[-3.45510436e-05  4.22617669e-03 -2.45564432e-03 -4.87650489e-03
+  3.19828914e-03 -9.50578376e-03  5.09306294e-03] | final_max_err=0.009506 | last_max_vel_cmd=0.03706
+waypoint=06/19 | reached=True | final_err=[-0.00015627  0.00656256 -0.00244245 -0.0040204   0.00313695 -0.00713973
+  0.00475196] | final_max_err=0.007140 | last_max_vel_cmd=0.03219
+waypoint=07/19 | reached=True | final_err=[-0.00027624  0.00887614 -0.00243147 -0.00312499  0.00304172 -0.00505452
+  0.00439638] | final_max_err=0.008876 | last_max_vel_cmd=0.04827
+waypoint=08/19 | reached=True | final_err=[-0.00039594  0.01115299 -0.00242106 -0.00222625  0.00295193 -0.0032936
+  0.00404136] | final_max_err=0.011153 | last_max_vel_cmd=0.07236
+waypoint=09/19 | reached=True | final_err=[-0.00044765  0.01199428 -0.00253637 -0.0013462   0.00273694 -0.01094391
+  0.00387465] | final_max_err=0.011994 | last_max_vel_cmd=0.12350
+waypoint=10/19 | reached=False | final_err=[ 3.38303230e-04  1.57781848e-05 -4.60824144e-03 -6.12603824e-03
+  3.00804974e-03 -2.59672369e-02  9.40385467e-03] | final_max_err=0.025967 | last_max_vel_cmd=0.07821
+Stopped early at waypoint 10 because target was not reached in time.
+Retry descend motion failed.
+Grasp validation failed — demo ending early.
+Saved trajectory log to results/m2/trajectory_log.json
+
+Demo total time: 118.3s
+
+================================================================================
+Residual demo run started: 2026-04-16T20:08:17
+================================================================================
+Log file: results/m2\demo_log.txt
+Loaded model from results/m2/models\final_model.pt, mode=hybrid
+Perturbation ranges: xy=0.06, z=0.01, yaw=0.2
+[demo] Cube NOMINAL pose: xy=(0.7000, 0.0000) m, z=0.0790 m, yaw=0.0000 rad
+[demo] Planning trajectory from NOMINAL cube pose (before perturbation)
+[demo] Holding at nominal for 10.0s -- start your recorder now. Perturbation will be applied after the countdown.
+[demo]   ... perturbing in  9.0s
+[demo]   ... perturbing in  8.0s
+[demo]   ... perturbing in  7.0s
+[demo]   ... perturbing in  6.0s
+[demo]   ... perturbing in  5.0s
+[demo]   ... perturbing in  4.0s
+[demo]   ... perturbing in  3.0s
+[demo]   ... perturbing in  2.0s
+[demo]   ... perturbing in  1.0s
+[demo] Cube PERTURBED pose: xy=(0.7073, -0.0105) m, z=0.0706 m, yaw=0.1008 rad
+[demo] Perturbation delta: dx=+0.0073 m, dy=-0.0105 m, dz=-0.0084 m, dyaw=+0.1008 rad (+5.78 deg)
+[demo] Planner targets are from NOMINAL — robot will aim 1.5cm away from actual cube
+
+=== Phase 1: home ===
+
+=== Phase 2: pre_grasp (residual) ===
+
+================================================================================
+Residual demo run started: 2026-04-16T20:09:00
+================================================================================
+Log file: results/m2\demo_log.txt
+Loaded model from results/m2/models\final_model.pt, mode=hybrid
+Perturbation ranges: xy=0.06, z=0.01, yaw=0.2
+[demo] Cube NOMINAL pose: xy=(0.7000, 0.0000) m, z=0.0790 m, yaw=0.0000 rad
+[demo] Planning trajectory from NOMINAL cube pose (before perturbation)
+[demo] Holding at nominal for 10.0s -- start your recorder now. Perturbation will be applied after the countdown.
+[demo]   ... perturbing in  9.0s
+[demo]   ... perturbing in  8.0s
+[demo]   ... perturbing in  7.0s
+[demo]   ... perturbing in  6.0s
+[demo]   ... perturbing in  5.0s
+[demo]   ... perturbing in  4.0s
+[demo]   ... perturbing in  3.0s
+[demo]   ... perturbing in  2.0s
+[demo]   ... perturbing in  1.0s
+[demo]   ... perturbing in -0.0s
+[demo] Cube PERTURBED pose: xy=(0.7285, 0.0322) m, z=0.0724 m, yaw=-0.0491 rad
+[demo] Perturbation delta: dx=+0.0285 m, dy=+0.0322 m, dz=-0.0066 m, dyaw=-0.0491 rad (-2.81 deg)
+[demo] Planner targets are from NOMINAL — robot will aim 4.3cm away from actual cube
+
+=== Phase 1: home ===
+
+=== Phase 2: pre_grasp (residual) ===
+
+=== Phase 3: grasp_descend (residual) ===
+
+=== Phase 4: close_gripper ===
+
+=== Phase 5: validate_and_attach ===
+grasp_check | ee_to_cube_dist=0.04155 | min_finger_to_cube_dist=0.05515 | total_contacts=3 | finger_contacts=3 | dist_ok=True | finger_dist_ok=False | total_contact_ok=True | finger_contact_ok=True | ready=False
+left_finger_pos=[0.73111576 0.00086537 0.14667112]
+right_finger_pos=[ 0.71832222 -0.0007339   0.144288  ]
+Initial grasp check failed. Trying deeper descend retry...
+grasp_descend_retry IK target joints: [-0.10104941  0.97485705  0.04940841 -1.24534932 -0.0513016   2.21902905
+  0.74308776]
+
+=== Planner result: grasp_descend_retry ===
+success: False
+num_nodes: 0
+message: Start is in collision.
+Planner failed. Falling back to interpolated joint trajectory.
+Fallback interpolated waypoints: 20
+
+=== Executing grasp_descend_retry ===
+Num waypoints: 20
+waypoint=00/19 | reached=True | final_err=[-6.81173533e-07  4.29924420e-07  1.18177088e-05  7.04894947e-06
+ -1.09771122e-06  6.52732517e-08  9.77473212e-08] | final_max_err=0.000012 | last_max_vel_cmd=0.00148
+waypoint=01/19 | reached=True | final_err=[-0.00305763  0.00274293  0.00428331  0.00036252  0.00731445  0.00282366
+  0.00166358] | final_max_err=0.007314 | last_max_vel_cmd=0.01730
+waypoint=02/19 | reached=True | final_err=[-0.00480928  0.00431395  0.00677081  0.00061845  0.01187686  0.00458934
+  0.00275546] | final_max_err=0.011877 | last_max_vel_cmd=0.03374
+waypoint=03/19 | reached=True | final_err=[-0.00454686  0.00407747  0.00648537  0.00066724  0.01194258  0.00462243
+  0.00287814] | final_max_err=0.011943 | last_max_vel_cmd=0.03393
+waypoint=04/19 | reached=True | final_err=[-0.00430134  0.00382938  0.00663562  0.00048355  0.01186794  0.00458073
+  0.00274229] | final_max_err=0.011868 | last_max_vel_cmd=0.03449
+waypoint=05/19 | reached=True | final_err=[-4.14931660e-03  3.63500479e-03  7.46757718e-03  9.33123292e-05
+  1.19330573e-02  4.56733758e-03  2.43270377e-03] | final_max_err=0.011933 | last_max_vel_cmd=0.03521
+waypoint=06/19 | reached=True | final_err=[-0.00397426  0.00341465  0.00828606 -0.00043142  0.01194174  0.0043278
+  0.00224158] | final_max_err=0.011942 | last_max_vel_cmd=0.03599
+waypoint=07/19 | reached=True | final_err=[-0.00379067  0.00318475  0.0090425  -0.00105494  0.01192824  0.00397189
+  0.00215328] | final_max_err=0.011928 | last_max_vel_cmd=0.03913
+waypoint=08/19 | reached=True | final_err=[-0.00357221  0.00290731  0.00992663 -0.00189659  0.01195747  0.00347058
+  0.00208968] | final_max_err=0.011957 | last_max_vel_cmd=0.04463
+waypoint=09/19 | reached=True | final_err=[-0.00323261  0.00247843  0.01107708 -0.00317429  0.01195278  0.00257062
+  0.00221744] | final_max_err=0.011953 | last_max_vel_cmd=0.05066
+waypoint=10/19 | reached=True | final_err=[-0.00302779  0.00221921  0.01154899 -0.00392015  0.01199428  0.00184872
+  0.00259911] | final_max_err=0.011994 | last_max_vel_cmd=0.05104
+waypoint=11/19 | reached=True | final_err=[-0.00297387  0.00219812  0.01119071 -0.00413667  0.01196446  0.00194876
+  0.00238154] | final_max_err=0.011964 | last_max_vel_cmd=0.04348
+waypoint=12/19 | reached=True | final_err=[-0.00291078  0.00236514  0.00871271 -0.00546033  0.01195968  0.00192174
+  0.002457  ] | final_max_err=0.011960 | last_max_vel_cmd=0.03636
+waypoint=13/19 | reached=True | final_err=[-0.00281592  0.00246751  0.00641451 -0.00658056  0.01192044  0.00157054
+  0.00257598] | final_max_err=0.011920 | last_max_vel_cmd=0.03942
+waypoint=14/19 | reached=True | final_err=[-0.00260102  0.00243563  0.00466991 -0.00826487  0.01192063  0.00094274
+  0.0030066 ] | final_max_err=0.011921 | last_max_vel_cmd=0.05173
+waypoint=15/19 | reached=False | final_err=[-9.42347267e-05  1.68833163e-04 -1.64861037e-05 -4.94581786e-04
+  8.61200375e-04 -1.59841342e-02  2.00596347e-04] | final_max_err=0.015984 | last_max_vel_cmd=0.04548
+Stopped early at waypoint 15 because target was not reached in time.
+Retry descend motion failed.
+Grasp validation failed — demo ending early.
+Saved trajectory log to results/m2/trajectory_log.json
+
+Demo total time: 125.0s
+
+================================================================================
+Residual demo run started: 2026-04-16T20:18:44
+================================================================================
+Log file: results/m2\demo_log.txt
+Loaded model from results/m2/models\final_model.pt, mode=hybrid
+Perturbation ranges: xy=0.04, z=0.01, yaw=0.2
+[demo] Cube NOMINAL pose: xy=(0.7000, 0.0000) m, z=0.0790 m, yaw=0.0000 rad
+[demo] Planning trajectory from NOMINAL cube pose (before perturbation)
+[demo] Holding at nominal for 10.0s -- start your recorder now. Perturbation will be applied after the countdown.
+[demo]   ... perturbing in  9.0s
+[demo]   ... perturbing in  8.0s
+[demo]   ... perturbing in  7.0s
+[demo]   ... perturbing in  6.0s
+[demo]   ... perturbing in  5.0s
+[demo]   ... perturbing in  4.0s
+[demo]   ... perturbing in  3.0s
+[demo]   ... perturbing in  2.0s
+[demo]   ... perturbing in  1.0s
+[demo]   ... perturbing in -0.0s
+[demo] Cube PERTURBED pose: xy=(0.7200, 0.0245) m, z=0.0722 m, yaw=0.0220 rad
+[demo] Perturbation delta: dx=+0.0200 m, dy=+0.0245 m, dz=-0.0068 m, dyaw=+0.0220 rad (+1.26 deg)
+[demo] Planner targets are from NOMINAL — robot will aim 3.2cm away from actual cube
+
+=== Phase 1: home ===
+
+=== Phase 2: pre_grasp (residual) ===
+
+=== Phase 3: grasp_descend (residual) ===
+[residual] waypoint 19 not reached in grasp_descend
+Failed at grasp_descend with residual, falling back to classical
+grasp_descend_fallback IK target joints: [-0.04782129  0.92242353 -0.0268733  -1.25791822  0.02611489  2.17998362
+  0.70640017]
+
+=== Planner result: grasp_descend_fallback ===
+success: False
+num_nodes: 0
+message: Start is in collision.
+Planner failed. Falling back to interpolated joint trajectory.
+Fallback interpolated waypoints: 20
+
+=== Executing grasp_descend_fallback ===
+Num waypoints: 20
+waypoint=00/19 | reached=True | final_err=[-1.36996313e-05 -8.87971702e-07  1.82018428e-04 -6.02493152e-05
+  7.45631860e-05  1.57793669e-05 -7.11601928e-05] | final_max_err=0.000182 | last_max_vel_cmd=0.02275
+waypoint=01/19 | reached=True | final_err=[-0.00037552 -0.00037441  0.0012123  -0.00035068  0.00110964  0.00041099
+ -0.0005777 ] | final_max_err=0.001212 | last_max_vel_cmd=0.01558
+waypoint=02/19 | reached=True | final_err=[-0.00073654 -0.00074418  0.00225512 -0.00065333  0.00214888  0.00080778
+ -0.00109034] | final_max_err=0.002255 | last_max_vel_cmd=0.02230
+waypoint=03/19 | reached=True | final_err=[-0.00108971 -0.00110781  0.0032654  -0.00093882  0.00315934  0.00119222
+ -0.00158096] | final_max_err=0.003265 | last_max_vel_cmd=0.02344
+waypoint=04/19 | reached=True | final_err=[-0.00143913 -0.00146689  0.00426598 -0.00122534  0.004163    0.00157536
+ -0.00207109] | final_max_err=0.004266 | last_max_vel_cmd=0.02728
+waypoint=05/19 | reached=True | final_err=[-0.00178305 -0.00182082  0.0052494  -0.00150434  0.0051526   0.00195259
+ -0.00255422] | final_max_err=0.005249 | last_max_vel_cmd=0.03014
+waypoint=06/19 | reached=True | final_err=[-0.00212242 -0.00216995  0.00621881 -0.00178023  0.00613079  0.0023259
+ -0.00303236] | final_max_err=0.006219 | last_max_vel_cmd=0.03330
+waypoint=07/19 | reached=True | final_err=[-0.00245688 -0.00251423  0.00717358 -0.00205105  0.00709697  0.00269447
+ -0.00350504] | final_max_err=0.007174 | last_max_vel_cmd=0.03632
+waypoint=08/19 | reached=True | final_err=[-0.00278673 -0.00285379  0.00811442 -0.00231797  0.00805154  0.00305872
+ -0.00397247] | final_max_err=0.008114 | last_max_vel_cmd=0.03936
+waypoint=09/19 | reached=True | final_err=[-0.00311193 -0.00318866  0.00904153 -0.00258059  0.00899463  0.00341852
+ -0.00443469] | final_max_err=0.009042 | last_max_vel_cmd=0.04234
+waypoint=10/19 | reached=True | final_err=[-0.00343261 -0.00351892  0.00995528 -0.00283927  0.0099264   0.00377399
+ -0.00489179] | final_max_err=0.009955 | last_max_vel_cmd=0.04531
+waypoint=11/19 | reached=True | final_err=[-0.0030213  -0.00299513  0.00995724 -0.00275998  0.00922892  0.00335959
+ -0.00481128] | final_max_err=0.009957 | last_max_vel_cmd=0.04361
+waypoint=12/19 | reached=True | final_err=[-0.00282177 -0.00274202  0.00998575 -0.0027253   0.00892597  0.00316045
+ -0.00481304] | final_max_err=0.009986 | last_max_vel_cmd=0.04286
+waypoint=13/19 | reached=True | final_err=[-0.00268649 -0.00257214  0.00999552 -0.00269882  0.00873205  0.00302461
+ -0.0048253 ] | final_max_err=0.009996 | last_max_vel_cmd=0.04241
+waypoint=14/19 | reached=True | final_err=[-0.00257212 -0.00243299  0.009966   -0.00267247  0.00855528  0.00290681
+ -0.00482236] | final_max_err=0.009966 | last_max_vel_cmd=0.04202
+waypoint=15/19 | reached=True | final_err=[-0.00250605 -0.00235121  0.00998431 -0.00267036  0.0084796   0.00283685
+ -0.00484672] | final_max_err=0.009984 | last_max_vel_cmd=0.04192
+waypoint=16/19 | reached=True | final_err=[-0.00244985 -0.00228329  0.00998613 -0.00266982  0.00841329  0.00277541
+ -0.00486476] | final_max_err=0.009986 | last_max_vel_cmd=0.04180
+waypoint=17/19 | reached=True | final_err=[-0.0024021  -0.00222707  0.00997823 -0.0026724   0.00835563  0.00272073
+ -0.0048765 ] | final_max_err=0.009978 | last_max_vel_cmd=0.04170
+waypoint=18/19 | reached=True | final_err=[-0.00236164 -0.00218044  0.00996438 -0.00267743  0.00830683  0.00267274
+ -0.00488505] | final_max_err=0.009964 | last_max_vel_cmd=0.04159
+waypoint=19/19 | reached=True | final_err=[-0.00232735 -0.00214192  0.00994757 -0.00268562  0.00826558  0.0026296
+ -0.00488878] | final_max_err=0.009948 | last_max_vel_cmd=0.04149
+Completed grasp_descend_fallback in 138 simulation steps.
+
+=== Phase 4: close_gripper ===
+
+=== Phase 5: validate_and_attach ===
+grasp_check | ee_to_cube_dist=0.02733 | min_finger_to_cube_dist=0.04044 | total_contacts=4 | finger_contacts=4 | dist_ok=True | finger_dist_ok=True | total_contact_ok=True | finger_contact_ok=True | ready=True
+left_finger_pos=[7.37760007e-01 4.21924487e-04 1.41313255e-01]
+right_finger_pos=[6.77219093e-01 4.89536615e-04 1.40946180e-01]
+Grasp validated. Object attached.
+
+=== Phase 6: lift (residual) ===
+
+=== Phase 7: transfer_pre_place ===
+transfer_pre_place IK target joints: [ 1.09215087e-01  3.50960663e-01  1.57594690e-03 -1.84367583e+00
+ -6.70819140e-04  2.19460817e+00  8.96485003e-01]
+
+=== Planner result: transfer_pre_place ===
+success: True
+num_nodes: 2
+message: Direct path found.
+Sparse path nodes before smoothing: 2
+Sparse path nodes after smoothing:  2
+Sparse path length before smoothing: 0.9272
+Sparse path length after smoothing:  0.9272
+Planner path waypoints: 13
+
+=== Executing transfer_pre_place ===
+Num waypoints: 13
+waypoint=00/12 | reached=True | final_err=[ 3.42360623e-08  5.37671493e-06 -1.39704862e-06  2.79332448e-05
+ -5.84544383e-06  6.47121340e-06  6.49579263e-06] | final_max_err=0.000028 | last_max_vel_cmd=0.00384
+waypoint=01/12 | reached=True | final_err=[ 0.00271188 -0.00626051  0.00049573 -0.00994572 -0.00095753  0.00795453
+  0.00670176] | final_max_err=0.009946 | last_max_vel_cmd=0.03198
+waypoint=02/12 | reached=False | final_err=[ 0.00075409 -0.00157229  0.00024426 -0.00147612 -0.00108153  0.00291237
+  0.0117525 ] | final_max_err=0.011752 | last_max_vel_cmd=0.04049
+Stopped early at waypoint 2 because target was not reached in time.
+
+=== Phase 8: place_descend ===
+place_descend IK target joints: [ 0.11469138  0.59818258 -0.00419545 -1.88642456  0.00386413  2.48457353
+  0.89356284]
+
+=== Planner result: place_descend ===
+success: True
+num_nodes: 2
+message: Direct path found.
+Sparse path nodes before smoothing: 2
+Sparse path nodes after smoothing:  2
+Sparse path length before smoothing: 0.9050
+Sparse path length after smoothing:  0.9050
+Planner path waypoints: 13
+
+=== Executing place_descend ===
+Num waypoints: 13
+waypoint=00/12 | reached=True | final_err=[ 3.99235061e-07  4.53136882e-06  1.78745939e-06  3.03994030e-05
+ -1.60592913e-05  2.83825703e-06  1.54137762e-04] | final_max_err=0.000154 | last_max_vel_cmd=0.01349
+waypoint=01/12 | reached=False | final_err=[ 3.23467561e-04  4.75458996e-06  1.47762241e-04 -7.08823956e-05
+ -1.06576987e-03  2.27722734e-03  1.22035705e-02] | final_max_err=0.012204 | last_max_vel_cmd=0.04270
+Stopped early at waypoint 1 because target was not reached in time.
+
+=== Phase 9: detach_object ===
+
+=== Phase 10: open_gripper ===
+
+=== Phase 11: post_place_retreat ===
+post_place_retreat IK target joints: [ 1.11832800e-01  3.91070941e-01 -1.28235834e-03 -1.86651379e+00
+  6.28723031e-04  2.25755676e+00  8.95646770e-01]
+
+=== Planner result: post_place_retreat ===
+success: True
+num_nodes: 2
+message: Direct path found.
+Sparse path nodes before smoothing: 2
+Sparse path nodes after smoothing:  2
+Sparse path length before smoothing: 0.7397
+Sparse path length after smoothing:  0.7397
+Planner path waypoints: 11
+
+=== Executing post_place_retreat ===
+Num waypoints: 11
+waypoint=00/10 | reached=True | final_err=[-3.48697575e-07  3.71506289e-07  3.82050647e-06  5.58124880e-06
+ -5.79352329e-07 -1.61415015e-09 -2.21729490e-09] | final_max_err=0.000006 | last_max_vel_cmd=0.00077
+waypoint=01/10 | reached=True | final_err=[ 0.0023927  -0.0053097   0.00060137 -0.00996817 -0.00045536  0.00770548
+  0.00453483] | final_max_err=0.009968 | last_max_vel_cmd=0.03479
+waypoint=02/10 | reached=True | final_err=[ 0.0024554  -0.00545008  0.00063612 -0.00997472 -0.00049837  0.00842984
+  0.00515917] | final_max_err=0.009975 | last_max_vel_cmd=0.03490
+waypoint=03/10 | reached=True | final_err=[ 0.00243352 -0.00540023  0.00062769 -0.00986054 -0.00049841  0.00848518
+  0.00525798] | final_max_err=0.009861 | last_max_vel_cmd=0.03457
+waypoint=04/10 | reached=True | final_err=[ 0.00243161 -0.00539391  0.00061829 -0.00987057 -0.00049506  0.00849705
+  0.00528242] | final_max_err=0.009871 | last_max_vel_cmd=0.03467
+waypoint=05/10 | reached=True | final_err=[ 0.00243284 -0.00539444  0.00060891 -0.00989303 -0.00049132  0.0084996
+  0.00528847] | final_max_err=0.009893 | last_max_vel_cmd=0.03479
+waypoint=06/10 | reached=True | final_err=[ 0.00243439 -0.00539577  0.00059981 -0.00991239 -0.00048789  0.00850013
+  0.00528998] | final_max_err=0.009912 | last_max_vel_cmd=0.03490
+waypoint=07/10 | reached=True | final_err=[ 0.00243579 -0.00539695  0.00059105 -0.00992732 -0.00048494  0.00850024
+  0.00529038] | final_max_err=0.009927 | last_max_vel_cmd=0.03498
+waypoint=08/10 | reached=True | final_err=[ 0.00243698 -0.00539787  0.00058261 -0.00993845 -0.00048251  0.00850025
+  0.00529049] | final_max_err=0.009938 | last_max_vel_cmd=0.03503
+waypoint=09/10 | reached=True | final_err=[ 0.00243795 -0.00539855  0.00057439 -0.00994661 -0.00048057  0.00850025
+  0.00529054] | final_max_err=0.009947 | last_max_vel_cmd=0.03508
+waypoint=10/10 | reached=True | final_err=[ 0.00243873 -0.00539904  0.00056624 -0.00995249 -0.00047909  0.00850024
+  0.00529057] | final_max_err=0.009952 | last_max_vel_cmd=0.03511
+Completed post_place_retreat in 1278 simulation steps.
+
+=== Phase 12: return_home ===
+
+=== Planner result: return_home ===
+success: True
+num_nodes: 2
+message: Direct path found.
+Sparse path nodes before smoothing: 2
+Sparse path nodes after smoothing:  2
+Sparse path length before smoothing: 1.4588
+Sparse path length after smoothing:  1.4588
+Planner path waypoints: 20
+
+=== Executing return_home ===
+Num waypoints: 20
+waypoint=00/19 | reached=True | final_err=[-3.65432833e-08  1.72201474e-08  2.12812955e-06  2.40298325e-07
+ -4.47682815e-08 -1.93045269e-09 -1.01105302e-09] | final_max_err=0.000002 | last_max_vel_cmd=0.00027
+waypoint=01/19 | reached=True | final_err=[-9.14004330e-04 -9.91301845e-03  1.39494604e-04 -3.69018627e-03
+ -1.32390889e-05 -7.35908717e-03 -1.32375030e-03] | final_max_err=0.009913 | last_max_vel_cmd=0.03289
+waypoint=02/19 | reached=True | final_err=[-9.21912909e-04 -9.99637076e-03  1.65546894e-04 -3.63224504e-03
+ -1.38539116e-05 -7.88260315e-03 -1.47224418e-03] | final_max_err=0.009996 | last_max_vel_cmd=0.03317
+waypoint=03/19 | reached=True | final_err=[-9.09954151e-04 -9.86786994e-03  1.62573483e-04 -3.57321913e-03
+ -1.35401832e-05 -7.88405560e-03 -1.48793686e-03] | final_max_err=0.009868 | last_max_vel_cmd=0.03274
+waypoint=04/19 | reached=True | final_err=[-9.20580500e-04 -9.98655391e-03  1.37574394e-04 -3.62083273e-03
+ -1.36262455e-05 -7.97894537e-03 -1.50750828e-03] | final_max_err=0.009987 | last_max_vel_cmd=0.03313
+waypoint=05/19 | reached=True | final_err=[-9.08908535e-04 -9.86222898e-03  9.29893709e-05 -3.56881133e-03
+ -1.57388837e-05 -7.90113215e-03 -1.49556774e-03] | final_max_err=0.009862 | last_max_vel_cmd=0.03272
+waypoint=06/19 | reached=True | final_err=[-9.35750188e-04 -9.99758110e-03  2.60743800e-05 -3.62397822e-03
+  2.31193836e-05 -7.86735989e-03 -1.53901552e-03] | final_max_err=0.009998 | last_max_vel_cmd=0.03321
+waypoint=07/19 | reached=True | final_err=[-9.27570226e-04 -9.99987747e-03 -5.31838642e-05 -3.62891267e-03
+ -3.42050233e-06 -7.96066252e-03 -1.52251146e-03] | final_max_err=0.010000 | last_max_vel_cmd=0.03318
+waypoint=08/19 | reached=True | final_err=[-9.22409045e-04 -9.99588003e-03 -1.05012529e-04 -3.62934968e-03
+ -1.36990844e-05 -7.99287231e-03 -1.51494608e-03] | final_max_err=0.009996 | last_max_vel_cmd=0.03316
+waypoint=09/19 | reached=True | final_err=[-9.22135669e-04 -9.99267233e-03 -1.16873009e-04 -3.62937924e-03
+ -1.59646374e-05 -7.99877454e-03 -1.51332056e-03] | final_max_err=0.009993 | last_max_vel_cmd=0.03315
+waypoint=10/19 | reached=True | final_err=[-9.22445063e-04 -9.98944258e-03 -9.73071737e-05 -3.62967856e-03
+ -1.62818982e-05 -7.99947214e-03 -1.51307368e-03] | final_max_err=0.009989 | last_max_vel_cmd=0.03314
+waypoint=11/19 | reached=True | final_err=[-9.22471948e-04 -9.98593663e-03 -6.28770287e-05 -3.63027340e-03
+ -1.61298018e-05 -8.00000678e-03 -1.51290710e-03] | final_max_err=0.009986 | last_max_vel_cmd=0.03313
+waypoint=12/19 | reached=True | final_err=[-9.78304437e-04 -9.98418080e-03  3.49381843e-06 -3.63274481e-03
+  4.27858662e-06 -7.99122281e-03 -1.52986886e-03] | final_max_err=0.009984 | last_max_vel_cmd=0.03313
+waypoint=13/19 | reached=True | final_err=[-9.86983896e-04 -9.98394037e-03  1.33532331e-05 -3.63299596e-03
+  1.80075040e-05 -7.96674517e-03 -1.54021094e-03] | final_max_err=0.009984 | last_max_vel_cmd=0.03314
+waypoint=14/19 | reached=True | final_err=[-9.84847491e-04 -9.99027289e-03  1.51219752e-05 -3.63286013e-03
+  4.54542688e-05 -7.89383661e-03 -1.55538580e-03] | final_max_err=0.009990 | last_max_vel_cmd=0.03318
+waypoint=15/19 | reached=True | final_err=[-9.62467188e-04 -9.99156514e-03  1.55086483e-05 -3.63256100e-03
+  5.52338693e-05 -7.85095797e-03 -1.55599549e-03] | final_max_err=0.009992 | last_max_vel_cmd=0.03319
+waypoint=16/19 | reached=True | final_err=[-9.39209119e-04 -9.98382171e-03  1.55622100e-05 -3.63239265e-03
+  4.15204092e-05 -7.86965125e-03 -1.54338990e-03] | final_max_err=0.009984 | last_max_vel_cmd=0.03315
+waypoint=17/19 | reached=True | final_err=[-9.29154829e-04 -9.98236168e-03  1.55696293e-05 -3.63236304e-03
+  4.63429787e-05 -7.84983881e-03 -1.54039981e-03] | final_max_err=0.009982 | last_max_vel_cmd=0.03316
+waypoint=18/19 | reached=True | final_err=[-9.24042638e-04 -9.97388064e-03  1.55706570e-05 -3.63239025e-03
+  3.65264285e-05 -7.87338797e-03 -1.53321178e-03] | final_max_err=0.009974 | last_max_vel_cmd=0.03312
+waypoint=19/19 | reached=True | final_err=[-9.22778823e-04 -9.97386479e-03  1.55707994e-05 -3.63243403e-03
+  4.48644486e-05 -7.85330766e-03 -1.53314162e-03] | final_max_err=0.009974 | last_max_vel_cmd=0.03313
+Completed return_home in 2691 simulation steps.
+
+=== Final Cube Pose ===
+Cube position: [0.67078165 0.04518864 0.07598818]
+Saved trajectory log to results/m2/trajectory_log.json
