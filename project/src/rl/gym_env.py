@@ -58,7 +58,7 @@ class PandaGraspEnv(gymnasium.Env):
     def __init__(self, gui=False, mode="hybrid", perturb_xy_range=None,
                  perturb_yaw_range=None, perturb_z_range=None,
                  render_mode=None, verbose_episodes=False,
-                 curriculum=False):
+                 curriculum=False, trace=None, trace_dir=None):
         super().__init__()
 
         self.gui = gui
@@ -112,6 +112,18 @@ class PandaGraspEnv(gymnasium.Env):
         self._perturb_offset = np.zeros(3, dtype=np.float32)
 
         self._initialized = False
+
+        # Diagnostic trace (per-step CSV + per-episode JSON summary).
+        self.trace = (
+            bool(getattr(config, "RL_TRACE_EPISODE", False)) if trace is None else bool(trace)
+        )
+        self.trace_dir = (
+            trace_dir if trace_dir is not None
+            else getattr(config, "RL_TRACE_OUTPUT_DIR", "results/m2/traces")
+        )
+        self._trace_rows = []
+        self._trace_grasp_debug = None
+        self._trace_episode_idx = 0
 
     def _lazy_init(self):
         if self._initialized:
@@ -313,6 +325,11 @@ class PandaGraspEnv(gymnasium.Env):
         cube_pos, _ = get_body_pose(self._objects.cube_id)
         self._prev_ee_cube_dist = float(np.linalg.norm(ee_pos - cube_pos))
 
+        if self.trace:
+            self._trace_rows = []
+            self._trace_grasp_debug = None
+            self._trace_episode_idx += 1
+
         obs = self._get_obs()
         return obs, {}
 
@@ -388,7 +405,9 @@ class PandaGraspEnv(gymnasium.Env):
 
         # Single-attempt grasp validation — no retry. RL must learn to
         # position precisely enough for the physics contact check to pass.
-        ready, _ = self._robot.is_grasp_ready(self._objects.cube_id)
+        ready, grasp_debug = self._robot.is_grasp_ready(self._objects.cube_id)
+        if self.trace:
+            self._trace_grasp_debug = grasp_debug
 
         if ready:
             self._robot.attach_object(self._objects.cube_id)
@@ -539,6 +558,31 @@ class PandaGraspEnv(gymnasium.Env):
             # every step because waypoints are exhausted.
             terminated = True
 
+        if self.trace:
+            _, cube_aabb_max = p.getAABB(self._objects.cube_id)
+            cube_top_z_now = float(cube_aabb_max[2])
+            ee_xy_dist = float(np.linalg.norm(ee_pos[:2] - cube_pos[:2]))
+            ee_above = float(ee_pos[2] - cube_top_z_now)
+            self._trace_rows.append({
+                "step": int(self._step_count),
+                "phase": int(self._phase),
+                "wp_idx": int(self._waypoint_idx),
+                "wp_total": int(len(self._waypoints)),
+                "ee_x": float(ee_pos[0]),
+                "ee_y": float(ee_pos[1]),
+                "ee_z": float(ee_pos[2]),
+                "cube_x": float(cube_pos[0]),
+                "cube_y": float(cube_pos[1]),
+                "cube_z": float(cube_pos[2]),
+                "cube_top_z": cube_top_z_now,
+                "ee_xy_dist": ee_xy_dist,
+                "ee_above_cube_top": ee_above,
+                "gripper_cmd": float(gripper_width),
+                "act_norm": float(np.linalg.norm(action)),
+                "grasp_ready_at_lift": bool(grasp_ready),
+                "reward": float(reward),
+            })
+
         info = {
             "success": cube_lifted,
             "phase": self._phase,
@@ -585,8 +629,66 @@ class PandaGraspEnv(gymnasium.Env):
                     f"| steps={self._step_count:d}"
                 )
 
+        if self.trace and (terminated or truncated):
+            self._write_trace(
+                cube_lifted=bool(cube_lifted),
+                cube_fallen=bool(cube_fallen),
+                truncated=bool(truncated),
+            )
+
         obs = self._get_obs()
         return obs, float(reward), terminated, truncated, info
+
+    def _write_trace(self, cube_lifted, cube_fallen, truncated):
+        import csv as _csv
+        import json as _json
+        import os as _os
+
+        def _safe(v):
+            if isinstance(v, np.ndarray):
+                return v.tolist()
+            if isinstance(v, (np.bool_,)):
+                return bool(v)
+            if isinstance(v, (np.integer,)):
+                return int(v)
+            if isinstance(v, (np.floating,)):
+                return float(v)
+            return v
+
+        out_dir = _os.path.join(self.trace_dir, self.mode)
+        _os.makedirs(out_dir, exist_ok=True)
+        name = f"ep_{self._trace_episode_idx:03d}"
+        csv_path = _os.path.join(out_dir, name + ".csv")
+        json_path = _os.path.join(out_dir, name + ".json")
+
+        if self._trace_rows:
+            keys = list(self._trace_rows[0].keys())
+            with open(csv_path, "w", newline="") as f:
+                writer = _csv.DictWriter(f, fieldnames=keys)
+                writer.writeheader()
+                writer.writerows(self._trace_rows)
+
+        grasp_dbg = None
+        if self._trace_grasp_debug is not None:
+            grasp_dbg = {k: _safe(v) for k, v in self._trace_grasp_debug.items()}
+
+        summary = {
+            "episode": int(self._trace_episode_idx),
+            "mode": self.mode,
+            "success": bool(cube_lifted),
+            "cube_fallen": bool(cube_fallen),
+            "truncated": bool(truncated),
+            "steps": int(self._step_count),
+            "max_phase": int(self._max_phase_reached),
+            "end_phase": int(self._phase),
+            "forced_wp_advances": int(self._forced_waypoint_advances),
+            "grasp_attempted": bool(self._grasp_attempted),
+            "grasp_attached": bool(self._grasp_attached),
+            "grasp_debug_at_close": grasp_dbg,
+            "perturb_offset": [float(x) for x in self._perturb_offset],
+        }
+        with open(json_path, "w") as f:
+            _json.dump(summary, f, indent=2, default=str)
 
     def close(self):
         if self._env is not None:

@@ -322,4 +322,10 @@ M2_MODEL_DIR = "results/m2/models"
 M2_TB_LOG_DIR = "results/m2/tb_logs"
 M2_EVAL_RESULTS_PATH = "results/m2/eval_results.json"
 M2_PLOT_DIR = "results/m2/plots"
+
+# Diagnostic: per-step trace written to disk when the env is instantiated
+# with trace=True (or this flag is on). One CSV + one JSON summary per
+# episode, scoped by mode (hybrid / rl_only).
+RL_TRACE_EPISODE = False
+RL_TRACE_OUTPUT_DIR = "results/m2/traces"
 M2_TRAJECTORY_LOG_PATH = "results/m2/trajectory_log.json"
