@@ -259,11 +259,17 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
     ep_reward_acc = None
     ep_length_acc = None
     ep_max_step_r_acc = None
+    best_score = -float("inf")
     best_succ_rate = -1.0
     best_mean_reward = -float("inf")
     best_succ_batch = 0
     best_count = 0
     below_peak_count = 0
+    # Rolling history for smoothed best-model selection (last N batches)
+    _score_window = 10
+    _hist_succ: list[float] = []
+    _hist_grasp: list[float] = []
+    _hist_reward: list[float] = []
     current_lr = config.PPO_LR
     start_time = time.time()
 
@@ -500,16 +506,32 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
         kl_flag = " KL!" if kl_early_stop else ""
         best_flag = ""
 
-        # Best model tracking: higher succ_rate wins; ties broken by mean ep reward
+        # Best model tracking: composite score smoothed over last N batches.
+        # score = 3*succ + 1*grasp + 0.5*norm_reward
+        # Smoothing prevents saving on single-batch noise spikes.
+        _hist_succ.append(succ_rate)
+        _hist_grasp.append(grasp_rate)
+        _hist_reward.append(mean_ep_reward)
+        if len(_hist_succ) > _score_window:
+            _hist_succ.pop(0)
+            _hist_grasp.pop(0)
+            _hist_reward.pop(0)
+        smooth_succ = float(np.mean(_hist_succ))
+        smooth_grasp = float(np.mean(_hist_grasp))
+        smooth_reward = float(np.mean(_hist_reward))
+        # Normalize reward to ~[0,1] range using terminal bonus scale
+        reward_norm = smooth_reward / max(config.REWARD_EPSILON, 1.0)
+        composite_score = 3.0 * smooth_succ + 1.0 * smooth_grasp + 0.5 * reward_norm
+
         is_new_best = (
             save_best
             and len(recent_successes) >= 5
-            and (succ_rate > best_succ_rate
-                 or (succ_rate == best_succ_rate and mean_ep_reward > best_mean_reward))
+            and composite_score > best_score
         )
         if is_new_best:
-            best_succ_rate = succ_rate
-            best_mean_reward = mean_ep_reward
+            best_score = composite_score
+            best_succ_rate = smooth_succ
+            best_mean_reward = smooth_reward
             best_succ_batch = batch_idx
             best_count += 1
             below_peak_count = 0
@@ -518,14 +540,18 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
                 "critic_state_dict": critic.state_dict(),
                 "optimizer_state_dict": optimizer.state_dict(),
                 "total_frames": total_frames,
-                "success_rate": succ_rate,
-                "mean_episode_reward": mean_ep_reward,
+                "success_rate": smooth_succ,
+                "grasp_rate": smooth_grasp,
+                "mean_episode_reward": smooth_reward,
+                "composite_score": composite_score,
             }
             best_path = os.path.join(model_save_path, "best_model.pt")
             torch.save(checkpoint_data, best_path)
-            # Numbered copy: best_003_succ100_r152.3.pt
-            succ_pct = int(round(succ_rate * 100))
-            numbered_name = f"best_{run_tag}_{best_count:03d}_succ{succ_pct}_r{mean_ep_reward:.1f}.pt"
+            # Numbered copy with grasp info
+            succ_pct = int(round(smooth_succ * 100))
+            grasp_pct = int(round(smooth_grasp * 100))
+            numbered_name = (f"best_{run_tag}_{best_count:03d}"
+                             f"_s{succ_pct}_g{grasp_pct}_r{smooth_reward:.1f}.pt")
             torch.save(checkpoint_data, os.path.join(model_save_path, numbered_name))
             best_flag = f" *BEST #{best_count}*"
 
@@ -558,13 +584,13 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
         if nan_detected:
             break
 
-        # Early stopping on collapse
+        # Early stopping on collapse (uses smoothed success)
         if es_patience > 0 and best_succ_rate >= es_min_peak:
-            if succ_rate < best_succ_rate - es_drop:
+            if smooth_succ < best_succ_rate - es_drop:
                 below_peak_count += 1
                 if below_peak_count >= es_patience:
                     print(
-                        f"\n*** EARLY STOP: succ={succ_rate:.0%} has been "
+                        f"\n*** EARLY STOP: smooth_succ={smooth_succ:.0%} has been "
                         f">{es_drop:.0%} below peak={best_succ_rate:.0%} "
                         f"(batch {best_succ_batch}) for {below_peak_count} "
                         f"consecutive batches ***\n"
@@ -578,8 +604,9 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
     best_path = os.path.join(model_save_path, "best_model.pt")
     if save_best and os.path.exists(best_path):
         shutil.copy2(best_path, final_path)
-        print(f"Training complete. Copied best model (succ={best_succ_rate:.0%}, "
-              f"ep_r={best_mean_reward:+.1f}, batch={best_succ_batch}) to {final_path}")
+        print(f"Training complete. Copied best model (score={best_score:.3f}, "
+              f"succ={best_succ_rate:.0%}, ep_r={best_mean_reward:+.1f}, "
+              f"batch={best_succ_batch}) to {final_path}")
     else:
         torch.save({
             "actor_state_dict": actor.state_dict(),
