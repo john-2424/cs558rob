@@ -158,8 +158,8 @@ ATTACH_PARENT_LINK_INDEX = 11
 ENABLE_GRASP_VALIDATION = True
 GRASP_MAX_EE_TO_CUBE_CENTER_DIST = 0.110
 GRASP_REQUIRE_CONTACT = True
-GRASP_MIN_TOTAL_CONTACTS = 1
-GRASP_MIN_FINGER_CONTACTS = 1
+GRASP_MIN_TOTAL_CONTACTS = 2
+GRASP_MIN_FINGER_CONTACTS = 2
 GRASP_MAX_FINGER_TO_CUBE_DIST = 0.055
 GRASP_USE_FINGER_DISTANCE = True
 
@@ -207,16 +207,16 @@ PLANNER_ATTACHED_MOTION_LABELS = {
 # =========================
 
 # Phase-gating: zero residual during phases where PD alone suffices.
-# Avoids wasting step budget on forced waypoint advances in pre_grasp.
+# Enabling pre_grasp (phase 0) gives the policy the entire approach to
+# steer toward the actual cube instead of only the last few cm.
 RESIDUAL_PHASE_GATE = True
-RESIDUAL_ACTIVE_PHASES = {1, 2}  # PHASE_GRASP_DESCEND, PHASE_LIFT
+RESIDUAL_ACTIVE_PHASES = {0, 1, 2}  # PHASE_PRE_GRASP, PHASE_GRASP_DESCEND, PHASE_LIFT
 
 # Residual bounds
-# 0.3 rad/s (~12% of PD max). Planner targets are computed from the nominal
+# 0.5 rad/s (~20% of PD max). Planner targets are computed from the nominal
 # (pre-perturbation) cube pose, so the PD drives toward the wrong spot.
-# At 0.04m perturbation the PD pulls ~0.2 rad/s toward nominal; the residual
-# needs >= 0.2 to counteract. 0.3 gives enough headroom for RL to override.
-RESIDUAL_MAX = 0.3
+# Needs enough authority to overcome PD pull toward stale targets.
+RESIDUAL_MAX = 0.5
 
 # RL simulation
 RL_SIM_SUBSTEPS = 4
@@ -247,12 +247,11 @@ CURRICULUM_WARMUP_EPISODES = 0
 
 # Reward shaping
 REWARD_ALPHA = 10.0
-# With RESIDUAL_MAX=0.3, BETA=0.15 gives max per-step residual penalty
-# ~= -0.045, comparable in magnitude to per-step approach reward.
-# (Scaled down from 0.5 to compensate for 3x larger RESIDUAL_MAX.)
+# With RESIDUAL_MAX=0.5, BETA=0.10 gives max per-step residual penalty
+# ~= -0.05, comparable in magnitude to per-step approach reward.
 # Note: residual penalty is disabled for rl_only mode since there is no
 # PD backbone — penalizing the only control signal trains it to do nothing.
-REWARD_BETA = 0.15
+REWARD_BETA = 0.10
 REWARD_GAMMA = 0.02
 REWARD_DELTA = 50.0
 REWARD_EPSILON = 100.0
