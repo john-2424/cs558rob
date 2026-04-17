@@ -1,33 +1,33 @@
 {
   "episode": 2,
-  "mode": "rl_only",
+  "mode": "planner_only",
   "success": false,
   "cube_fallen": false,
-  "truncated": true,
-  "steps": 4000,
+  "truncated": false,
+  "steps": 801,
   "max_phase": 1,
   "end_phase": 1,
-  "forced_wp_advances": 40,
+  "forced_wp_advances": 0,
   "grasp_attempted": true,
   "grasp_attached": false,
   "grasp_debug_at_close": {
-    "ee_to_cube_dist": 0.30753080565595636,
-    "min_finger_to_cube_dist": 0.3193018598057509,
+    "ee_to_cube_dist": 0.077653568777108,
+    "min_finger_to_cube_dist": 0.08734364789585329,
     "total_contacts": 0,
     "finger_contacts": 0,
-    "dist_ok": false,
+    "dist_ok": true,
     "finger_dist_ok": false,
     "total_contact_ok": false,
     "finger_contact_ok": false,
     "left_finger_pos": [
-      0.41554874181747437,
-      0.09918919950723648,
-      0.229130357503891
+      0.7000043392181396,
+      -0.0001734303659759462,
+      0.1497860699892044
     ],
     "right_finger_pos": [
-      0.4155413508415222,
-      0.0991891548037529,
-      0.229129821062088
+      0.7000042796134949,
+      -0.00017343115177936852,
+      0.1497860699892044
     ],
     "ready": false
   },

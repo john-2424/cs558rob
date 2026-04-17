@@ -3,14 +3,34 @@
   "mode": "hybrid",
   "success": false,
   "cube_fallen": false,
-  "truncated": true,
-  "steps": 1200,
+  "truncated": false,
+  "steps": 2099,
   "max_phase": 1,
   "end_phase": 1,
-  "forced_wp_advances": 5,
-  "grasp_attempted": false,
+  "forced_wp_advances": 14,
+  "grasp_attempted": true,
   "grasp_attached": false,
-  "grasp_debug_at_close": null,
+  "grasp_debug_at_close": {
+    "ee_to_cube_dist": 0.24023178600767206,
+    "min_finger_to_cube_dist": 0.24542586037830666,
+    "total_contacts": 0,
+    "finger_contacts": 0,
+    "dist_ok": false,
+    "finger_dist_ok": false,
+    "total_contact_ok": false,
+    "finger_contact_ok": false,
+    "left_finger_pos": [
+      0.7367002964019775,
+      0.002418599557131529,
+      0.1576327383518219
+    ],
+    "right_finger_pos": [
+      0.7367003560066223,
+      0.0024186004884541035,
+      0.1576327383518219
+    ],
+    "ready": false
+  },
   "perturb_offset": [
     0.021911867509082583,
     -0.03683623893828907,

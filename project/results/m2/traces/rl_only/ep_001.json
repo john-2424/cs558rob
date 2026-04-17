@@ -4,13 +4,33 @@
   "success": false,
   "cube_fallen": false,
   "truncated": true,
-  "steps": 1200,
-  "max_phase": 0,
-  "end_phase": 0,
-  "forced_wp_advances": 12,
-  "grasp_attempted": false,
+  "steps": 4000,
+  "max_phase": 1,
+  "end_phase": 1,
+  "forced_wp_advances": 40,
+  "grasp_attempted": true,
   "grasp_attached": false,
-  "grasp_debug_at_close": null,
+  "grasp_debug_at_close": {
+    "ee_to_cube_dist": 0.2997914242858864,
+    "min_finger_to_cube_dist": 0.3038891528127959,
+    "total_contacts": 0,
+    "finger_contacts": 0,
+    "dist_ok": false,
+    "finger_dist_ok": false,
+    "total_contact_ok": false,
+    "finger_contact_ok": false,
+    "left_finger_pos": [
+      0.5147310495376587,
+      0.11782851815223694,
+      0.22538352012634277
+    ],
+    "right_finger_pos": [
+      0.5146878361701965,
+      0.11782164126634598,
+      0.2253713458776474
+    ],
+    "ready": false
+  },
   "perturb_offset": [
     0.021911867509082583,
     -0.03683623893828907,
