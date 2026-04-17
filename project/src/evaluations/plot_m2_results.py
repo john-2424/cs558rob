@@ -324,7 +324,7 @@ def plot_residual_magnitude(results, save_dir):
         )
 
     ax.set_xlabel("Perturbation Level (XY m / Z m / Yaw rad)")
-    ax.set_ylabel("Mean Residual Magnitude (rad/s)")
+    ax.set_ylabel("Mean Residual Magnitude (rad)")
     ax.set_title("Residual Correction Magnitude vs Perturbation")
     ax.set_xticks(perturb_values)
     ax.set_xticklabels(_perturb_tick_labels(perturb_values), fontsize=7)
@@ -357,18 +357,22 @@ def plot_grasp_analysis(results, save_dir):
     for ax, method in zip(axes, methods):
         attempted = []
         attached = []
+        lifted = []
         for lk in levels:
             if method in results[lk]:
                 attempted.append(results[lk][method].get("grasp_attempted_rate", 0) * 100)
                 attached.append(results[lk][method].get("grasp_attached_rate", 0) * 100)
+                lifted.append(results[lk][method].get("cube_lifted_rate", 0) * 100)
             else:
                 attempted.append(0)
                 attached.append(0)
+                lifted.append(0)
 
         x = np.arange(len(perturb_values))
-        w = 0.35
-        ax.bar(x - w / 2, attempted, w, label="Attempted", color="#F5A623", alpha=0.85)
-        ax.bar(x + w / 2, attached, w, label="Attached", color="#6ACC65", alpha=0.85)
+        w = 0.25
+        ax.bar(x - w, attempted, w, label="Attempted", color="#F5A623", alpha=0.85)
+        ax.bar(x, attached, w, label="Attached", color="#6ACC65", alpha=0.85)
+        ax.bar(x + w, lifted, w, label="Lifted", color="#4878CF", alpha=0.85)
 
         ax.set_title(method_labels.get(method, method))
         ax.set_xlabel("Perturbation Level", labelpad=10)
@@ -379,10 +383,68 @@ def plot_grasp_analysis(results, save_dir):
         ax.grid(axis="y", alpha=0.3)
 
     axes[0].set_ylabel("Rate (%)")
-    fig.suptitle("Grasp Attempted vs Attached Rate", fontsize=13, y=1.02)
+    fig.suptitle("Grasp Pipeline: Attempted → Attached → Lifted", fontsize=13, y=1.02)
     plt.tight_layout()
     path = os.path.join(save_dir, "grasp_analysis.png")
     plt.savefig(path, dpi=150, bbox_inches="tight")
+    plt.close()
+    print(f"Saved {path}")
+
+
+def plot_diagnostic_metrics(results, save_dir):
+    """Two-panel line plot: mean forced WP advances and final EE-cube distance."""
+    levels = sorted(results.keys())
+    methods = sorted({m for lvl in results.values() for m in lvl.keys()})
+    perturb_values = [float(lk.split("_")[1]) for lk in levels]
+
+    method_labels = {
+        "planner_only": "Planner Only",
+        "hybrid": "Planner + Residual RL",
+        "rl_only": "RL Only",
+    }
+    colors = {
+        "planner_only": "#4878CF",
+        "hybrid": "#6ACC65",
+        "rl_only": "#D65F5F",
+    }
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
+
+    for method in methods:
+        forced = []
+        ee_cube = []
+        for lk in levels:
+            if method in results[lk]:
+                forced.append(results[lk][method].get("mean_forced_wp_advances", 0.0))
+                ee_cube.append(results[lk][method].get("mean_ee_cube_dist", 0.0))
+            else:
+                forced.append(0)
+                ee_cube.append(0)
+
+        label = method_labels.get(method, method)
+        c = colors.get(method, None)
+        ax1.plot(perturb_values, forced, marker="o", label=label, color=c)
+        ax2.plot(perturb_values, ee_cube, marker="s", label=label, color=c)
+
+    ax1.set_xlabel("Perturbation Level (XY m)")
+    ax1.set_ylabel("Mean Forced WP Advances / Episode")
+    ax1.set_title("Forced Waypoint Advances")
+    ax1.set_xticks(perturb_values)
+    ax1.set_xticklabels(_perturb_tick_labels(perturb_values), fontsize=7)
+    ax1.legend(fontsize=8)
+    ax1.grid(alpha=0.3)
+
+    ax2.set_xlabel("Perturbation Level (XY m)")
+    ax2.set_ylabel("Mean Final EE-Cube Distance (m)")
+    ax2.set_title("Final EE-to-Cube Distance")
+    ax2.set_xticks(perturb_values)
+    ax2.set_xticklabels(_perturb_tick_labels(perturb_values), fontsize=7)
+    ax2.legend(fontsize=8)
+    ax2.grid(alpha=0.3)
+
+    plt.tight_layout()
+    path = os.path.join(save_dir, "diagnostic_metrics.png")
+    plt.savefig(path, dpi=150)
     plt.close()
     print(f"Saved {path}")
 
@@ -477,6 +539,7 @@ def generate_all_plots(results_path=None, save_dir=None, log_file_path=None):
             ("phase_breakdown", plot_phase_breakdown),
             ("residual_magnitude", plot_residual_magnitude),
             ("grasp_analysis", plot_grasp_analysis),
+            ("diagnostic_metrics", plot_diagnostic_metrics),
             ("summary_table", plot_summary_table),
         ]
         overall_start = time.time()

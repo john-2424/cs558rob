@@ -212,6 +212,7 @@ def _eval_one_method(label, mode, model_path, perturb_level, num_episodes, num_w
         phase_counts = {0: 0, 1: 0, 2: 0}
         tried = 0
         attached = 0
+        lifted_n = 0
         truncated_n = 0
         terminated_n = 0
         fallen_n = 0
@@ -223,6 +224,7 @@ def _eval_one_method(label, mode, model_path, perturb_level, num_episodes, num_w
                 phase_counts[r["ep_max_phase"]] += 1
             if r.get("ep_grasp_attempted"): tried += 1
             if r.get("ep_grasp_attached"): attached += 1
+            if r.get("ep_cube_lifted"): lifted_n += 1
             if r.get("truncated"): truncated_n += 1
             if r.get("terminated"): terminated_n += 1
             if r.get("ep_cube_fallen"): fallen_n += 1
@@ -236,7 +238,7 @@ def _eval_one_method(label, mode, model_path, perturb_level, num_episodes, num_w
         mean_forced = float(np.mean(forced_vals)) if forced_vals else 0.0
         print(
             f"      diag: max_phase_reached[{phase_str}] | "
-            f"grasp_try={tried}/{n} attach={attached}/{n} | "
+            f"grasp_try={tried}/{n} attach={attached}/{n} lifted={lifted_n}/{n} | "
             f"trunc={truncated_n} term={terminated_n} fallen={fallen_n} | "
             f"forced_wp/ep={mean_forced:.1f} | "
             f"final cube_dz={mean_dz:+.3f} ee_cube={mean_dist:.3f}"

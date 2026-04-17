@@ -129,6 +129,9 @@ def _draw_residual_magnitude(residual_norm):
                  [0.30, 0.0, 0.70], color=color, size=1.2)
 
 
+_phase_residual_stats = {}  # populated by execute_residual_trajectory for end-of-demo summary
+
+
 def execute_residual_trajectory(
     env, robot, waypoints, actor, action_wrapper, cube_id,
     tol=config.WAYPOINT_TOL,
@@ -142,6 +145,7 @@ def execute_residual_trajectory(
     if perturb_offset is None:
         perturb_offset = np.zeros(3, dtype=np.float32)
     total_steps = 0
+    residual_norms = []
 
     for i, q_target in enumerate(waypoints):
         reached = False
@@ -187,8 +191,10 @@ def execute_residual_trajectory(
 
             # Debug overlay: show residual magnitude (skip for planner_only)
             qd_residual = action_wrapper.get_residual(raw_action)
+            r_norm = float(np.linalg.norm(qd_residual))
+            residual_norms.append(r_norm)
             if action_wrapper.mode != "planner_only":
-                _draw_residual_magnitude(float(np.linalg.norm(qd_residual)))
+                _draw_residual_magnitude(r_norm)
 
             # Send to robot
             forces = robot.arm_max_forces
@@ -229,7 +235,24 @@ def execute_residual_trajectory(
 
         if not reached:
             print(f"[residual] waypoint {i} not reached in {label}")
+            # Record partial stats before returning failure
+            if residual_norms:
+                _phase_residual_stats[label] = {
+                    "steps": total_steps,
+                    "waypoints": len(waypoints),
+                    "mean_residual": float(np.mean(residual_norms)),
+                    "max_residual": float(np.max(residual_norms)),
+                }
             return False
+
+    # Record stats for this phase
+    if residual_norms:
+        _phase_residual_stats[label] = {
+            "steps": total_steps,
+            "waypoints": len(waypoints),
+            "mean_residual": float(np.mean(residual_norms)),
+            "max_residual": float(np.max(residual_norms)),
+        }
 
     return True
 
@@ -349,6 +372,7 @@ def run_pick_place_with_residual(
     print(f"Loaded model from {model_path}, mode={mode}")
     print(f"Perturbation ranges: xy={perturb_xy_range}, z={perturb_z_range}, yaw={perturb_yaw_range}")
     _overlay_ids.clear()
+    _phase_residual_stats.clear()
 
     env = BulletEnv(gui=config.GUI)
     env.connect()
@@ -607,8 +631,26 @@ def run_pick_place_with_residual(
         # Final state
         _draw_phase_label("COMPLETE", None)
         cube_pos, cube_orn = get_body_pose(objects.cube_id)
-        print("\n=== Final Cube Pose ===")
-        print("Cube position:", cube_pos)
+        ee_pos_final, _ = robot.get_ee_pose()
+        ee_cube_dist = float(np.linalg.norm(np.array(cube_pos) - ee_pos_final))
+        cube_dz = float(cube_pos[2]) - table_top_z
+
+        print("\n=== Demo Summary ===")
+        print(f"Cube position: {cube_pos}")
+        print(f"Cube dz from table: {cube_dz:+.4f} m")
+        print(f"Final EE-cube dist: {ee_cube_dist:.4f} m")
+        print(f"Mode: {mode}")
+        print(f"Total time: {time.time() - demo_start:.1f}s")
+        if _phase_residual_stats:
+            print("\nPer-phase residual stats:")
+            total_steps_all = 0
+            for phase_name, stats in _phase_residual_stats.items():
+                total_steps_all += stats["steps"]
+                print(f"  {phase_name:20s}: {stats['steps']:4d} steps, "
+                      f"{stats['waypoints']:2d} wp, "
+                      f"residual mean={stats['mean_residual']:.4f} "
+                      f"max={stats['max_residual']:.4f} rad")
+            print(f"  {'TOTAL':20s}: {total_steps_all:4d} steps (RL-controlled)")
 
         if logger is not None:
             os.makedirs(os.path.dirname(config.M2_TRAJECTORY_LOG_PATH), exist_ok=True)

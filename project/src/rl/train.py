@@ -255,6 +255,7 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
     episode_rewards = []
     episode_lengths = []
     episode_successes = []
+    episode_grasps = []  # reached grasp (but not necessarily lifted)
     ep_reward_acc = None
     ep_length_acc = None
     ep_max_step_r_acc = None
@@ -426,11 +427,12 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
                         ep_len_done = ep_length_acc[w]
                         episode_rewards.append(ep_r_done)
                         episode_lengths.append(ep_len_done)
-                        # Detect actual cube lift: the lift bonus
-                        # (REWARD_EPSILON=100) is the only single-step reward
-                        # component that can exceed ~80. This is reliable
-                        # regardless of cumulative proximity or approach rewards.
+                        # Detect grasp and lift from max single-step reward.
+                        # Grasp bonus (REWARD_DELTA) fires once on attach;
+                        # lift bonus (REWARD_EPSILON) fires on successful lift.
+                        grasped = ep_max_step_r_acc[w] >= config.REWARD_DELTA * 0.8
                         lifted = ep_max_step_r_acc[w] >= config.REWARD_EPSILON * 0.8
+                        episode_grasps.append(1 if grasped else 0)
                         episode_successes.append(1 if lifted else 0)
                         batch_new_rewards.append(ep_r_done)
                         batch_new_lengths.append(ep_len_done)
@@ -444,11 +446,16 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
         recent_rewards = episode_rewards[-20:]
         recent_lengths = episode_lengths[-20:]
         recent_successes = episode_successes[-20:]
+        recent_grasps = episode_grasps[-20:]
 
         mean_ep_reward = float(np.mean(recent_rewards)) if recent_rewards else float("nan")
         std_ep_reward = float(np.std(recent_rewards)) if len(recent_rewards) > 1 else 0.0
         mean_ep_length = float(np.mean(recent_lengths)) if recent_lengths else float("nan")
         succ_rate = float(np.mean(recent_successes)) if recent_successes else 0.0
+        grasp_rate = float(np.mean(recent_grasps)) if recent_grasps else 0.0
+
+        # Position offset in radians: how much the RL is actually shifting PD targets
+        offset_rad = act_std * config.RESIDUAL_MAX_POS
 
         batch_ep_std = float(np.std(batch_new_rewards)) if len(batch_new_rewards) > 1 else 0.0
 
@@ -471,11 +478,13 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
         writer.add_scalar("train/value_mean", val_mean, total_frames)
         if not np.isnan(log_std_val):
             writer.add_scalar("train/log_std", log_std_val, total_frames)
+        writer.add_scalar("train/offset_rad", offset_rad, total_frames)
         if recent_rewards:
             writer.add_scalar("train/mean_episode_reward", mean_ep_reward, total_frames)
             writer.add_scalar("train/std_episode_reward", std_ep_reward, total_frames)
             writer.add_scalar("train/mean_episode_length", mean_ep_length, total_frames)
             writer.add_scalar("train/success_rate", succ_rate, total_frames)
+            writer.add_scalar("train/grasp_rate", grasp_rate, total_frames)
         if len(batch_new_rewards) > 1:
             writer.add_scalar("train/batch_episode_reward_std", batch_ep_std, total_frames)
 
@@ -517,11 +526,12 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
             f"loss={mean_loss:+.3f} (p={mean_policy_loss:+.3f} v={mean_value_loss:.3f}) | "
             f"step_r={mean_step_reward:+.4f} | "
             f"ep_r={mean_ep_reward:+7.2f}±{std_ep_reward:5.2f} | "
-            f"succ={succ_rate:5.0%} | "
-            f"grad={mean_grad_norm:.3f} clip={mean_clip_frac:.2f} ent={mean_entropy:.3f} | "
+            f"grasp={grasp_rate:4.0%} succ={succ_rate:4.0%} | "
+            f"grad={mean_grad_norm:.3f} clip={mean_clip_frac:.2f} | "
             f"kl={mean_kl:.4f} ep={epochs_run}/{config.PPO_EPOCHS}{kl_flag} | "
             f"lr={current_lr:.1e} ent_c={current_ent:.3f} | "
-            f"act={act_mean:+.3f}±{act_std:.3f} logσ={log_std_val:+.2f} V={val_mean:+.1f} | "
+            f"act={act_mean:+.3f}±{act_std:.3f} off={offset_rad:.4f}rad "
+            f"logσ={log_std_val:+.2f} V={val_mean:+.1f} | "
             f"fps={fps:.0f}{best_flag}"
         )
 
