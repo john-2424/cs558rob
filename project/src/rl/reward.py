@@ -22,6 +22,8 @@ def compute_reward(ee_pos, cube_pos, qd_residual,
     # Linear ramp in [0, REWARD_ETA] for ee_cube_dist in [PROXIMITY_RADIUS, 0].
     # Active in both phases so the policy gets a guiding signal during approach,
     # not only during the final descent.
+    # NOTE: gym_env caps cumulative proximity per episode (PROXIMITY_REWARD_CAP)
+    # to prevent reward farming (hovering near cube indefinitely).
     r_proximity = 0.0
     if phase is not None and phase in (0, 1):  # PRE_GRASP or GRASP_DESCEND
         proximity = max(0.0, config.PROXIMITY_RADIUS - ee_cube_dist) / config.PROXIMITY_RADIUS

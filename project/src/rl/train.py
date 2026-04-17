@@ -319,6 +319,7 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
         batch_entropies = []
         epochs_run = 0
         kl_early_stop = False
+        nan_detected = False
         for epoch_i in range(config.PPO_EPOCHS):
             epoch_kls = []
             for _ in range(num_mini_batches):
@@ -329,6 +330,12 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
                 loss_cri = loss_td["loss_critic"]
                 loss_ent = loss_td["loss_entropy"]
                 loss = loss_obj + loss_cri + loss_ent
+
+                if torch.isnan(loss) or torch.isinf(loss):
+                    print(f"\n*** NaN/Inf loss detected at batch {batch_idx}, "
+                          f"epoch {epoch_i}. Stopping training. ***\n")
+                    nan_detected = True
+                    break
 
                 optimizer.zero_grad()
                 loss.backward()
@@ -357,6 +364,8 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
                     ev = ent_val.mean().item() if ent_val.numel() > 1 else ent_val.item()
                     batch_entropies.append(ev)
 
+            if nan_detected:
+                break
             epochs_run = epoch_i + 1
             kl_active = target_kl > 0 and total_frames >= kl_warmup_frames
             if kl_active and epoch_kls:
@@ -544,6 +553,10 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
                 "optimizer_state_dict": optimizer.state_dict(),
                 "total_frames": total_frames,
             }, checkpoint_path)
+
+        # Abort on NaN
+        if nan_detected:
+            break
 
         # Early stopping on collapse
         if es_patience > 0 and best_succ_rate >= es_min_peak:

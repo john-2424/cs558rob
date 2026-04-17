@@ -224,12 +224,12 @@ RESIDUAL_MAX = 0.5
 
 # RL simulation
 RL_SIM_SUBSTEPS = 4
-RL_MAX_EPISODE_STEPS = 2000
+RL_MAX_EPISODE_STEPS = 1200
 # Per-waypoint timeout (sim steps). Forces _waypoint_idx to advance even if
 # WAYPOINT_TOL never converges, mirroring classical demo's WAYPOINT_MAX_STEPS.
 # Without this a small constant residual can stall the policy on a single
 # waypoint until RL_MAX_EPISODE_STEPS truncation.
-RL_MAX_STEPS_PER_WAYPOINT = 150
+RL_MAX_STEPS_PER_WAYPOINT = 100
 # Looser waypoint tolerance for RL: residual noise makes tight 0.010 hard to
 # converge, causing forced advances. 0.025 lets natural PD+residual pass
 # without stalling while still tracking the trajectory.
@@ -250,22 +250,22 @@ TRAIN_CURRICULUM = True
 CURRICULUM_WARMUP_EPISODES = 0
 
 # Reward shaping
-# Scaled so dense per-step rewards (~0.01-0.1) and terminal bonuses (~10-20)
-# are in a similar range, making value function estimation much easier.
+# Terminal bonuses dominate dense rewards so the policy is incentivized to
+# grasp and lift rather than farm per-step proximity reward indefinitely.
+# Proximity is capped per-episode (PROXIMITY_REWARD_CAP) to prevent farming.
 REWARD_ALPHA = 10.0
 REWARD_BETA = 0.10
 REWARD_GAMMA = 0.02
-REWARD_DELTA = 10.0   # grasp bonus (was 50)
-REWARD_EPSILON = 20.0  # lift success bonus (was 100)
-REWARD_ZETA = 10.0    # failure penalty (was 50)
-# Dense proximity bonus during grasp_descend phase: linear ramp in
-# [0, REWARD_ETA] for ee_cube_dist in [PROXIMITY_RADIUS, 0.0]. Smooths
-# the cliff between "approached but didn't grasp" and the one-shot
-# REWARD_DELTA. Radius 0.12 starts pulling from slightly further out
-# than before; ETA 3.0 gives up to +3/step at contact — strong enough
-# to guide random policies without drowning out grasp/lift bonuses.
-REWARD_ETA = 2.0
+REWARD_DELTA = 20.0   # grasp bonus
+REWARD_EPSILON = 40.0  # lift success bonus
+REWARD_ZETA = 10.0    # failure penalty
+# Dense proximity bonus during pre_grasp and grasp_descend phases: linear
+# ramp in [0, REWARD_ETA] for ee_cube_dist in [PROXIMITY_RADIUS, 0.0].
+# Capped per-episode to prevent reward farming (hovering near cube
+# indefinitely). The cap makes proximity act like a milestone bonus.
+REWARD_ETA = 0.5
 PROXIMITY_RADIUS = 0.10
+PROXIMITY_REWARD_CAP = 5.0  # max cumulative proximity reward per episode
 
 # PPO hyperparameters
 # Tuned after run #3 oscillated 60-95% on bimodal rewards. Lower LR + lower
@@ -298,9 +298,9 @@ PPO_EARLY_STOP_DROP = 0.25  # success must drop this much below peak to count
 PPO_NUM_COLLECTOR_WORKERS = 8
 
 # Episode-reward threshold for counting an episode as a "success" in training logs.
-# Lift bonus is REWARD_EPSILON (20); grasp bonus is REWARD_DELTA (10). Set at 15
+# Lift bonus is REWARD_EPSILON (40); grasp bonus is REWARD_DELTA (20). Set at 30
 # so only episodes that received the lift terminal bonus count.
-EP_SUCCESS_REWARD_THRESHOLD = 15.0
+EP_SUCCESS_REWARD_THRESHOLD = 30.0
 
 # Evaluation
 EVAL_EPISODES_PER_LEVEL = 50
