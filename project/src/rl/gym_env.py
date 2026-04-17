@@ -298,7 +298,7 @@ class PandaGraspEnv(gymnasium.Env):
         self._waypoint_step_count = 0
         self._step_count = 0
         self._grasp_bonus_given = False
-        self._cumulative_proximity = 0.0
+        self._milestones_given = {"m08": False, "m05": False, "m03": False}
 
         # Episode diagnostics
         self._max_phase_reached = self._phase
@@ -514,19 +514,13 @@ class PandaGraspEnv(gymnasium.Env):
             cube_fallen=cube_fallen,
             grasp_bonus_given=self._grasp_bonus_given,
             phase=self._phase,
+            milestones_given=self._milestones_given,
         )
 
-        # Cap cumulative proximity reward to prevent farming (hovering near
-        # cube indefinitely for per-step proximity bonus).
-        raw_proximity = reward_info.get("r_proximity", 0.0)
-        prox_cap = float(getattr(config, "PROXIMITY_REWARD_CAP", float("inf")))
-        if raw_proximity > 0 and self._cumulative_proximity + raw_proximity > prox_cap:
-            allowed = max(0.0, prox_cap - self._cumulative_proximity)
-            reward -= (raw_proximity - allowed)
-            reward_info["r_proximity"] = allowed
-            self._cumulative_proximity = prox_cap
-        else:
-            self._cumulative_proximity += raw_proximity
+        fired = reward_info.get("milestones_fired", {})
+        for key in ("m08", "m05", "m03"):
+            if fired.get(key, False):
+                self._milestones_given[key] = True
 
         if grasp_ready and not self._grasp_bonus_given:
             self._grasp_bonus_given = True

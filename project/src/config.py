@@ -250,22 +250,24 @@ TRAIN_CURRICULUM = True
 CURRICULUM_WARMUP_EPISODES = 0
 
 # Reward shaping
-# Terminal bonuses dominate dense rewards so the policy is incentivized to
-# grasp and lift rather than farm per-step proximity reward indefinitely.
-# Proximity is capped per-episode (PROXIMITY_REWARD_CAP) to prevent farming.
+# Milestone cascade: one-time bonuses at decreasing distance thresholds
+# replace the per-step proximity reward. This removes the "hover near cube
+# to farm reward" local optimum -- the agent can only earn milestone bonuses
+# once per episode, so the only way to collect more is to descend further.
 REWARD_ALPHA = 10.0
 REWARD_BETA = 0.10
 REWARD_GAMMA = 0.02
-REWARD_DELTA = 20.0   # grasp bonus
-REWARD_EPSILON = 40.0  # lift success bonus
-REWARD_ZETA = 10.0    # failure penalty
-# Dense proximity bonus during pre_grasp and grasp_descend phases: linear
-# ramp in [0, REWARD_ETA] for ee_cube_dist in [PROXIMITY_RADIUS, 0.0].
-# Capped per-episode to prevent reward farming (hovering near cube
-# indefinitely). The cap makes proximity act like a milestone bonus.
-REWARD_ETA = 0.5
-PROXIMITY_RADIUS = 0.10
-PROXIMITY_REWARD_CAP = 5.0  # max cumulative proximity reward per episode
+REWARD_DELTA = 30.0   # grasp bonus
+REWARD_EPSILON = 60.0  # lift success bonus
+REWARD_ZETA = 3.0     # failure penalty (lowered: reduce fear of attempting grasp)
+# One-time proximity milestones: triggered on first crossing of each threshold.
+# Active in pre_grasp and grasp_descend phases.
+MILESTONE_DIST_08 = 0.08
+MILESTONE_DIST_05 = 0.05
+MILESTONE_DIST_03 = 0.03
+REWARD_MILESTONE_08 = 2.0
+REWARD_MILESTONE_05 = 5.0
+REWARD_MILESTONE_03 = 10.0
 
 # PPO hyperparameters
 # Tuned after run #3 oscillated 60-95% on bimodal rewards. Lower LR + lower
@@ -279,8 +281,8 @@ PPO_EPOCHS = 4
 PPO_CLIP_EPSILON = 0.2
 PPO_GAMMA = 0.99
 PPO_GAE_LAMBDA = 0.95
-PPO_ENT_COEFF = 0.001
-PPO_ENT_COEFF_START = 0.005  # mild initial entropy; decays to PPO_ENT_COEFF
+PPO_ENT_COEFF = 0.005
+PPO_ENT_COEFF_START = 0.015  # higher initial entropy; prevents exploration collapse
 PPO_CRITIC_COEFF = 0.5
 PPO_MAX_GRAD_NORM = 0.5
 
@@ -298,9 +300,10 @@ PPO_EARLY_STOP_DROP = 0.25  # success must drop this much below peak to count
 PPO_NUM_COLLECTOR_WORKERS = 8
 
 # Episode-reward threshold for counting an episode as a "success" in training logs.
-# Lift bonus is REWARD_EPSILON (40); grasp bonus is REWARD_DELTA (20). Set at 30
-# so only episodes that received the lift terminal bonus count.
-EP_SUCCESS_REWARD_THRESHOLD = 30.0
+# Lift bonus is REWARD_EPSILON (60); grasp bonus is REWARD_DELTA (30);
+# milestones cap at 17. Set at 50 so only episodes that received the lift
+# terminal bonus count.
+EP_SUCCESS_REWARD_THRESHOLD = 50.0
 
 # Evaluation
 EVAL_EPISODES_PER_LEVEL = 50
