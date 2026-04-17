@@ -1,0 +1,19 @@
+{
+  "episode": 4,
+  "mode": "rl_only",
+  "success": false,
+  "cube_fallen": false,
+  "truncated": true,
+  "steps": 1200,
+  "max_phase": 0,
+  "end_phase": 0,
+  "forced_wp_advances": 12,
+  "grasp_attempted": false,
+  "grasp_attached": false,
+  "grasp_debug_at_close": null,
+  "perturb_offset": [
+    -0.06629687591713951,
+    -0.042111022358411375,
+    -0.0031520850028756014
+  ]
+}

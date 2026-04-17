@@ -1,0 +1,19 @@
+{
+  "episode": 5,
+  "mode": "hybrid",
+  "success": false,
+  "cube_fallen": false,
+  "truncated": true,
+  "steps": 1200,
+  "max_phase": 1,
+  "end_phase": 1,
+  "forced_wp_advances": 4,
+  "grasp_attempted": false,
+  "grasp_attached": false,
+  "grasp_debug_at_close": null,
+  "perturb_offset": [
+    0.07088821459276085,
+    0.0018119705192679923,
+    -0.003389853884156163
+  ]
+}
