@@ -120,7 +120,7 @@ def build_critic(obs_dim, device="cpu"):
 
 def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
           model_save_path=None, tb_log_dir=None, log_file_path=None,
-          num_workers=None, seed=None):
+          num_workers=None, seed=None, resume_path=None):
     device = "cpu"
     run_tag = time.strftime("%Y%m%d_%H%M%S")
 
@@ -189,6 +189,24 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
     # Optimizer
     optimizer = optim.Adam(loss_module.parameters(), lr=config.PPO_LR)
 
+    # Resume from checkpoint if requested
+    resumed_frames = 0
+    if resume_path is not None:
+        if not os.path.isfile(resume_path):
+            raise FileNotFoundError(f"Resume checkpoint not found: {resume_path}")
+        ckpt = torch.load(resume_path, map_location=device, weights_only=True)
+        actor.load_state_dict(ckpt["actor_state_dict"])
+        critic.load_state_dict(ckpt["critic_state_dict"])
+        if "optimizer_state_dict" in ckpt:
+            optimizer.load_state_dict(ckpt["optimizer_state_dict"])
+        resumed_frames = int(ckpt.get("total_frames", 0))
+        ckpt_succ = ckpt.get("success_rate", None)
+        ckpt_reward = ckpt.get("mean_episode_reward", None)
+        print(f"Resumed from {resume_path}")
+        print(f"  checkpoint frames: {resumed_frames}"
+              + (f", succ: {ckpt_succ:.0%}" if ckpt_succ is not None else "")
+              + (f", ep_r: {ckpt_reward:+.1f}" if ckpt_reward is not None else ""))
+
     # Collector (no main-process env -- workers each build their own PyBullet client)
     num_workers = max(1, int(num_workers if num_workers is not None
                                       else config.PPO_NUM_COLLECTOR_WORKERS))
@@ -232,7 +250,7 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
     es_drop = float(getattr(config, "PPO_EARLY_STOP_DROP", 0.25))
 
     # Training loop
-    total_frames = 0
+    total_frames = resumed_frames
     batch_idx = 0
     episode_rewards = []
     episode_lengths = []

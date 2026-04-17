@@ -3489,3 +3489,6 @@ Completed return_home in 2691 simulation steps.
 === Final Cube Pose ===
 Cube position: [0.67078165 0.04518864 0.07598818]
 Saved trajectory log to results/m2/trajectory_log.json
+
+Stopping simulation...
+Demo total time: 1583.1s

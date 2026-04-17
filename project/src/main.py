@@ -46,6 +46,10 @@ def _build_parser():
         "--seed", type=int, default=None,
         help="Random seed for reproducibility (seeds PyTorch, NumPy, Python random).",
     )
+    train_p.add_argument(
+        "--resume", type=str, default=None, metavar="PATH",
+        help="Resume training from a checkpoint .pt file (loads actor, critic, optimizer state).",
+    )
 
     eval_p = sub.add_parser("eval", help="M2: evaluate planner-only / hybrid / rl-only.")
     eval_default = bool(getattr(config, "EVAL_VERBOSE_EPISODES", False))
@@ -100,7 +104,8 @@ def main():
     elif args.command == "train":
         from src.rl.train import train
         train(mode=args.mode, total_timesteps=args.total_timesteps,
-              num_workers=args.workers, seed=args.seed)
+              num_workers=args.workers, seed=args.seed,
+              resume_path=args.resume)
     elif args.command == "eval":
         from src.rl.evaluate import run_evaluation
         run_evaluation(
