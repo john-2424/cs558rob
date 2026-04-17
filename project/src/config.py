@@ -224,7 +224,7 @@ RESIDUAL_MAX = 0.5
 
 # RL simulation
 RL_SIM_SUBSTEPS = 4
-RL_MAX_EPISODE_STEPS = 1200
+RL_MAX_EPISODE_STEPS = 4000
 # Per-waypoint timeout (sim steps). Forces _waypoint_idx to advance even if
 # WAYPOINT_TOL never converges, mirroring classical demo's WAYPOINT_MAX_STEPS.
 # Without this a small constant residual can stall the policy on a single
@@ -234,6 +234,13 @@ RL_MAX_STEPS_PER_WAYPOINT = 100
 # converge, causing forced advances. 0.025 lets natural PD+residual pass
 # without stalling while still tracking the trajectory.
 RL_WAYPOINT_TOL = 0.025
+
+# Early grasp trigger: when in GRASP_DESCEND, if EE arrives within this
+# Cartesian radius of the grasp target pose, force waypoint exhaustion so
+# auto-grasp-and-attach fires immediately. Without this, closure is gated on
+# wp_idx reaching 20, which under timeout-dominated advancement exceeds the
+# episode step budget and makes grasp attempts structurally impossible.
+GRASP_TRIGGER_RADIUS = 0.025
 
 # Perturbation
 # Training range: XY ±4cm, Z ±1cm, yaw ±0.2rad. Planner sees nominal pose;

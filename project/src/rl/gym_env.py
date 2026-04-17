@@ -104,11 +104,12 @@ class PandaGraspEnv(gymnasium.Env):
         self._waypoints = []
         self._waypoint_idx = 0
         self._step_count = 0
-        self._prev_ee_cube_dist = None
+        self._prev_ee_target_dist = None
         self._grasp_bonus_given = False
         self._cube_nominal_pos = None
         self._cube_nominal_orn_euler = None
         self._grasp_orn = None
+        self._grasp_target_cartesian = None
         self._perturb_offset = np.zeros(3, dtype=np.float32)
 
         self._initialized = False
@@ -210,6 +211,10 @@ class PandaGraspEnv(gymnasium.Env):
         q_pre_grasp = self._robot.solve_ik(pre_grasp_pos, self._grasp_orn)
         q_grasp = self._robot.solve_ik(grasp_pos, self._grasp_orn)
         q_lift = self._robot.solve_ik(lift_pos, self._grasp_orn)
+
+        # Cartesian grasp target is the reward attractor and the early-grasp
+        # trigger reference. A physical, graspable pose — not cube center.
+        self._grasp_target_cartesian = np.asarray(grasp_pos, dtype=float)
 
         return q_pre_grasp, q_grasp, q_lift
 
@@ -320,10 +325,12 @@ class PandaGraspEnv(gymnasium.Env):
         self._grasp_attached = False
         self._summary_printed = False
 
-        # Initial EE-cube distance
+        # Initial EE-to-grasp-target distance (reward attractor)
         ee_pos, _ = self._robot.get_ee_pose()
         cube_pos, _ = get_body_pose(self._objects.cube_id)
-        self._prev_ee_cube_dist = float(np.linalg.norm(ee_pos - cube_pos))
+        self._prev_ee_target_dist = float(
+            np.linalg.norm(ee_pos - self._grasp_target_cartesian)
+        )
 
         if self.trace:
             self._trace_rows = []
@@ -498,6 +505,22 @@ class PandaGraspEnv(gymnasium.Env):
                 self._waypoint_idx += 1
                 self._waypoint_step_count = 0
 
+        # Early grasp trigger: in GRASP_DESCEND, if EE has arrived within
+        # GRASP_TRIGGER_RADIUS of the grasp target pose, force waypoint
+        # exhaustion so auto_grasp_and_attach fires immediately. Without
+        # this, closure is gated on wp_idx == 20, which under timeout-
+        # dominated advancement exceeds the episode budget.
+        if (self._phase == PHASE_GRASP_DESCEND
+                and not self._grasp_attempted
+                and self._grasp_target_cartesian is not None
+                and self._waypoint_idx < len(self._waypoints)):
+            ee_pos_now, _ = self._robot.get_ee_pose()
+            dist_to_grasp = float(
+                np.linalg.norm(ee_pos_now - self._grasp_target_cartesian)
+            )
+            if dist_to_grasp < config.GRASP_TRIGGER_RADIUS:
+                self._waypoint_idx = len(self._waypoints)
+
         # Track per-phase max waypoint progress (diagnostic)
         self._max_waypoint_per_phase[self._phase] = max(
             self._max_waypoint_per_phase[self._phase], self._waypoint_idx,
@@ -523,17 +546,18 @@ class PandaGraspEnv(gymnasium.Env):
         cube_lifted = self._check_cube_lifted()
         cube_fallen = self._check_cube_fallen()
 
-        reward, self._prev_ee_cube_dist, reward_info = compute_reward(
+        reward, self._prev_ee_target_dist, reward_info = compute_reward(
             ee_pos=ee_pos,
-            cube_pos=cube_pos,
+            grasp_target_pos=self._grasp_target_cartesian,
             qd_residual=qd_residual,
-            prev_ee_cube_dist=self._prev_ee_cube_dist,
+            prev_ee_target_dist=self._prev_ee_target_dist,
             grasp_ready=grasp_ready,
             cube_lifted=cube_lifted,
             cube_fallen=cube_fallen,
             grasp_bonus_given=self._grasp_bonus_given,
             phase=self._phase,
             milestones_given=self._milestones_given,
+            cube_pos=cube_pos,
         )
 
         fired = reward_info.get("milestones_fired", {})
