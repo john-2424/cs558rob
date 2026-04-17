@@ -57,7 +57,7 @@ class ActorWithLearnableStd(nn.Module):
     unlike NormalParamExtractor whose scale saturates around 0.58.
     """
 
-    def __init__(self, obs_dim, act_dim, init_log_std=-0.5, warm_start=True):
+    def __init__(self, obs_dim, act_dim, init_log_std=-1.5, warm_start=True):
         super().__init__()
         output_layer = nn.Linear(256, act_dim)
         if warm_start:
@@ -71,7 +71,7 @@ class ActorWithLearnableStd(nn.Module):
             nn.Tanh(),
             output_layer,
         )
-        # State-independent log-std: init_log_std=-0.5 -> std=exp(-0.5)≈0.61
+        # State-independent log-std: init_log_std=-1.5 -> std=exp(-1.5)≈0.22
         self.log_std = nn.Parameter(torch.full((act_dim,), init_log_std))
 
     def forward(self, observation):
@@ -82,7 +82,7 @@ class ActorWithLearnableStd(nn.Module):
 
 def build_actor(obs_dim, act_dim, device="cpu", warm_start=True):
     actor_net = ActorWithLearnableStd(
-        obs_dim, act_dim, init_log_std=-0.5, warm_start=warm_start,
+        obs_dim, act_dim, init_log_std=-1.5, warm_start=warm_start,
     )
 
     actor_module = TensorDictModule(
