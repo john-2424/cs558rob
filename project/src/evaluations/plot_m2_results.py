@@ -291,7 +291,7 @@ def plot_phase_breakdown(results, save_dir):
 
 
 def plot_residual_magnitude(results, save_dir):
-    """Line plot: mean residual magnitude vs perturbation (hybrid only)."""
+    """Line plot: mean residual magnitude vs perturbation, per method."""
     levels = sorted(results.keys())
     perturb_values = [float(lk.split("_")[1]) for lk in levels]
 
@@ -426,7 +426,7 @@ def plot_diagnostic_metrics(results, save_dir):
         ax1.plot(perturb_values, forced, marker="o", label=label, color=c)
         ax2.plot(perturb_values, ee_cube, marker="s", label=label, color=c)
 
-    ax1.set_xlabel("Perturbation Level (XY m)")
+    ax1.set_xlabel("Perturbation Level (XY m / Z m / Yaw rad)")
     ax1.set_ylabel("Mean Forced WP Advances / Episode")
     ax1.set_title("Forced Waypoint Advances")
     ax1.set_xticks(perturb_values)
@@ -434,7 +434,7 @@ def plot_diagnostic_metrics(results, save_dir):
     ax1.legend(fontsize=8)
     ax1.grid(alpha=0.3)
 
-    ax2.set_xlabel("Perturbation Level (XY m)")
+    ax2.set_xlabel("Perturbation Level (XY m / Z m / Yaw rad)")
     ax2.set_ylabel("Mean Final EE-Cube Distance (m)")
     ax2.set_title("Final EE-to-Cube Distance")
     ax2.set_xticks(perturb_values)
