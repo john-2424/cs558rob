@@ -516,9 +516,14 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
             _hist_succ.pop(0)
             _hist_grasp.pop(0)
             _hist_reward.pop(0)
-        smooth_succ = float(np.mean(_hist_succ))
-        smooth_grasp = float(np.mean(_hist_grasp))
-        smooth_reward = float(np.mean(_hist_reward))
+        # nanmean: early batches with zero completed episodes write NaN into
+        # _hist_reward; np.mean would poison the window for 10 batches and
+        # block best-save entirely until the NaNs rolled off.
+        smooth_succ = float(np.nanmean(_hist_succ)) if _hist_succ else 0.0
+        smooth_grasp = float(np.nanmean(_hist_grasp)) if _hist_grasp else 0.0
+        smooth_reward = float(np.nanmean(_hist_reward)) if _hist_reward else 0.0
+        if not np.isfinite(smooth_reward):
+            smooth_reward = 0.0
         # Normalize reward to ~[0,1] range using terminal bonus scale
         reward_norm = smooth_reward / max(config.REWARD_EPSILON, 1.0)
         composite_score = 3.0 * smooth_succ + 1.0 * smooth_grasp + 0.5 * reward_norm
