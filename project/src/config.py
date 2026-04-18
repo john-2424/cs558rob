@@ -163,6 +163,17 @@ GRASP_MIN_FINGER_CONTACTS = 2
 GRASP_MAX_FINGER_TO_CUBE_DIST = 0.055
 GRASP_USE_FINGER_DISTANCE = True
 
+# Geometric-validity checks layered on top of the proximity/contact checks.
+# Both fingertips must be below the cube top by at least this much (meters);
+# rejects "one finger on top face" pinches that the contact-count rule alone
+# would accept.
+GRASP_FINGER_BELOW_TOP_MARGIN = 0.005
+# Parameter t = projection of cube center onto (right - left) fingertip axis,
+# normalized so t=0 is at the left fingertip and t=1 at the right. The cube
+# center must fall inside (T_MIN, T_MAX) for force-closure geometry.
+GRASP_BRACKET_T_MIN = 0.2
+GRASP_BRACKET_T_MAX = 0.8
+
 GRASP_DESCEND_WAYPOINT_TOL = 0.012
 GRASP_DESCEND_WAYPOINT_MAX_STEPS = 260
 

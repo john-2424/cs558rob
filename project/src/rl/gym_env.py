@@ -296,6 +296,22 @@ class PandaGraspEnv(gymnasium.Env):
         perturbed_pos, _ = get_body_pose(self._objects.cube_id)
         self._perturb_offset = perturbed_pos - np.array(self._cube_nominal_pos)
 
+        # Reward attractor must follow the PERTURBED cube, not the nominal one
+        # the waypoints were built from. Without this, r_approach and the
+        # milestone cascade reward convergence to a phantom point, and the
+        # policy has no gradient to actually correct for the perturbation.
+        _, perturbed_aabb_max = p.getAABB(self._objects.cube_id)
+        perturbed_top_z = perturbed_aabb_max[2]
+        grasp_bias = np.array([
+            config.GRASP_TARGET_BIAS_X,
+            config.GRASP_TARGET_BIAS_Y,
+            config.GRASP_TARGET_BIAS_Z,
+        ], dtype=float)
+        self._grasp_target_cartesian = np.array([
+            perturbed_pos[0], perturbed_pos[1],
+            perturbed_top_z + config.PICK_DESCEND_Z_OFFSET,
+        ], dtype=float) + grasp_bias
+
         q_home = self._robot.home_joints.copy()
 
         # Build all phase waypoints

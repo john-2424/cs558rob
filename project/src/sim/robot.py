@@ -786,6 +786,28 @@ class PandaRobotDemo:
 
         left_pos, right_pos = self.get_finger_tip_positions()
 
+        # Fingertips must sit below the cube top (rejects top-face pinches).
+        _, cube_aabb_max = p.getAABB(body_id)
+        cube_top_z = cube_aabb_max[2]
+        below_top = bool(
+            left_pos[2] < cube_top_z - config.GRASP_FINGER_BELOW_TOP_MARGIN
+            and right_pos[2] < cube_top_z - config.GRASP_FINGER_BELOW_TOP_MARGIN
+        )
+
+        # Cube center must lie BETWEEN the fingertips along the finger axis
+        # (rejects same-side contacts that game the lenient contact count).
+        cube_center = np.asarray(
+            p.getBasePositionAndOrientation(body_id)[0], dtype=float,
+        )
+        finger_axis = right_pos - left_pos
+        axis_sq = float(np.dot(finger_axis, finger_axis)) + 1e-9
+        bracket_t = float(np.dot(cube_center - left_pos, finger_axis)) / axis_sq
+        bracket_ok = bool(
+            config.GRASP_BRACKET_T_MIN < bracket_t < config.GRASP_BRACKET_T_MAX
+        )
+
+        ready = ready and below_top and bracket_ok
+
         debug = {
             "ee_to_cube_dist": ee_to_cube_dist,
             "min_finger_to_cube_dist": min_finger_to_cube_dist,
@@ -795,6 +817,9 @@ class PandaRobotDemo:
             "finger_dist_ok": finger_dist_ok,
             "total_contact_ok": total_contact_ok,
             "finger_contact_ok": finger_contact_ok,
+            "below_top": below_top,
+            "bracket_ok": bracket_ok,
+            "bracket_t": bracket_t,
             "left_finger_pos": left_pos,
             "right_finger_pos": right_pos,
             "ready": ready,
