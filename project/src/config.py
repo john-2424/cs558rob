@@ -221,7 +221,9 @@ PLANNER_ATTACHED_MOTION_LABELS = {
 # Enabling pre_grasp (phase 0) gives the policy the entire approach to
 # steer toward the actual cube instead of only the last few cm.
 RESIDUAL_PHASE_GATE = True
-RESIDUAL_ACTIVE_PHASES = {0, 1, 2}  # PHASE_PRE_GRASP, PHASE_GRASP_DESCEND, PHASE_LIFT
+RESIDUAL_ACTIVE_PHASES = {0, 1}  # PHASE_PRE_GRASP, PHASE_GRASP_DESCEND. LIFT excluded:
+# after attach the classical PD+IK waypoint already lifts reliably; residual
+# corrections there just disrupt the straight-up trajectory and drop the cube.
 
 # Residual bounds
 # Position-target residual: RL outputs a joint-space offset (rad) added to
@@ -276,7 +278,9 @@ REWARD_ALPHA = 10.0
 REWARD_BETA = 0.10
 REWARD_GAMMA = 0.02
 REWARD_DELTA = 30.0   # grasp bonus
-REWARD_EPSILON = 60.0  # lift success bonus
+REWARD_EPSILON = 150.0  # lift success bonus. Must exceed max accumulated time
+# cost (2000 steps * 0.05 = 100) with margin so successful episodes are
+# clearly dominant over any parking/farming strategy under PPO's GAE target.
 REWARD_ZETA = 3.0     # failure penalty (lowered: reduce fear of attempting grasp)
 # One-time proximity milestones: triggered on first crossing of each threshold.
 # Active in pre_grasp and grasp_descend phases.

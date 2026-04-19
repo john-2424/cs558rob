@@ -57,9 +57,12 @@ def compute_reward(ee_pos, grasp_target_pos, qd_residual,
     # regardless of outcome. Dominates any park-forever strategy.
     r_attempt = config.REWARD_ATTEMPT_BONUS if attempt_fired else 0.0
 
-    # Per-step time cost: turns the episode into shortest-path optimization.
-    # Classical sparse-reward-style pressure against hovering.
-    r_time = -config.REWARD_TIME_COST
+    # Per-step time cost: applied only pre-attach (phases 0=PRE_GRASP,
+    # 1=GRASP_DESCEND). Once the grasp is attached and phase==LIFT, time
+    # pressure would cause the policy to rush the lift and drop the cube;
+    # the classical PD+IK lift trajectory is already reliable when
+    # undisturbed, so we stop the clock after attach.
+    r_time = -config.REWARD_TIME_COST if phase in (0, 1) else 0.0
 
     # Lenient grasp bonus: fires on proximity+contact readiness without the
     # strict bracket/below-top gate. Decouples learning signal from attach
