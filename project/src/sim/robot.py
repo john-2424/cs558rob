@@ -802,11 +802,65 @@ class PandaRobotDemo:
         bracket_score = max(0.0, 1.0 - 2.0 * abs(bracket_t - 0.5))
         worst_tip_above_top = max(left_pos[2], right_pos[2]) - cube_top_z
 
+        # Opposite-face perpendicularity check: fingertips must sit on OPPOSITE
+        # side faces with the finger axis NORMAL to the face. Expressed in the
+        # cube's local frame, a valid side grasp has one horizontal component
+        # near ±CUBE_HALF_SIZE (on the face plane) and the other horizontal
+        # component near 0 (centered on the face). Rejects slanted, edge, and
+        # diagonal pinches that bracket+below_top alone accept.
+        cube_pos_q, cube_orn_q = p.getBasePositionAndOrientation(body_id)
+        inv_cube_pos, inv_cube_orn = p.invertTransform(cube_pos_q, cube_orn_q)
+        left_local_t, _ = p.multiplyTransforms(
+            inv_cube_pos, inv_cube_orn, left_pos.tolist(), [0, 0, 0, 1],
+        )
+        right_local_t, _ = p.multiplyTransforms(
+            inv_cube_pos, inv_cube_orn, right_pos.tolist(), [0, 0, 0, 1],
+        )
+        left_local = np.asarray(left_local_t, dtype=float)
+        right_local = np.asarray(right_local_t, dtype=float)
+        half = float(config.CUBE_HALF_SIZE)
+
+        def _score_face_axis(axis: int):
+            other = 1 - axis
+            plane_err = max(
+                abs(abs(float(left_local[axis])) - half),
+                abs(abs(float(right_local[axis])) - half),
+            )
+            ortho_err = max(
+                abs(float(left_local[other])),
+                abs(float(right_local[other])),
+            )
+            opposite_signs = (
+                float(left_local[axis]) * float(right_local[axis]) < 0.0
+            )
+            return plane_err, ortho_err, opposite_signs
+
+        x_plane, x_ortho, x_opp = _score_face_axis(0)
+        y_plane, y_ortho, y_opp = _score_face_axis(1)
+        # Pick the axis the fingers actually straddle (opposite signs).
+        # If both or neither, pick the one with the smaller face-plane error.
+        if x_opp and not y_opp:
+            use_x = True
+        elif y_opp and not x_opp:
+            use_x = False
+        else:
+            use_x = x_plane <= y_plane
+        face_plane_err, face_ortho_err, faces_opposite = (
+            (x_plane, x_ortho, x_opp) if use_x
+            else (y_plane, y_ortho, y_opp)
+        )
+        face_plane_ok = face_plane_err <= config.GRASP_FACE_PLANE_TOL
+        face_centered_ok = face_ortho_err <= config.GRASP_FACE_ORTHO_TOL
+        opposite_face_ok = bool(
+            faces_opposite and face_plane_ok and face_centered_ok
+        )
+        face_axis = "x" if use_x else "y"
+
         # Lenient readiness = geometry + proximity, NO contact requirement.
         # Contact physics are flaky (depend on exact closure timing); rewarding
         # the geometry the policy can actually control gives a cleaner signal.
         prox_ok = finger_dist_ok if config.GRASP_USE_FINGER_DISTANCE else dist_ok
-        ready_lenient = prox_ok and below_top and bracket_ok
+        ready_lenient = prox_ok and below_top and bracket_ok and opposite_face_ok
 
         # Strict readiness = lenient geometry + physics contacts (for attach).
         ready = ready_lenient and total_contact_ok and finger_contact_ok
@@ -826,6 +880,13 @@ class PandaRobotDemo:
             "bracket_t": bracket_t,
             "bracket_score": bracket_score,
             "worst_tip_above_top": worst_tip_above_top,
+            "opposite_face_ok": opposite_face_ok,
+            "faces_opposite": bool(faces_opposite),
+            "face_plane_ok": face_plane_ok,
+            "face_centered_ok": face_centered_ok,
+            "face_plane_err": float(face_plane_err),
+            "face_ortho_err": float(face_ortho_err),
+            "face_axis": face_axis,
             "left_finger_pos": left_pos,
             "right_finger_pos": right_pos,
             "ready": ready,

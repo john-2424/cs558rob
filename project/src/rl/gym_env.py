@@ -364,7 +364,29 @@ class PandaGraspEnv(gymnasium.Env):
             self._trace_episode_idx += 1
 
         obs = self._get_obs()
-        return obs, {}
+        return obs, self._diag_info()
+
+    def _diag_info(self):
+        # Per-step diagnostic fields. Always emitted (not just terminal) so
+        # TorchRL's info-dict reader can register them as proper spec keys
+        # and train.py can aggregate attach/lift/wp-progress across the batch.
+        cube_pos_now, _ = get_body_pose(self._objects.cube_id)
+        cube_dz_now = float(cube_pos_now[2] - self._table_top_z)
+        # TorchRL's default_info_dict_reader calls `val.dtype` on each value,
+        # so every entry must be a numpy scalar/array — not a Python scalar.
+        return {
+            "diag_phase": np.int64(self._phase),
+            "diag_max_phase": np.int64(self._max_phase_reached),
+            "diag_grasp_attempted": np.bool_(self._grasp_attempted),
+            "diag_grasp_attached": np.bool_(self._grasp_attached),
+            "diag_cube_lifted": np.bool_(self._check_cube_lifted()),
+            "diag_cube_fallen": np.bool_(self._check_cube_fallen()),
+            "diag_cube_dz": np.float32(cube_dz_now),
+            "diag_wp_pregrasp": np.int64(self._max_waypoint_per_phase[PHASE_PRE_GRASP]),
+            "diag_wp_graspdescend": np.int64(self._max_waypoint_per_phase[PHASE_GRASP_DESCEND]),
+            "diag_wp_lift": np.int64(self._max_waypoint_per_phase[PHASE_LIFT]),
+            "diag_forced_wp_advances": np.int64(self._forced_waypoint_advances),
+        }
 
     def _get_obs(self):
         q = self._robot.get_joint_positions()
@@ -668,6 +690,7 @@ class PandaGraspEnv(gymnasium.Env):
             "phase": self._phase,
             "step_count": self._step_count,
             **reward_info,
+            **self._diag_info(),
         }
 
         if terminated or truncated:

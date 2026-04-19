@@ -174,6 +174,17 @@ GRASP_FINGER_BELOW_TOP_MARGIN = 0.005
 GRASP_BRACKET_T_MIN = 0.2
 GRASP_BRACKET_T_MAX = 0.8
 
+# Cube dimensions (cube_small.urdf is 5cm per side)
+CUBE_HALF_SIZE = 0.025
+# Opposite-face / perpendicularity check: fingertips expressed in cube-local
+# frame must sit near ±CUBE_HALF_SIZE along ONE horizontal axis (face plane)
+# and near 0 along the OTHER horizontal axis (centered on the face). Both
+# conditions together enforce a proper side-face grasp with the finger axis
+# perpendicular to the face — rejects slanted/edge/corner pinches that the
+# bracket+below_top checks alone let through.
+GRASP_FACE_PLANE_TOL = 0.015   # fingertip may be this far from face plane (m)
+GRASP_FACE_ORTHO_TOL = 0.018   # fingertip may be this far from face center (m)
+
 GRASP_DESCEND_WAYPOINT_TOL = 0.012
 GRASP_DESCEND_WAYPOINT_MAX_STEPS = 260
 

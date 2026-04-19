@@ -14,9 +14,27 @@ from torchrl.collectors import SyncDataCollector, MultiSyncDataCollector
 from torchrl.data import LazyTensorStorage, ReplayBuffer
 from torchrl.envs import GymWrapper, TransformedEnv, StepCounter
 from torchrl.envs.utils import set_exploration_type, ExplorationType
+from torchrl.envs.gym_like import default_info_dict_reader
 from torchrl.modules import ProbabilisticActor, TanhNormal, ValueOperator
 from torchrl.objectives import ClipPPOLoss
 from torchrl.objectives.value import GAE
+
+
+# Diagnostic info keys emitted by PandaGraspEnv on every step. Registered
+# with TorchRL's info_dict_reader so they surface in the batch tensordict.
+DIAG_INFO_KEYS = [
+    "diag_phase",
+    "diag_max_phase",
+    "diag_grasp_attempted",
+    "diag_grasp_attached",
+    "diag_cube_lifted",
+    "diag_cube_fallen",
+    "diag_cube_dz",
+    "diag_wp_pregrasp",
+    "diag_wp_graspdescend",
+    "diag_wp_lift",
+    "diag_forced_wp_advances",
+]
 
 from torch.utils.tensorboard import SummaryWriter
 
@@ -33,6 +51,9 @@ def make_env(gui=False, mode="hybrid", perturb_xy_range=None, curriculum=False):
         curriculum=curriculum,
     )
     env = GymWrapper(gym_env, device="cpu")
+    # Register a strict key list so the info dict's non-numeric entries
+    # (e.g. milestones_fired subdict) don't crash the default auto-reader.
+    env.set_info_dict_reader(default_info_dict_reader(keys=list(DIAG_INFO_KEYS)))
     env = TransformedEnv(env, StepCounter(max_steps=config.RL_MAX_EPISODE_STEPS))
     return env
 
@@ -256,6 +277,14 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
     episode_lengths = []
     episode_successes = []
     episode_grasps = []  # reached grasp (but not necessarily lifted)
+    episode_attaches = []       # diag_grasp_attached at episode end
+    episode_lifts = []          # diag_cube_lifted at episode end
+    episode_attempts = []       # diag_grasp_attempted at episode end
+    episode_falls = []          # diag_cube_fallen at episode end
+    episode_wp_lift = []        # diag_wp_lift at episode end
+    episode_cube_dz = []        # diag_cube_dz at episode end
+    episode_max_phase = []      # diag_max_phase at episode end
+    episode_forced_wp = []      # diag_forced_wp_advances at episode end
     ep_reward_acc = None
     ep_length_acc = None
     ep_max_step_r_acc = None
@@ -415,8 +444,47 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
         mean_step_reward = float(step_rewards_t.mean().item()) if step_rewards_t is not None else 0.0
         num_dones = int(done_t.sum().item()) if done_t is not None else 0
 
+        # Diagnostic keys from the env's info dict (registered via
+        # default_info_dict_reader). Keys land under ("next", <name>). Missing
+        # keys fall back to None (shouldn't happen after registration).
+        diag_attached_t = batch_data.get(("next", "diag_grasp_attached"), None)
+        diag_lifted_t = batch_data.get(("next", "diag_cube_lifted"), None)
+        diag_attempted_t = batch_data.get(("next", "diag_grasp_attempted"), None)
+        diag_fallen_t = batch_data.get(("next", "diag_cube_fallen"), None)
+        diag_cube_dz_t = batch_data.get(("next", "diag_cube_dz"), None)
+        diag_wp_lift_t = batch_data.get(("next", "diag_wp_lift"), None)
+        diag_max_phase_t = batch_data.get(("next", "diag_max_phase"), None)
+        diag_forced_wp_t = batch_data.get(("next", "diag_forced_wp_advances"), None)
+
+        def _to_list(t):
+            if t is None:
+                return None
+            t2 = t.squeeze(-1) if t.ndim >= 2 and t.shape[-1] == 1 else t
+            if t2.dim() == 1:
+                t2 = t2.unsqueeze(0)
+            return t2.tolist()
+
+        diag_attached = _to_list(diag_attached_t)
+        diag_lifted = _to_list(diag_lifted_t)
+        diag_attempted = _to_list(diag_attempted_t)
+        diag_fallen = _to_list(diag_fallen_t)
+        diag_cube_dz = _to_list(diag_cube_dz_t)
+        diag_wp_lift = _to_list(diag_wp_lift_t)
+        diag_max_phase = _to_list(diag_max_phase_t)
+        diag_forced_wp = _to_list(diag_forced_wp_t)
+
         batch_new_rewards = []
         batch_new_lengths = []
+        # Per-batch counters for aggregate log line
+        batch_attach_count = 0
+        batch_lift_count = 0
+        batch_attempt_count = 0
+        batch_fall_count = 0
+        batch_wp_lift_sum = 0
+        batch_cube_dz_sum = 0.0
+        batch_max_phase_hist = [0, 0, 0]  # index by phase (0,1,2)
+        batch_forced_wp_sum = 0
+        batch_ep_count = 0
         if step_rewards_t is not None and done_t is not None:
             r = step_rewards_t.squeeze(-1) if step_rewards_t.shape[-1] == 1 else step_rewards_t
             d = done_t.squeeze(-1) if done_t.shape[-1] == 1 else done_t
@@ -442,15 +510,44 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
                         ep_len_done = ep_length_acc[w]
                         episode_rewards.append(ep_r_done)
                         episode_lengths.append(ep_len_done)
-                        # Detect grasp and lift from max single-step reward.
-                        # Grasp bonus (REWARD_DELTA) fires once on attach;
-                        # lift bonus (REWARD_EPSILON) fires on successful lift.
-                        grasped = ep_max_step_r_acc[w] >= config.REWARD_DELTA * 0.8
-                        lifted = ep_max_step_r_acc[w] >= config.REWARD_EPSILON * 0.8
-                        episode_grasps.append(1 if grasped else 0)
+                        # Detect grasp/lift from the env's own state via
+                        # diag_*. The previous reward-threshold heuristic was
+                        # fooled by r_attempt+r_geom which fire on failed
+                        # attempts too; diag_grasp_attached is the ground truth.
+                        attached = bool(diag_attached[w][t]) if diag_attached is not None else False
+                        lifted = bool(diag_lifted[w][t]) if diag_lifted is not None else False
+                        attempted = bool(diag_attempted[w][t]) if diag_attempted is not None else False
+                        fallen = bool(diag_fallen[w][t]) if diag_fallen is not None else False
+                        cube_dz = float(diag_cube_dz[w][t]) if diag_cube_dz is not None else 0.0
+                        wp_lift = int(diag_wp_lift[w][t]) if diag_wp_lift is not None else 0
+                        max_phase = int(diag_max_phase[w][t]) if diag_max_phase is not None else 0
+                        forced_wp = int(diag_forced_wp[w][t]) if diag_forced_wp is not None else 0
+
+                        # grasp = attach succeeded; succ = cube actually lifted
+                        episode_grasps.append(1 if attached else 0)
                         episode_successes.append(1 if lifted else 0)
+                        episode_attaches.append(1 if attached else 0)
+                        episode_lifts.append(1 if lifted else 0)
+                        episode_attempts.append(1 if attempted else 0)
+                        episode_falls.append(1 if fallen else 0)
+                        episode_wp_lift.append(wp_lift)
+                        episode_cube_dz.append(cube_dz)
+                        episode_max_phase.append(max_phase)
+                        episode_forced_wp.append(forced_wp)
+
                         batch_new_rewards.append(ep_r_done)
                         batch_new_lengths.append(ep_len_done)
+                        batch_attach_count += int(attached)
+                        batch_lift_count += int(lifted)
+                        batch_attempt_count += int(attempted)
+                        batch_fall_count += int(fallen)
+                        batch_wp_lift_sum += wp_lift
+                        batch_cube_dz_sum += cube_dz
+                        batch_forced_wp_sum += forced_wp
+                        if 0 <= max_phase < len(batch_max_phase_hist):
+                            batch_max_phase_hist[max_phase] += 1
+                        batch_ep_count += 1
+
                         ep_reward_acc[w] = 0.0
                         ep_length_acc[w] = 0
                         ep_max_step_r_acc[w] = -float("inf")
@@ -473,6 +570,26 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
         offset_rad = act_std * config.RESIDUAL_MAX_POS
 
         batch_ep_std = float(np.std(batch_new_rewards)) if len(batch_new_rewards) > 1 else 0.0
+
+        # Per-batch diagnostic aggregates (computed over episodes that ended
+        # in this batch — fresh each batch, not rolling). Used by the aux
+        # log line to see attach/lift/wp-progress broken out from reward.
+        if batch_ep_count > 0:
+            batch_attach_rate = batch_attach_count / batch_ep_count
+            batch_lift_rate = batch_lift_count / batch_ep_count
+            batch_attempt_rate = batch_attempt_count / batch_ep_count
+            batch_fall_rate = batch_fall_count / batch_ep_count
+            batch_wp_lift_avg = batch_wp_lift_sum / batch_ep_count
+            batch_cube_dz_avg = batch_cube_dz_sum / batch_ep_count
+            batch_forced_wp_avg = batch_forced_wp_sum / batch_ep_count
+        else:
+            batch_attach_rate = 0.0
+            batch_lift_rate = 0.0
+            batch_attempt_rate = 0.0
+            batch_fall_rate = 0.0
+            batch_wp_lift_avg = 0.0
+            batch_cube_dz_avg = 0.0
+            batch_forced_wp_avg = 0.0
 
         # TensorBoard scalars
         writer.add_scalar("train/loss", mean_loss, total_frames)
@@ -502,6 +619,19 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
             writer.add_scalar("train/grasp_rate", grasp_rate, total_frames)
         if len(batch_new_rewards) > 1:
             writer.add_scalar("train/batch_episode_reward_std", batch_ep_std, total_frames)
+        # Diagnostic scalars (batch-local, not rolling)
+        if batch_ep_count > 0:
+            writer.add_scalar("diag/attach_rate", batch_attach_rate, total_frames)
+            writer.add_scalar("diag/lift_rate", batch_lift_rate, total_frames)
+            writer.add_scalar("diag/attempt_rate", batch_attempt_rate, total_frames)
+            writer.add_scalar("diag/fall_rate", batch_fall_rate, total_frames)
+            writer.add_scalar("diag/wp_lift_avg", batch_wp_lift_avg, total_frames)
+            writer.add_scalar("diag/cube_dz_avg", batch_cube_dz_avg, total_frames)
+            writer.add_scalar("diag/forced_wp_avg", batch_forced_wp_avg, total_frames)
+            writer.add_scalar("diag/ep_count", batch_ep_count, total_frames)
+            writer.add_scalar("diag/max_phase_pre_grasp", batch_max_phase_hist[0], total_frames)
+            writer.add_scalar("diag/max_phase_grasp_descend", batch_max_phase_hist[1], total_frames)
+            writer.add_scalar("diag/max_phase_lift", batch_max_phase_hist[2], total_frames)
 
         kl_flag = " KL!" if kl_early_stop else ""
         best_flag = ""
@@ -574,6 +704,21 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
             f"logσ={log_std_val:+.2f} V={val_mean:+.1f} | "
             f"fps={fps:.0f}{best_flag}"
         )
+        # Second-line diagnostic: attach/lift broken out from reward heuristic,
+        # plus lift-wp progress, cube_dz, end-phase distribution, forced_wp.
+        # Read straight from env state — ground truth, not reward inference.
+        if batch_ep_count > 0:
+            n = batch_ep_count
+            mp = batch_max_phase_hist
+            print(
+                f"         diag | ep={batch_ep_count:3d} "
+                f"| try={batch_attempt_rate:4.0%} att={batch_attach_rate:4.0%} "
+                f"lift={batch_lift_rate:4.0%} fall={batch_fall_rate:4.0%} "
+                f"| wp_lift={batch_wp_lift_avg:4.1f}/{config.TRAJ_NUM_WAYPOINTS:d} "
+                f"cube_dz={batch_cube_dz_avg:+.3f}m "
+                f"| max_ph(pre/gd/lift)={mp[0]:d}/{mp[1]:d}/{mp[2]:d} "
+                f"| forced_wp={batch_forced_wp_avg:.1f}"
+            )
 
         # Periodic checkpoint
         if batch_idx % 20 == 0:
