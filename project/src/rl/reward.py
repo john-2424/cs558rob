@@ -6,7 +6,9 @@ from src import config
 def compute_reward(ee_pos, grasp_target_pos, qd_residual,
                    prev_ee_target_dist, grasp_ready, cube_lifted,
                    cube_fallen, grasp_bonus_given, phase=None,
-                   milestones_given=None, cube_pos=None):
+                   milestones_given=None, cube_pos=None,
+                   bracket_score=None, worst_tip_above_top=None,
+                   lenient_ready=False, lenient_bonus_given=False):
     # Distance to the physical grasp target pose (cube XY + cube_top_z +
     # PICK_DESCEND_Z_OFFSET). Using this instead of cube-center distance
     # prevents the "plant EE inside the cube" local optimum: the reward
@@ -40,7 +42,27 @@ def compute_reward(ee_pos, grasp_target_pos, qd_residual,
             r_milestone += config.REWARD_MILESTONE_03
             milestones_fired["m03"] = True
 
-    # One-time grasp readiness bonus
+    # Dense geometric shaping in GRASP_DESCEND: continuous gradient toward
+    # the bracket/below-top geometry that the strict is_grasp_ready check
+    # demands. Without this, the strict check is an unreachable cliff.
+    r_geom = 0.0
+    if phase == 1 and bracket_score is not None and worst_tip_above_top is not None:
+        # bracket_score in [0, 1], peaks at cube centered between fingertips
+        r_geom += config.REWARD_W_BRACKET * float(bracket_score)
+        # reward fingertips below cube top; worst_tip_above_top negative = good
+        below_top_depth = max(0.0, -float(worst_tip_above_top))
+        # scale so ~1 cm below top saturates the shaping (0.01 m -> 1.0)
+        r_geom += config.REWARD_W_BELOW_TOP * min(1.0, below_top_depth / 0.01)
+
+    # Lenient grasp bonus: fires on proximity+contact readiness without the
+    # strict bracket/below-top gate. Decouples learning signal from attach
+    # physics so the policy gets reward for near-grasps and can iterate
+    # toward the strict geometry.
+    r_grasp_lenient = 0.0
+    if lenient_ready and not lenient_bonus_given:
+        r_grasp_lenient = config.REWARD_DELTA_LENIENT
+
+    # One-time strict grasp readiness bonus (attach succeeded)
     r_grasp = 0.0
     if grasp_ready and not grasp_bonus_given:
         r_grasp = config.REWARD_DELTA
@@ -51,7 +73,8 @@ def compute_reward(ee_pos, grasp_target_pos, qd_residual,
     # Terminal failure
     r_fail = -config.REWARD_ZETA if cube_fallen else 0.0
 
-    total = r_approach + r_residual + r_smooth + r_milestone + r_grasp + r_lift + r_fail
+    total = (r_approach + r_residual + r_smooth + r_milestone + r_geom
+             + r_grasp_lenient + r_grasp + r_lift + r_fail)
 
     # Diagnostic: distance to cube center (kept for eval parity with older runs).
     ee_cube_dist_info = ee_target_dist
@@ -65,12 +88,15 @@ def compute_reward(ee_pos, grasp_target_pos, qd_residual,
         "r_residual": r_residual,
         "r_smooth": r_smooth,
         "r_milestone": r_milestone,
+        "r_geom": r_geom,
+        "r_grasp_lenient": r_grasp_lenient,
         "r_grasp": r_grasp,
         "r_lift": r_lift,
         "r_fail": r_fail,
         "ee_target_dist": ee_target_dist,
         "ee_cube_dist": ee_cube_dist_info,
         "milestones_fired": milestones_fired,
+        "lenient_bonus_fired": bool(r_grasp_lenient > 0),
     }
 
     return total, ee_target_dist, info

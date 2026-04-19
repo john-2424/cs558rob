@@ -287,6 +287,17 @@ REWARD_MILESTONE_08 = 2.0
 REWARD_MILESTONE_05 = 5.0
 REWARD_MILESTONE_03 = 10.0
 
+# Dense geometric shaping during GRASP_DESCEND. Gives the policy a continuous
+# gradient toward the exact geometry the strict is_grasp_ready check demands.
+# Without these, the strict bracket/below-top test is an unreachable cliff and
+# the grasp bonus never fires during training.
+REWARD_W_BRACKET = 0.3      # per-step, peak when cube centered between fingertips
+REWARD_W_BELOW_TOP = 0.2    # per-step, peak when both fingertips below cube top
+# One-shot bonus when the LENIENT readiness check fires (proximity + finger
+# contacts, no bracket/below-top gate). Decouples reward signal from attach
+# physics: policy learns to get close even before the strict check passes.
+REWARD_DELTA_LENIENT = 10.0
+
 # PPO hyperparameters
 # Tuned after run #3 oscillated 60-95% on bimodal rewards. Lower LR + lower
 # entropy reduce per-batch swing; larger batch + fewer epochs cut the

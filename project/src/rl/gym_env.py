@@ -106,6 +106,8 @@ class PandaGraspEnv(gymnasium.Env):
         self._step_count = 0
         self._prev_ee_target_dist = None
         self._grasp_bonus_given = False
+        self._lenient_bonus_given = False
+        self._attempt_lenient_ready = False
         self._cube_nominal_pos = None
         self._cube_nominal_orn_euler = None
         self._grasp_orn = None
@@ -331,6 +333,8 @@ class PandaGraspEnv(gymnasium.Env):
         self._waypoint_step_count = 0
         self._step_count = 0
         self._grasp_bonus_given = False
+        self._lenient_bonus_given = False
+        self._attempt_lenient_ready = False
         self._milestones_given = {"m08": False, "m05": False, "m03": False}
 
         # Episode diagnostics
@@ -431,6 +435,10 @@ class PandaGraspEnv(gymnasium.Env):
         ready, grasp_debug = self._robot.is_grasp_ready(self._objects.cube_id)
         if self.trace:
             self._trace_grasp_debug = grasp_debug
+
+        # Expose the lenient result so step() can fire the lenient bonus
+        # even when the strict bracket/below_top gate fails.
+        self._attempt_lenient_ready = bool(grasp_debug.get("ready_lenient", False))
 
         if ready:
             self._robot.attach_object(self._objects.cube_id)
@@ -562,6 +570,21 @@ class PandaGraspEnv(gymnasium.Env):
         cube_lifted = self._check_cube_lifted()
         cube_fallen = self._check_cube_fallen()
 
+        # Dense geometric shaping inputs (FK-only; work with open gripper).
+        # Computed in GRASP_DESCEND where the geometry is meaningful.
+        bracket_score = None
+        worst_tip_above_top = None
+        if self._phase == PHASE_GRASP_DESCEND:
+            _, grasp_debug_step = self._robot.is_grasp_ready(self._objects.cube_id)
+            bracket_score = grasp_debug_step.get("bracket_score")
+            worst_tip_above_top = grasp_debug_step.get("worst_tip_above_top")
+
+        # Lenient grasp bonus fires at the attempt moment: when the strict
+        # gate fails but proximity+contact (lenient) passed. Evaluated
+        # inside _auto_grasp_and_attach and consumed once here.
+        lenient_ready = bool(getattr(self, "_attempt_lenient_ready", False))
+        self._attempt_lenient_ready = False
+
         reward, self._prev_ee_target_dist, reward_info = compute_reward(
             ee_pos=ee_pos,
             grasp_target_pos=self._grasp_target_cartesian,
@@ -574,12 +597,19 @@ class PandaGraspEnv(gymnasium.Env):
             phase=self._phase,
             milestones_given=self._milestones_given,
             cube_pos=cube_pos,
+            bracket_score=bracket_score,
+            worst_tip_above_top=worst_tip_above_top,
+            lenient_ready=lenient_ready,
+            lenient_bonus_given=self._lenient_bonus_given,
         )
 
         fired = reward_info.get("milestones_fired", {})
         for key in ("m08", "m05", "m03"):
             if fired.get(key, False):
                 self._milestones_given[key] = True
+
+        if reward_info.get("lenient_bonus_fired", False):
+            self._lenient_bonus_given = True
 
         if grasp_ready and not self._grasp_bonus_given:
             self._grasp_bonus_given = True

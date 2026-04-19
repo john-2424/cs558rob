@@ -775,14 +775,14 @@ class PandaRobotDemo:
 
         if config.GRASP_REQUIRE_CONTACT:
             if config.GRASP_USE_FINGER_DISTANCE:
-                ready = finger_dist_ok and total_contact_ok and finger_contact_ok
+                ready_lenient = finger_dist_ok and total_contact_ok and finger_contact_ok
             else:
-                ready = dist_ok and total_contact_ok and finger_contact_ok
+                ready_lenient = dist_ok and total_contact_ok and finger_contact_ok
         else:
             if config.GRASP_USE_FINGER_DISTANCE:
-                ready = finger_dist_ok
+                ready_lenient = finger_dist_ok
             else:
-                ready = dist_ok
+                ready_lenient = dist_ok
 
         left_pos, right_pos = self.get_finger_tip_positions()
 
@@ -806,7 +806,14 @@ class PandaRobotDemo:
             config.GRASP_BRACKET_T_MIN < bracket_t < config.GRASP_BRACKET_T_MAX
         )
 
-        ready = ready and below_top and bracket_ok
+        # Continuous geometric scores used by reward shaping. bracket_score
+        # peaks at 1.0 when t=0.5 and drops to 0 at t<=0 or t>=1. below_top
+        # depth is the worst (max) fingertip distance above the cube top;
+        # negative means both fingers are below the top.
+        bracket_score = max(0.0, 1.0 - 2.0 * abs(bracket_t - 0.5))
+        worst_tip_above_top = max(left_pos[2], right_pos[2]) - cube_top_z
+
+        ready = ready_lenient and below_top and bracket_ok
 
         debug = {
             "ee_to_cube_dist": ee_to_cube_dist,
@@ -817,9 +824,12 @@ class PandaRobotDemo:
             "finger_dist_ok": finger_dist_ok,
             "total_contact_ok": total_contact_ok,
             "finger_contact_ok": finger_contact_ok,
+            "ready_lenient": ready_lenient,
             "below_top": below_top,
             "bracket_ok": bracket_ok,
             "bracket_t": bracket_t,
+            "bracket_score": bracket_score,
+            "worst_tip_above_top": worst_tip_above_top,
             "left_finger_pos": left_pos,
             "right_finger_pos": right_pos,
             "ready": ready,
