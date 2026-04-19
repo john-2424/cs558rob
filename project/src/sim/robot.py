@@ -889,6 +889,8 @@ class PandaRobotDemo:
             "face_axis": face_axis,
             "left_finger_pos": left_pos,
             "right_finger_pos": right_pos,
+            "left_local": left_local,
+            "right_local": right_local,
             "ready": ready,
         }
         return ready, debug

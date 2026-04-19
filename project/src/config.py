@@ -285,13 +285,15 @@ CURRICULUM_WARMUP_EPISODES = 0
 # replace the per-step proximity reward. This removes the "hover near cube
 # to farm reward" local optimum -- the agent can only earn milestone bonuses
 # once per episode, so the only way to collect more is to descend further.
-REWARD_ALPHA = 10.0
+REWARD_ALPHA = 100.0  # boosted 10x: at 8cm perturbation the total approach reward
+# was ~0.8 per episode, dwarfed by -80 time cost. 100x makes approach signal
+# dominant on the scale where the policy can actually respond to it.
 REWARD_BETA = 0.10
 REWARD_GAMMA = 0.02
 REWARD_DELTA = 30.0   # grasp bonus
-REWARD_EPSILON = 150.0  # lift success bonus. Must exceed max accumulated time
-# cost (2000 steps * 0.05 = 100) with margin so successful episodes are
-# clearly dominant over any parking/farming strategy under PPO's GAE target.
+REWARD_EPSILON = 150.0  # lift success bonus. Far exceeds max accumulated time
+# cost (2000 steps * 0.01 = 20) so successful episodes clearly dominate any
+# parking/farming strategy under PPO's GAE target.
 REWARD_ZETA = 3.0     # failure penalty (lowered: reduce fear of attempting grasp)
 # One-time proximity milestones: triggered on first crossing of each threshold.
 # Active in pre_grasp and grasp_descend phases.
@@ -315,7 +317,9 @@ REWARD_ATTEMPT_BONUS = 15.0
 # Small per-step time penalty. Converts the episode into a shortest-path
 # problem: every step of hovering costs something, so the policy is pressured
 # to progress toward the goal. Classical sparse-reward-style formulation.
-REWARD_TIME_COST = 0.05
+REWARD_TIME_COST = 0.01  # cut 5x: previous -100 per 2000-step episode drowned
+# the approach gradient. 0.01 gives -20 total — still pressure against
+# hovering, but doesn't overwhelm the shaping terms.
 # One-shot bonus when the LENIENT readiness check fires (now geometry-based:
 # proximity + below_top + bracket_ok; contacts NOT required). Rewards geometric
 # correctness at attempt moment even if contact physics are flaky.

@@ -26,6 +26,12 @@ NUM_RL_PHASES = 3
 OBS_DIM = 41  # added waypoint_progress (1)
 ACT_DIM = 7
 
+# Per-worker grasp-geometry dump counter. Each worker process gets its own
+# copy; once this reaches GRASP_DIAG_DUMP_LIMIT, dumps stop. Used to
+# instrument the opposite-face/perpendicularity check without flooding logs.
+_GRASP_DIAG_DUMPS = 0
+GRASP_DIAG_DUMP_LIMIT = 8
+
 # Fixed normalization scales so all observation components are roughly [-1, 1].
 _MAX_JOINT_VEL = np.asarray(config.PD_MAX_JOINT_VEL, dtype=np.float32)
 _WORKSPACE_CENTER = np.array([0.5, 0.0, 0.4], dtype=np.float32)
@@ -463,6 +469,32 @@ class PandaGraspEnv(gymnasium.Env):
         ready, grasp_debug = self._robot.is_grasp_ready(self._objects.cube_id)
         if self.trace:
             self._trace_grasp_debug = grasp_debug
+
+        # Dump the first GRASP_DIAG_DUMP_LIMIT grasp geometries per worker to
+        # stderr. Shows local-frame fingertip coords and the face-check errs
+        # so we can pick tolerances from actual data.
+        global _GRASP_DIAG_DUMPS
+        if _GRASP_DIAG_DUMPS < GRASP_DIAG_DUMP_LIMIT:
+            import sys, os
+            _GRASP_DIAG_DUMPS += 1
+            ll = grasp_debug.get("left_local")
+            rl = grasp_debug.get("right_local")
+            sys.stderr.write(
+                f"[grasp_diag pid={os.getpid()} #{_GRASP_DIAG_DUMPS}] "
+                f"L_local=({ll[0]:+.4f},{ll[1]:+.4f},{ll[2]:+.4f}) "
+                f"R_local=({rl[0]:+.4f},{rl[1]:+.4f},{rl[2]:+.4f}) "
+                f"axis={grasp_debug.get('face_axis')} "
+                f"plane_err={grasp_debug.get('face_plane_err'):.4f} "
+                f"ortho_err={grasp_debug.get('face_ortho_err'):.4f} "
+                f"opposite={int(grasp_debug.get('faces_opposite'))} "
+                f"below_top={int(grasp_debug.get('below_top'))} "
+                f"bracket_ok={int(grasp_debug.get('bracket_ok'))} "
+                f"prox={int(grasp_debug.get('dist_ok'))} "
+                f"contacts(t/f)={int(grasp_debug.get('total_contacts'))}/"
+                f"{int(grasp_debug.get('finger_contacts'))} "
+                f"ready={int(grasp_debug.get('ready'))}\n"
+            )
+            sys.stderr.flush()
 
         # Expose attempt results so step() can fire terminal geom shaping +
         # attempt bonus + lenient bonus from the geometry achieved at the
