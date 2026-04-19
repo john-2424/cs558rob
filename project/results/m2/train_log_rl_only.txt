@@ -2671,3 +2671,373 @@ batch= 114 | frames=  933888/10000000 | loss=+0.765 (p=-0.000 v=0.755) | step_r=
          diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=28.0
 batch= 115 | frames=  942080/10000000 | loss=+1.002 (p=-0.010 v=1.002) | step_r=+0.0271 | ep_r= +59.42±14.68 | grasp=  0% succ=  0% | grad=3.423 clip=0.19 | kl=0.0173 ep=4/4 | lr=4.5e-05 ent_c=0.014 | act=+0.061±0.274 off=0.0411rad logσ=-1.43 V=+1.3 | fps=785
          diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.025m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=25.7
+batch= 116 | frames=  950272/10000000 | loss=+1.020 (p=-0.004 v=1.015) | step_r=+0.0441 | ep_r= +61.90±13.18 | grasp=  0% succ=  0% | grad=3.790 clip=0.15 | kl=0.0102 ep=4/4 | lr=4.5e-05 ent_c=0.014 | act=+0.066±0.269 off=0.0403rad logσ=-1.43 V=+1.8 | fps=785
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=20.6
+batch= 117 | frames=  958464/10000000 | loss=+0.572 (p=-0.007 v=0.569) | step_r=+0.0120 | ep_r= +63.21±12.44 | grasp=  0% succ=  0% | grad=3.024 clip=0.15 | kl=0.0107 ep=4/4 | lr=4.5e-05 ent_c=0.014 | act=+0.059±0.272 off=0.0409rad logσ=-1.43 V=+1.0 | fps=785
+         diag | ep=  2 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/2/0 | forced_wp=20.0
+batch= 118 | frames=  966656/10000000 | loss=+0.666 (p=-0.003 v=0.659) | step_r=+0.0286 | ep_r= +64.87±12.01 | grasp=  0% succ=  0% | grad=3.504 clip=0.16 | kl=0.0101 ep=4/4 | lr=4.5e-05 ent_c=0.014 | act=+0.059±0.276 off=0.0414rad logσ=-1.43 V=+1.8 | fps=785
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=19.2
+batch= 119 | frames=  974848/10000000 | loss=+1.025 (p=-0.004 v=1.018) | step_r=+0.0476 | ep_r= +65.95±12.82 | grasp=  0% succ=  0% | grad=3.921 clip=0.15 | kl=0.0113 ep=4/4 | lr=4.5e-05 ent_c=0.014 | act=+0.065±0.284 off=0.0425rad logσ=-1.43 V=+2.0 | fps=785 *BEST #38*
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=23.2
+batch= 120 | frames=  983040/10000000 | loss=+0.675 (p=-0.004 v=0.670) | step_r=+0.0219 | ep_r= +64.27±13.64 | grasp=  0% succ=  0% | grad=3.696 clip=0.15 | kl=0.0109 ep=4/4 | lr=4.5e-05 ent_c=0.014 | act=+0.061±0.265 off=0.0398rad logσ=-1.43 V=+1.0 | fps=785 *BEST #39*
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=25.3
+batch= 121 | frames=  991232/10000000 | loss=+1.017 (p=-0.002 v=1.009) | step_r=+0.0424 | ep_r= +65.95±13.19 | grasp=  0% succ=  0% | grad=3.564 clip=0.17 | kl=0.0094 ep=4/4 | lr=4.5e-05 ent_c=0.014 | act=+0.072±0.270 off=0.0405rad logσ=-1.43 V=+2.2 | fps=785 *BEST #40*
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=19.4
+batch= 122 | frames=  999424/10000000 | loss=+0.790 (p=-0.006 v=0.786) | step_r=+0.0231 | ep_r= +67.26±12.81 | grasp=  0% succ=  0% | grad=3.458 clip=0.18 | kl=0.0149 ep=4/4 | lr=4.5e-05 ent_c=0.014 | act=+0.068±0.268 off=0.0402rad logσ=-1.43 V=+1.3 | fps=785 *BEST #41*
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=20.3
+batch= 123 | frames= 1007616/10000000 | loss=+1.833 (p=-0.011 v=1.833) | step_r=+0.0472 | ep_r= +67.09±14.86 | grasp=  0% succ=  0% | grad=4.223 clip=0.17 | kl=0.0113 ep=4/4 | lr=4.5e-05 ent_c=0.014 | act=+0.073±0.271 off=0.0406rad logσ=-1.43 V=+1.8 | fps=785 *BEST #42*
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=19.2
+batch= 124 | frames= 1015808/10000000 | loss=+0.541 (p=-0.015 v=0.545) | step_r=+0.0204 | ep_r= +68.66±12.85 | grasp=  0% succ=  0% | grad=3.608 clip=0.16 | kl=0.0115 ep=4/4 | lr=4.5e-05 ent_c=0.014 | act=+0.067±0.272 off=0.0408rad logσ=-1.43 V=+0.9 | fps=785 *BEST #43*
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=19.7
+batch= 125 | frames= 1024000/10000000 | loss=+1.073 (p=+0.003 v=1.060) | step_r=+0.0348 | ep_r= +70.66± 9.86 | grasp=  0% succ=  0% | grad=3.809 clip=0.19 | kl=0.0146 ep=4/4 | lr=4.5e-05 ent_c=0.014 | act=+0.072±0.277 off=0.0416rad logσ=-1.43 V=+2.0 | fps=785 *BEST #44*
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=19.2
+batch= 126 | frames= 1032192/10000000 | loss=+0.419 (p=-0.008 v=0.417) | step_r=+0.0039 | ep_r= +69.36±10.44 | grasp=  0% succ=  0% | grad=3.548 clip=0.19 | kl=0.0114 ep=4/4 | lr=4.5e-05 ent_c=0.014 | act=+0.071±0.285 off=0.0427rad logσ=-1.43 V=+1.9 | fps=784 *BEST #45*
+         diag | ep=  2 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/2/0 | forced_wp=24.0
+batch= 127 | frames= 1040384/10000000 | loss=+0.797 (p=-0.008 v=0.795) | step_r=+0.0394 | ep_r= +68.06±11.94 | grasp=  0% succ=  0% | grad=3.665 clip=0.18 | kl=0.0151 ep=4/4 | lr=4.5e-05 ent_c=0.014 | act=+0.071±0.279 off=0.0418rad logσ=-1.43 V=+2.0 | fps=784 *BEST #46*
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.027m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=24.5
+batch= 128 | frames= 1048576/10000000 | loss=+0.381 (p=-0.010 v=0.381) | step_r=+0.0188 | ep_r= +65.30±14.65 | grasp=  0% succ=  0% | grad=3.283 clip=0.17 | kl=0.0147 ep=4/4 | lr=4.5e-05 ent_c=0.014 | act=+0.068±0.273 off=0.0410rad logσ=-1.43 V=+1.5 | fps=784 *BEST #47*
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=28.3
+batch= 129 | frames= 1056768/10000000 | loss=+0.566 (p=-0.004 v=0.560) | step_r=+0.0205 | ep_r= +61.89±12.07 | grasp=  0% succ=  0% | grad=3.488 clip=0.20 | kl=0.0173 ep=4/4 | lr=4.5e-05 ent_c=0.014 | act=+0.077±0.272 off=0.0409rad logσ=-1.43 V=+1.4 | fps=784
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=23.0
+batch= 130 | frames= 1064960/10000000 | loss=+0.534 (p=+0.004 v=0.519) | step_r=+0.0275 | ep_r= +60.44±12.71 | grasp=  0% succ=  0% | grad=3.786 clip=0.18 | kl=0.0130 ep=4/4 | lr=4.5e-05 ent_c=0.014 | act=+0.079±0.279 off=0.0419rad logσ=-1.43 V=+1.5 | fps=784
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=24.8
+batch= 131 | frames= 1073152/10000000 | loss=+0.484 (p=-0.008 v=0.483) | step_r=+0.0324 | ep_r= +57.08±10.99 | grasp=  0% succ=  0% | grad=3.463 clip=0.17 | kl=0.0108 ep=4/4 | lr=4.5e-05 ent_c=0.014 | act=+0.071±0.274 off=0.0412rad logσ=-1.43 V=+1.1 | fps=784
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.025m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=24.2
+batch= 132 | frames= 1081344/10000000 | loss=+0.707 (p=-0.006 v=0.702) | step_r=+0.0319 | ep_r= +57.62±11.47 | grasp=  0% succ=  0% | grad=3.539 clip=0.20 | kl=0.0151 ep=4/4 | lr=4.5e-05 ent_c=0.014 | act=+0.074±0.280 off=0.0420rad logσ=-1.43 V=+1.0 | fps=784
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=19.2
+batch= 133 | frames= 1089536/10000000 | loss=+0.749 (p=-0.007 v=0.747) | step_r=+0.0386 | ep_r= +60.04± 9.99 | grasp=  0% succ=  0% | grad=3.677 clip=0.19 | kl=0.0110 ep=4/4 | lr=4.5e-05 ent_c=0.014 | act=+0.075±0.272 off=0.0408rad logσ=-1.43 V=+1.8 | fps=783
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=19.8
+batch= 134 | frames= 1097728/10000000 | loss=+0.511 (p=-0.008 v=0.509) | step_r=+0.0236 | ep_r= +61.38±10.70 | grasp=  0% succ=  0% | grad=3.314 clip=0.19 | kl=0.0132 ep=4/4 | lr=4.5e-05 ent_c=0.014 | act=+0.066±0.274 off=0.0412rad logσ=-1.43 V=+0.7 | fps=783
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=19.3
+batch= 135 | frames= 1105920/10000000 | loss=+0.520 (p=-0.010 v=0.520) | step_r=+0.0410 | ep_r= +63.67± 9.28 | grasp=  0% succ=  0% | grad=3.397 clip=0.14 | kl=0.0092 ep=4/4 | lr=4.4e-05 ent_c=0.014 | act=+0.069±0.275 off=0.0412rad logσ=-1.43 V=+1.5 | fps=783
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=20.0
+batch= 136 | frames= 1114112/10000000 | loss=+0.576 (p=-0.011 v=0.577) | step_r=+0.0260 | ep_r= +63.53± 9.05 | grasp=  0% succ=  0% | grad=3.517 clip=0.16 | kl=0.0106 ep=4/4 | lr=4.4e-05 ent_c=0.014 | act=+0.078±0.275 off=0.0413rad logσ=-1.43 V=+0.7 | fps=783
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=19.4
+batch= 137 | frames= 1122304/10000000 | loss=+0.462 (p=-0.009 v=0.461) | step_r=+0.0307 | ep_r= +65.08± 6.29 | grasp=  0% succ=  0% | grad=3.303 clip=0.13 | kl=0.0073 ep=4/4 | lr=4.4e-05 ent_c=0.014 | act=+0.074±0.272 off=0.0409rad logσ=-1.43 V=+1.2 | fps=783
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=20.7
+batch= 138 | frames= 1130496/10000000 | loss=+0.575 (p=-0.009 v=0.575) | step_r=+0.0422 | ep_r= +65.53± 6.78 | grasp=  0% succ=  0% | grad=3.623 clip=0.16 | kl=0.0110 ep=4/4 | lr=4.4e-05 ent_c=0.014 | act=+0.073±0.278 off=0.0416rad logσ=-1.43 V=+1.3 | fps=783
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=19.6
+batch= 139 | frames= 1138688/10000000 | loss=+0.640 (p=-0.001 v=0.631) | step_r=+0.0389 | ep_r= +65.23± 6.42 | grasp=  0% succ=  0% | grad=3.319 clip=0.20 | kl=0.0139 ep=4/4 | lr=4.4e-05 ent_c=0.014 | act=+0.072±0.279 off=0.0419rad logσ=-1.43 V=+0.9 | fps=783
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=19.0
+batch= 140 | frames= 1146880/10000000 | loss=+0.551 (p=-0.001 v=0.541) | step_r=+0.0260 | ep_r= +65.72± 5.88 | grasp=  0% succ=  0% | grad=3.476 clip=0.15 | kl=0.0113 ep=4/4 | lr=4.4e-05 ent_c=0.014 | act=+0.071±0.279 off=0.0418rad logσ=-1.43 V=+0.6 | fps=783
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=19.2
+batch= 141 | frames= 1155072/10000000 | loss=+0.401 (p=-0.008 v=0.398) | step_r=+0.0277 | ep_r= +65.73± 5.57 | grasp=  0% succ=  0% | grad=3.285 clip=0.16 | kl=0.0131 ep=4/4 | lr=4.4e-05 ent_c=0.014 | act=+0.075±0.280 off=0.0420rad logσ=-1.43 V=+1.4 | fps=783
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=19.3
+batch= 142 | frames= 1163264/10000000 | loss=+0.455 (p=-0.004 v=0.449) | step_r=+0.0413 | ep_r= +65.96± 5.20 | grasp=  0% succ=  0% | grad=3.290 clip=0.13 | kl=0.0100 ep=4/4 | lr=4.4e-05 ent_c=0.014 | act=+0.076±0.278 off=0.0417rad logσ=-1.43 V=+1.0 | fps=783
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.025m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=21.4
+batch= 143 | frames= 1171456/10000000 | loss=+0.566 (p=-0.006 v=0.562) | step_r=+0.0390 | ep_r= +65.35± 5.24 | grasp=  0% succ=  0% | grad=3.637 clip=0.16 | kl=0.0124 ep=4/4 | lr=4.4e-05 ent_c=0.014 | act=+0.082±0.285 off=0.0428rad logσ=-1.43 V=+1.3 | fps=783
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=19.0
+batch= 144 | frames= 1179648/10000000 | loss=+0.443 (p=-0.004 v=0.437) | step_r=+0.0120 | ep_r= +65.31± 5.49 | grasp=  0% succ=  0% | grad=3.052 clip=0.16 | kl=0.0123 ep=4/4 | lr=4.4e-05 ent_c=0.014 | act=+0.074±0.279 off=0.0419rad logσ=-1.43 V=+0.8 | fps=783
+         diag | ep=  2 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/2/0 | forced_wp=19.5
+batch= 145 | frames= 1187840/10000000 | loss=+1.072 (p=-0.001 v=1.063) | step_r=+0.0526 | ep_r= +64.52± 6.96 | grasp=  0% succ=  0% | grad=3.897 clip=0.17 | kl=0.0115 ep=4/4 | lr=4.4e-05 ent_c=0.014 | act=+0.078±0.275 off=0.0412rad logσ=-1.43 V=+1.6 | fps=783
+         diag | ep=  6 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.026m | max_ph(pre/gd/lift)=0/6/0 | forced_wp=20.8
+batch= 146 | frames= 1196032/10000000 | loss=+0.657 (p=-0.001 v=0.648) | step_r=+0.0298 | ep_r= +65.44± 7.67 | grasp=  0% succ=  0% | grad=3.224 clip=0.18 | kl=0.0124 ep=4/4 | lr=4.4e-05 ent_c=0.014 | act=+0.069±0.281 off=0.0422rad logσ=-1.43 V=+1.3 | fps=783
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=19.8
+batch= 147 | frames= 1204224/10000000 | loss=+0.459 (p=-0.009 v=0.459) | step_r=+0.0200 | ep_r= +65.32± 8.56 | grasp=  0% succ=  0% | grad=3.561 clip=0.14 | kl=0.0100 ep=4/4 | lr=4.4e-05 ent_c=0.014 | act=+0.073±0.274 off=0.0411rad logσ=-1.43 V=+1.3 | fps=783
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=19.3
+batch= 148 | frames= 1212416/10000000 | loss=+0.843 (p=-0.011 v=0.845) | step_r=+0.0449 | ep_r= +64.79± 9.49 | grasp=  0% succ=  0% | grad=3.584 clip=0.18 | kl=0.0117 ep=4/4 | lr=4.4e-05 ent_c=0.014 | act=+0.078±0.276 off=0.0415rad logσ=-1.42 V=+1.4 | fps=783
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=21.0
+batch= 149 | frames= 1220608/10000000 | loss=+0.260 (p=-0.003 v=0.253) | step_r=+0.0112 | ep_r= +64.38± 9.11 | grasp=  0% succ=  0% | grad=3.196 clip=0.17 | kl=0.0111 ep=4/4 | lr=4.4e-05 ent_c=0.014 | act=+0.073±0.280 off=0.0420rad logσ=-1.43 V=+0.7 | fps=783
+         diag | ep=  2 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/2/0 | forced_wp=20.0
+batch= 150 | frames= 1228800/10000000 | loss=+0.886 (p=-0.002 v=0.878) | step_r=+0.0540 | ep_r= +65.29± 8.16 | grasp=  0% succ=  0% | grad=3.815 clip=0.16 | kl=0.0118 ep=4/4 | lr=4.4e-05 ent_c=0.014 | act=+0.080±0.285 off=0.0428rad logσ=-1.43 V=+1.4 | fps=783
+         diag | ep=  6 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/6/0 | forced_wp=20.8
+batch= 151 | frames= 1236992/10000000 | loss=+0.298 (p=-0.012 v=0.300) | step_r=+0.0113 | ep_r= +66.48± 7.39 | grasp=  0% succ=  0% | grad=3.251 clip=0.18 | kl=0.0149 ep=4/4 | lr=4.4e-05 ent_c=0.014 | act=+0.073±0.279 off=0.0419rad logσ=-1.42 V=+0.3 | fps=783
+         diag | ep=  2 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.029m | max_ph(pre/gd/lift)=0/2/0 | forced_wp=19.5
+batch= 152 | frames= 1245184/10000000 | loss=+0.969 (p=-0.002 v=0.961) | step_r=+0.0557 | ep_r= +67.48± 7.15 | grasp=  0% succ=  0% | grad=3.929 clip=0.17 | kl=0.0136 ep=4/4 | lr=4.4e-05 ent_c=0.014 | act=+0.076±0.278 off=0.0417rad logσ=-1.42 V=+1.5 | fps=783
+         diag | ep=  6 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/6/0 | forced_wp=19.3
+batch= 153 | frames= 1253376/10000000 | loss=+0.240 (p=-0.008 v=0.239) | step_r=+0.0108 | ep_r= +66.74± 6.08 | grasp=  0% succ=  0% | grad=3.175 clip=0.17 | kl=0.0139 ep=4/4 | lr=4.4e-05 ent_c=0.014 | act=+0.075±0.276 off=0.0414rad logσ=-1.42 V=+0.6 | fps=782
+         diag | ep=  2 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/2/0 | forced_wp=20.0
+batch= 154 | frames= 1261568/10000000 | loss=+0.469 (p=-0.001 v=0.460) | step_r=+0.0502 | ep_r= +66.63± 6.22 | grasp=  0% succ=  0% | grad=3.542 clip=0.14 | kl=0.0092 ep=4/4 | lr=4.4e-05 ent_c=0.014 | act=+0.083±0.277 off=0.0415rad logσ=-1.42 V=+1.2 | fps=782
+         diag | ep=  6 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.025m | max_ph(pre/gd/lift)=0/6/0 | forced_wp=19.7
+batch= 155 | frames= 1269760/10000000 | loss=+0.426 (p=-0.007 v=0.423) | step_r=+0.0199 | ep_r= +66.61± 6.16 | grasp=  0% succ=  0% | grad=3.131 clip=0.13 | kl=0.0081 ep=4/4 | lr=4.4e-05 ent_c=0.014 | act=+0.091±0.279 off=0.0418rad logσ=-1.42 V=+0.1 | fps=782
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=19.3
+batch= 156 | frames= 1277952/10000000 | loss=+0.482 (p=-0.010 v=0.483) | step_r=+0.0402 | ep_r= +65.19± 6.43 | grasp=  0% succ=  0% | grad=3.631 clip=0.17 | kl=0.0117 ep=4/4 | lr=4.4e-05 ent_c=0.014 | act=+0.081±0.275 off=0.0412rad logσ=-1.42 V=+1.3 | fps=782
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=19.8
+batch= 157 | frames= 1286144/10000000 | loss=+0.386 (p=+0.001 v=0.375) | step_r=+0.0173 | ep_r= +63.86± 4.47 | grasp=  0% succ=  0% | grad=3.439 clip=0.17 | kl=0.0130 ep=4/4 | lr=4.4e-05 ent_c=0.014 | act=+0.089±0.278 off=0.0417rad logσ=-1.42 V=+1.0 | fps=782
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=19.0
+batch= 158 | frames= 1294336/10000000 | loss=+0.850 (p=-0.007 v=0.847) | step_r=+0.0386 | ep_r= +65.05± 6.66 | grasp=  0% succ=  0% | grad=3.587 clip=0.17 | kl=0.0124 ep=4/4 | lr=4.4e-05 ent_c=0.014 | act=+0.069±0.277 off=0.0415rad logσ=-1.42 V=+0.9 | fps=782
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.028m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=19.8
+batch= 159 | frames= 1302528/10000000 | loss=+0.326 (p=-0.010 v=0.327) | step_r=+0.0308 | ep_r= +63.96± 9.92 | grasp=  0% succ=  0% | grad=3.380 clip=0.17 | kl=0.0138 ep=4/4 | lr=4.3e-05 ent_c=0.014 | act=+0.065±0.284 off=0.0426rad logσ=-1.42 V=+1.0 | fps=782
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=23.8
+batch= 160 | frames= 1310720/10000000 | loss=+0.748 (p=-0.008 v=0.747) | step_r=+0.0516 | ep_r= +65.59±10.21 | grasp=  0% succ=  0% | grad=3.397 clip=0.17 | kl=0.0122 ep=4/4 | lr=4.3e-05 ent_c=0.014 | act=+0.075±0.280 off=0.0421rad logσ=-1.42 V=+1.5 | fps=782
+         diag | ep=  6 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/6/0 | forced_wp=19.5
+batch= 161 | frames= 1318912/10000000 | loss=+0.242 (p=-0.000 v=0.233) | step_r=+0.0162 | ep_r= +66.16±10.01 | grasp=  0% succ=  0% | grad=3.233 clip=0.16 | kl=0.0128 ep=4/4 | lr=4.3e-05 ent_c=0.014 | act=+0.078±0.278 off=0.0417rad logσ=-1.42 V=+0.5 | fps=782
+         diag | ep=  2 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/2/0 | forced_wp=19.0
+batch= 162 | frames= 1327104/10000000 | loss=+0.765 (p=-0.006 v=0.762) | step_r=+0.0534 | ep_r= +67.29±10.34 | grasp=  0% succ=  0% | grad=3.711 clip=0.17 | kl=0.0112 ep=4/4 | lr=4.3e-05 ent_c=0.014 | act=+0.071±0.278 off=0.0416rad logσ=-1.42 V=+1.4 | fps=782
+         diag | ep=  6 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.028m | max_ph(pre/gd/lift)=0/6/0 | forced_wp=19.3
+batch= 163 | frames= 1335296/10000000 | loss=+0.383 (p=-0.008 v=0.382) | step_r=+0.0007 | ep_r= +67.74±10.43 | grasp=  0% succ=  0% | grad=2.994 clip=0.17 | kl=0.0121 ep=4/4 | lr=4.3e-05 ent_c=0.014 | act=+0.075±0.282 off=0.0423rad logσ=-1.42 V=+0.6 | fps=782
+         diag | ep=  1 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/1/0 | forced_wp=20.0
+batch= 164 | frames= 1343488/10000000 | loss=+0.690 (p=-0.006 v=0.687) | step_r=+0.0618 | ep_r= +66.61± 6.58 | grasp=  0% succ=  0% | grad=3.587 clip=0.16 | kl=0.0128 ep=4/4 | lr=4.3e-05 ent_c=0.014 | act=+0.071±0.277 off=0.0415rad logσ=-1.42 V=+2.3 | fps=782
+         diag | ep=  7 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.025m | max_ph(pre/gd/lift)=0/7/0 | forced_wp=21.7
+batch= 165 | frames= 1351680/10000000 | loss=+0.802 (p=-0.008 v=0.801) | step_r=+0.0338 | ep_r= +67.32± 7.07 | grasp=  0% succ=  0% | grad=3.600 clip=0.16 | kl=0.0106 ep=4/4 | lr=4.3e-05 ent_c=0.014 | act=+0.075±0.279 off=0.0419rad logσ=-1.42 V=+0.6 | fps=782
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.025m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=18.8
+batch= 166 | frames= 1359872/10000000 | loss=+0.425 (p=+0.002 v=0.414) | step_r=+0.0311 | ep_r= +66.69± 7.40 | grasp=  0% succ=  0% | grad=3.268 clip=0.15 | kl=0.0134 ep=4/4 | lr=4.3e-05 ent_c=0.014 | act=+0.071±0.275 off=0.0413rad logσ=-1.42 V=+0.7 | fps=782
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=19.5
+batch= 167 | frames= 1368064/10000000 | loss=+0.591 (p=-0.006 v=0.589) | step_r=+0.0357 | ep_r= +66.71± 6.77 | grasp=  0% succ=  0% | grad=3.330 clip=0.16 | kl=0.0094 ep=4/4 | lr=4.3e-05 ent_c=0.014 | act=+0.074±0.279 off=0.0418rad logσ=-1.42 V=+1.0 | fps=781
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=20.0
+batch= 168 | frames= 1376256/10000000 | loss=+0.656 (p=-0.008 v=0.655) | step_r=+0.0344 | ep_r= +67.29± 7.20 | grasp=  0% succ=  0% | grad=3.475 clip=0.17 | kl=0.0128 ep=4/4 | lr=4.3e-05 ent_c=0.014 | act=+0.079±0.274 off=0.0410rad logσ=-1.42 V=+1.4 | fps=781
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=20.8
+batch= 169 | frames= 1384448/10000000 | loss=+0.475 (p=-0.015 v=0.481) | step_r=+0.0311 | ep_r= +68.54± 7.08 | grasp=  0% succ=  0% | grad=3.373 clip=0.15 | kl=0.0097 ep=4/4 | lr=4.3e-05 ent_c=0.014 | act=+0.086±0.280 off=0.0421rad logσ=-1.42 V=+0.8 | fps=781
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=19.5
+batch= 170 | frames= 1392640/10000000 | loss=+0.472 (p=-0.003 v=0.466) | step_r=+0.0313 | ep_r= +66.80± 6.49 | grasp=  0% succ=  0% | grad=3.345 clip=0.16 | kl=0.0117 ep=4/4 | lr=4.3e-05 ent_c=0.014 | act=+0.088±0.278 off=0.0417rad logσ=-1.42 V=+0.7 | fps=781
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.026m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=18.8
+batch= 171 | frames= 1400832/10000000 | loss=+0.569 (p=+0.003 v=0.557) | step_r=+0.0425 | ep_r= +67.98± 7.11 | grasp=  0% succ=  0% | grad=3.319 clip=0.14 | kl=0.0100 ep=4/4 | lr=4.3e-05 ent_c=0.014 | act=+0.093±0.282 off=0.0422rad logσ=-1.42 V=+0.9 | fps=781 *BEST #48*
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=19.4
+batch= 172 | frames= 1409024/10000000 | loss=+0.388 (p=-0.006 v=0.386) | step_r=+0.0214 | ep_r= +67.82± 7.08 | grasp=  0% succ=  0% | grad=3.317 clip=0.17 | kl=0.0133 ep=4/4 | lr=4.3e-05 ent_c=0.014 | act=+0.073±0.274 off=0.0411rad logσ=-1.42 V=+0.8 | fps=780 *BEST #49*
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=19.0
+batch= 173 | frames= 1417216/10000000 | loss=+0.561 (p=-0.010 v=0.562) | step_r=+0.0253 | ep_r= +68.38± 6.77 | grasp=  0% succ=  0% | grad=3.246 clip=0.15 | kl=0.0093 ep=4/4 | lr=4.3e-05 ent_c=0.014 | act=+0.071±0.280 off=0.0420rad logσ=-1.42 V=+1.4 | fps=780 *BEST #50*
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=19.3
+batch= 174 | frames= 1425408/10000000 | loss=+0.650 (p=-0.005 v=0.646) | step_r=+0.0358 | ep_r= +68.65± 7.96 | grasp=  0% succ=  0% | grad=3.351 clip=0.14 | kl=0.0101 ep=4/4 | lr=4.3e-05 ent_c=0.014 | act=+0.078±0.280 off=0.0419rad logσ=-1.42 V=+1.9 | fps=780 *BEST #51*
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=24.2
+batch= 175 | frames= 1433600/10000000 | loss=+0.497 (p=+0.001 v=0.487) | step_r=+0.0325 | ep_r= +68.09± 8.21 | grasp=  0% succ=  0% | grad=3.270 clip=0.16 | kl=0.0112 ep=4/4 | lr=4.3e-05 ent_c=0.014 | act=+0.091±0.285 off=0.0428rad logσ=-1.41 V=+0.6 | fps=780 *BEST #52*
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=23.5
+batch= 176 | frames= 1441792/10000000 | loss=+0.724 (p=-0.007 v=0.722) | step_r=+0.0338 | ep_r= +69.92± 9.35 | grasp=  0% succ=  0% | grad=3.205 clip=0.16 | kl=0.0123 ep=4/4 | lr=4.3e-05 ent_c=0.014 | act=+0.082±0.280 off=0.0420rad logσ=-1.41 V=+0.7 | fps=780 *BEST #53*
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=19.8
+batch= 177 | frames= 1449984/10000000 | loss=+0.360 (p=-0.001 v=0.352) | step_r=+0.0315 | ep_r= +68.34± 9.22 | grasp=  0% succ=  0% | grad=3.254 clip=0.18 | kl=0.0145 ep=4/4 | lr=4.3e-05 ent_c=0.014 | act=+0.079±0.278 off=0.0417rad logσ=-1.41 V=+0.4 | fps=780 *BEST #54*
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=19.5
+batch= 178 | frames= 1458176/10000000 | loss=+0.443 (p=+0.001 v=0.434) | step_r=+0.0311 | ep_r= +66.77± 8.99 | grasp=  0% succ=  0% | grad=3.362 clip=0.15 | kl=0.0101 ep=4/4 | lr=4.3e-05 ent_c=0.014 | act=+0.073±0.273 off=0.0409rad logσ=-1.41 V=+0.9 | fps=780
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=19.5
+batch= 179 | frames= 1466368/10000000 | loss=+0.478 (p=-0.007 v=0.477) | step_r=+0.0253 | ep_r= +66.79± 7.77 | grasp=  0% succ=  0% | grad=3.254 clip=0.15 | kl=0.0098 ep=4/4 | lr=4.3e-05 ent_c=0.014 | act=+0.085±0.273 off=0.0409rad logσ=-1.41 V=+1.4 | fps=780
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=20.0
+batch= 180 | frames= 1474560/10000000 | loss=+0.452 (p=+0.008 v=0.436) | step_r=+0.0423 | ep_r= +67.48± 7.54 | grasp=  0% succ=  0% | grad=3.412 clip=0.14 | kl=0.0082 ep=4/4 | lr=4.3e-05 ent_c=0.014 | act=+0.086±0.277 off=0.0416rad logσ=-1.41 V=+2.1 | fps=780
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=19.2
+batch= 181 | frames= 1482752/10000000 | loss=+0.469 (p=+0.003 v=0.458) | step_r=+0.0306 | ep_r= +64.78± 9.57 | grasp=  0% succ=  0% | grad=3.208 clip=0.16 | kl=0.0096 ep=4/4 | lr=4.3e-05 ent_c=0.014 | act=+0.089±0.276 off=0.0415rad logσ=-1.41 V=+1.3 | fps=780
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=24.8
+batch= 182 | frames= 1490944/10000000 | loss=+0.523 (p=-0.004 v=0.518) | step_r=+0.0336 | ep_r= +65.88± 9.92 | grasp=  0% succ=  0% | grad=3.381 clip=0.17 | kl=0.0134 ep=4/4 | lr=4.3e-05 ent_c=0.014 | act=+0.091±0.278 off=0.0417rad logσ=-1.41 V=+0.5 | fps=780
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.025m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=18.8
+batch= 183 | frames= 1499136/10000000 | loss=+0.600 (p=-0.004 v=0.595) | step_r=+0.0376 | ep_r= +67.84± 9.98 | grasp=  0% succ=  0% | grad=3.455 clip=0.13 | kl=0.0089 ep=4/4 | lr=4.3e-05 ent_c=0.014 | act=+0.090±0.282 off=0.0422rad logσ=-1.41 V=+0.6 | fps=780
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=19.6
+batch= 184 | frames= 1507328/10000000 | loss=+0.593 (p=-0.007 v=0.592) | step_r=+0.0278 | ep_r= +67.57±10.15 | grasp=  0% succ=  0% | grad=3.473 clip=0.16 | kl=0.0118 ep=4/4 | lr=4.2e-05 ent_c=0.013 | act=+0.080±0.278 off=0.0417rad logσ=-1.41 V=+1.1 | fps=780
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=19.3
+batch= 185 | frames= 1515520/10000000 | loss=+0.502 (p=-0.002 v=0.496) | step_r=+0.0392 | ep_r= +66.24±10.87 | grasp=  0% succ=  0% | grad=3.510 clip=0.15 | kl=0.0103 ep=4/4 | lr=4.2e-05 ent_c=0.013 | act=+0.077±0.280 off=0.0421rad logσ=-1.41 V=+2.2 | fps=780
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=19.6
+batch= 186 | frames= 1523712/10000000 | loss=+0.403 (p=-0.004 v=0.400) | step_r=+0.0238 | ep_r= +66.16±11.00 | grasp=  0% succ=  0% | grad=3.298 clip=0.17 | kl=0.0129 ep=4/4 | lr=4.2e-05 ent_c=0.013 | act=+0.067±0.269 off=0.0404rad logσ=-1.41 V=+1.1 | fps=780
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=24.2
+batch= 187 | frames= 1531904/10000000 | loss=+0.446 (p=+0.004 v=0.433) | step_r=+0.0307 | ep_r= +65.74±11.57 | grasp=  0% succ=  0% | grad=3.253 clip=0.15 | kl=0.0100 ep=4/4 | lr=4.2e-05 ent_c=0.013 | act=+0.088±0.277 off=0.0415rad logσ=-1.41 V=+1.5 | fps=780
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=19.7
+batch= 188 | frames= 1540096/10000000 | loss=+0.718 (p=+0.006 v=0.704) | step_r=+0.0350 | ep_r= +66.27±12.67 | grasp=  0% succ=  0% | grad=3.316 clip=0.16 | kl=0.0130 ep=4/4 | lr=4.2e-05 ent_c=0.013 | act=+0.080±0.277 off=0.0416rad logσ=-1.41 V=+1.3 | fps=780
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.025m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=19.0
+batch= 189 | frames= 1548288/10000000 | loss=+0.514 (p=-0.012 v=0.517) | step_r=+0.0396 | ep_r= +63.92±13.56 | grasp=  0% succ=  0% | grad=3.449 clip=0.15 | kl=0.0113 ep=4/4 | lr=4.2e-05 ent_c=0.013 | act=+0.084±0.283 off=0.0424rad logσ=-1.41 V=+1.6 | fps=780
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=23.4
+batch= 190 | frames= 1556480/10000000 | loss=+0.241 (p=-0.009 v=0.242) | step_r=+0.0153 | ep_r= +65.31±13.20 | grasp=  0% succ=  0% | grad=2.998 clip=0.16 | kl=0.0101 ep=4/4 | lr=4.2e-05 ent_c=0.013 | act=+0.078±0.273 off=0.0410rad logσ=-1.41 V=+0.6 | fps=780
+         diag | ep=  2 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/2/0 | forced_wp=19.5
+batch= 191 | frames= 1564672/10000000 | loss=+0.543 (p=-0.014 v=0.548) | step_r=+0.0390 | ep_r= +67.16±10.90 | grasp=  0% succ=  0% | grad=3.571 clip=0.14 | kl=0.0117 ep=4/4 | lr=4.2e-05 ent_c=0.013 | act=+0.082±0.282 off=0.0423rad logσ=-1.41 V=+1.5 | fps=780
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=19.2
+batch= 192 | frames= 1572864/10000000 | loss=+0.391 (p=-0.000 v=0.383) | step_r=+0.0142 | ep_r= +65.95±12.64 | grasp=  0% succ=  0% | grad=3.386 clip=0.18 | kl=0.0126 ep=4/4 | lr=4.2e-05 ent_c=0.013 | act=+0.086±0.282 off=0.0423rad logσ=-1.41 V=+0.9 | fps=780
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=25.7
+batch= 193 | frames= 1581056/10000000 | loss=+0.516 (p=-0.002 v=0.509) | step_r=+0.0438 | ep_r= +61.18±13.34 | grasp=  0% succ=  0% | grad=3.328 clip=0.13 | kl=0.0100 ep=4/4 | lr=4.2e-05 ent_c=0.013 | act=+0.094±0.283 off=0.0424rad logσ=-1.41 V=+1.4 | fps=780
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=23.4
+batch= 194 | frames= 1589248/10000000 | loss=+0.383 (p=-0.005 v=0.380) | step_r=+0.0252 | ep_r= +62.39±12.94 | grasp=  0% succ=  0% | grad=3.134 clip=0.16 | kl=0.0105 ep=4/4 | lr=4.2e-05 ent_c=0.013 | act=+0.089±0.275 off=0.0413rad logσ=-1.40 V=+0.7 | fps=780
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.032m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=19.3
+batch= 195 | frames= 1597440/10000000 | loss=+0.475 (p=-0.003 v=0.471) | step_r=+0.0427 | ep_r= +63.05±12.57 | grasp=  0% succ=  0% | grad=3.328 clip=0.14 | kl=0.0102 ep=4/4 | lr=4.2e-05 ent_c=0.013 | act=+0.092±0.280 off=0.0420rad logσ=-1.40 V=+1.4 | fps=780
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=20.2
+batch= 196 | frames= 1605632/10000000 | loss=+0.262 (p=-0.010 v=0.264) | step_r=+0.0191 | ep_r= +60.88±11.95 | grasp=  0% succ=  0% | grad=3.182 clip=0.16 | kl=0.0119 ep=4/4 | lr=4.2e-05 ent_c=0.013 | act=+0.084±0.277 off=0.0415rad logσ=-1.40 V=+0.5 | fps=780
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=19.3
+batch= 197 | frames= 1613824/10000000 | loss=+0.627 (p=-0.009 v=0.629) | step_r=+0.0440 | ep_r= +63.85±11.41 | grasp=  0% succ=  0% | grad=3.366 clip=0.14 | kl=0.0103 ep=4/4 | lr=4.2e-05 ent_c=0.013 | act=+0.087±0.276 off=0.0414rad logσ=-1.40 V=+1.1 | fps=780
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.025m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=19.8
+batch= 198 | frames= 1622016/10000000 | loss=+0.477 (p=-0.007 v=0.476) | step_r=+0.0238 | ep_r= +66.52± 7.48 | grasp=  0% succ=  0% | grad=3.157 clip=0.14 | kl=0.0108 ep=4/4 | lr=4.2e-05 ent_c=0.013 | act=+0.096±0.278 off=0.0418rad logσ=-1.40 V=+0.4 | fps=780
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=19.7
+batch= 199 | frames= 1630208/10000000 | loss=+0.573 (p=-0.008 v=0.572) | step_r=+0.0215 | ep_r= +67.34± 7.36 | grasp=  0% succ=  0% | grad=3.382 clip=0.16 | kl=0.0108 ep=4/4 | lr=4.2e-05 ent_c=0.013 | act=+0.103±0.281 off=0.0421rad logσ=-1.40 V=+0.9 | fps=780
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=19.7
+batch= 200 | frames= 1638400/10000000 | loss=+0.728 (p=-0.019 v=0.740) | step_r=+0.0329 | ep_r= +68.24± 8.15 | grasp=  0% succ=  0% | grad=3.506 clip=0.17 | kl=0.0132 ep=4/4 | lr=4.2e-05 ent_c=0.013 | act=+0.091±0.281 off=0.0422rad logσ=-1.40 V=+1.4 | fps=780
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.026m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=21.5
+batch= 201 | frames= 1646592/10000000 | loss=+0.412 (p=+0.005 v=0.399) | step_r=+0.0205 | ep_r= +66.28±12.12 | grasp=  0% succ=  0% | grad=3.568 clip=0.17 | kl=0.0113 ep=4/4 | lr=4.2e-05 ent_c=0.013 | act=+0.092±0.287 off=0.0430rad logσ=-1.40 V=+1.2 | fps=780
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=26.7
+batch= 202 | frames= 1654784/10000000 | loss=+0.598 (p=-0.008 v=0.598) | step_r=+0.0361 | ep_r= +66.91±11.50 | grasp=  0% succ=  0% | grad=3.243 clip=0.18 | kl=0.0150 ep=4/4 | lr=4.2e-05 ent_c=0.013 | act=+0.086±0.280 off=0.0420rad logσ=-1.40 V=+0.9 | fps=780
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=19.0
+batch= 203 | frames= 1662976/10000000 | loss=+0.820 (p=-0.007 v=0.820) | step_r=+0.0349 | ep_r= +66.95±11.97 | grasp=  0% succ=  0% | grad=3.912 clip=0.16 | kl=0.0118 ep=4/4 | lr=4.2e-05 ent_c=0.013 | act=+0.089±0.277 off=0.0416rad logσ=-1.40 V=+0.7 | fps=780
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=25.0
+batch= 204 | frames= 1671168/10000000 | loss=+0.306 (p=-0.002 v=0.301) | step_r=+0.0346 | ep_r= +65.29±11.53 | grasp=  0% succ=  0% | grad=3.232 clip=0.16 | kl=0.0111 ep=4/4 | lr=4.2e-05 ent_c=0.013 | act=+0.089±0.277 off=0.0416rad logσ=-1.40 V=+0.5 | fps=779
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=19.4
+batch= 205 | frames= 1679360/10000000 | loss=+0.422 (p=-0.009 v=0.423) | step_r=+0.0335 | ep_r= +64.14±10.55 | grasp=  0% succ=  0% | grad=3.311 clip=0.16 | kl=0.0102 ep=4/4 | lr=4.2e-05 ent_c=0.013 | act=+0.103±0.278 off=0.0417rad logσ=-1.40 V=+0.9 | fps=779
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.025m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=19.2
+batch= 206 | frames= 1687552/10000000 | loss=+0.546 (p=-0.004 v=0.542) | step_r=+0.0347 | ep_r= +67.62± 7.25 | grasp=  0% succ=  0% | grad=3.619 clip=0.15 | kl=0.0108 ep=4/4 | lr=4.2e-05 ent_c=0.013 | act=+0.098±0.278 off=0.0418rad logσ=-1.40 V=+0.3 | fps=779
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=19.5
+batch= 207 | frames= 1695744/10000000 | loss=+0.660 (p=-0.003 v=0.655) | step_r=+0.0315 | ep_r= +68.09± 7.46 | grasp=  0% succ=  0% | grad=3.393 clip=0.17 | kl=0.0123 ep=4/4 | lr=4.2e-05 ent_c=0.013 | act=+0.110±0.284 off=0.0425rad logσ=-1.40 V=+1.1 | fps=779
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=19.8
+batch= 208 | frames= 1703936/10000000 | loss=+0.516 (p=-0.009 v=0.517) | step_r=+0.0149 | ep_r= +68.10± 7.39 | grasp=  0% succ=  0% | grad=3.382 clip=0.15 | kl=0.0103 ep=4/4 | lr=4.1e-05 ent_c=0.013 | act=+0.095±0.282 off=0.0422rad logσ=-1.40 V=+0.1 | fps=779
+         diag | ep=  2 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/2/0 | forced_wp=19.5
+batch= 209 | frames= 1712128/10000000 | loss=+0.591 (p=-0.007 v=0.590) | step_r=+0.0533 | ep_r= +66.62± 8.17 | grasp=  0% succ=  0% | grad=3.719 clip=0.13 | kl=0.0108 ep=4/4 | lr=4.1e-05 ent_c=0.013 | act=+0.088±0.281 off=0.0421rad logσ=-1.40 V=+1.2 | fps=779
+         diag | ep=  6 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/6/0 | forced_wp=22.7
+batch= 210 | frames= 1720320/10000000 | loss=+0.705 (p=-0.006 v=0.703) | step_r=+0.0279 | ep_r= +67.38± 8.23 | grasp=  0% succ=  0% | grad=3.596 clip=0.14 | kl=0.0107 ep=4/4 | lr=4.1e-05 ent_c=0.013 | act=+0.090±0.277 off=0.0416rad logσ=-1.40 V=-0.2 | fps=779
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=19.0
+batch= 211 | frames= 1728512/10000000 | loss=+0.686 (p=-0.005 v=0.684) | step_r=+0.0399 | ep_r= +67.27± 7.81 | grasp=  0% succ=  0% | grad=3.608 clip=0.14 | kl=0.0102 ep=4/4 | lr=4.1e-05 ent_c=0.013 | act=+0.091±0.281 off=0.0421rad logσ=-1.40 V=+0.9 | fps=779
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=20.5
+batch= 212 | frames= 1736704/10000000 | loss=+0.308 (p=-0.006 v=0.307) | step_r=+0.0212 | ep_r= +66.30± 6.87 | grasp=  0% succ=  0% | grad=3.175 clip=0.15 | kl=0.0119 ep=4/4 | lr=4.1e-05 ent_c=0.013 | act=+0.089±0.278 off=0.0417rad logσ=-1.40 V=+0.4 | fps=779
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=19.7
+batch= 213 | frames= 1744896/10000000 | loss=+0.575 (p=+0.003 v=0.564) | step_r=+0.0308 | ep_r= +66.23± 7.66 | grasp=  0% succ=  0% | grad=3.793 clip=0.14 | kl=0.0096 ep=4/4 | lr=4.1e-05 ent_c=0.013 | act=+0.086±0.282 off=0.0423rad logσ=-1.40 V=+1.4 | fps=779
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.028m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=21.2
+batch= 214 | frames= 1753088/10000000 | loss=+0.436 (p=-0.012 v=0.440) | step_r=+0.0205 | ep_r= +66.50± 7.58 | grasp=  0% succ=  0% | grad=3.666 clip=0.16 | kl=0.0098 ep=4/4 | lr=4.1e-05 ent_c=0.013 | act=+0.082±0.285 off=0.0427rad logσ=-1.40 V=+1.1 | fps=779
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.025m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=19.7
+batch= 215 | frames= 1761280/10000000 | loss=+0.449 (p=-0.002 v=0.443) | step_r=+0.0443 | ep_r= +64.67± 8.01 | grasp=  0% succ=  0% | grad=3.898 clip=0.15 | kl=0.0121 ep=4/4 | lr=4.1e-05 ent_c=0.013 | act=+0.087±0.281 off=0.0421rad logσ=-1.40 V=+1.5 | fps=779
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.026m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=23.6
+batch= 216 | frames= 1769472/10000000 | loss=+0.638 (p=-0.001 v=0.632) | step_r=+0.0245 | ep_r= +65.64± 9.72 | grasp=  0% succ=  0% | grad=3.451 clip=0.18 | kl=0.0145 ep=4/4 | lr=4.1e-05 ent_c=0.013 | act=+0.092±0.278 off=0.0417rad logσ=-1.40 V=+0.6 | fps=779
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.034m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=20.0
+batch= 217 | frames= 1777664/10000000 | loss=+0.483 (p=-0.012 v=0.487) | step_r=+0.0416 | ep_r= +66.26± 9.26 | grasp=  0% succ=  0% | grad=3.646 clip=0.17 | kl=0.0103 ep=4/4 | lr=4.1e-05 ent_c=0.013 | act=+0.092±0.286 off=0.0429rad logσ=-1.40 V=+1.6 | fps=779
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=19.0
+batch= 218 | frames= 1785856/10000000 | loss=+0.448 (p=-0.003 v=0.443) | step_r=+0.0226 | ep_r= +66.47± 9.77 | grasp=  0% succ=  0% | grad=3.283 clip=0.18 | kl=0.0134 ep=4/4 | lr=4.1e-05 ent_c=0.013 | act=+0.090±0.283 off=0.0425rad logσ=-1.40 V=+1.1 | fps=779
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=19.3
+batch= 219 | frames= 1794048/10000000 | loss=+0.716 (p=-0.014 v=0.722) | step_r=+0.0490 | ep_r= +67.08±10.05 | grasp=  0% succ=  0% | grad=3.616 clip=0.14 | kl=0.0099 ep=4/4 | lr=4.1e-05 ent_c=0.013 | act=+0.097±0.281 off=0.0421rad logσ=-1.40 V=+1.1 | fps=779
+         diag | ep=  6 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/6/0 | forced_wp=22.8
+batch= 220 | frames= 1802240/10000000 | loss=+0.314 (p=-0.003 v=0.310) | step_r=+0.0183 | ep_r= +68.26± 8.81 | grasp=  0% succ=  0% | grad=3.565 clip=0.16 | kl=0.0140 ep=4/4 | lr=4.1e-05 ent_c=0.013 | act=+0.106±0.282 off=0.0424rad logσ=-1.40 V=+0.3 | fps=779
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=19.3
+batch= 221 | frames= 1810432/10000000 | loss=+0.476 (p=-0.001 v=0.469) | step_r=+0.0472 | ep_r= +65.54± 8.14 | grasp=  0% succ=  0% | grad=3.670 clip=0.16 | kl=0.0089 ep=4/4 | lr=4.1e-05 ent_c=0.013 | act=+0.087±0.282 off=0.0423rad logσ=-1.40 V=+0.7 | fps=779
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=19.2
+batch= 222 | frames= 1818624/10000000 | loss=+0.281 (p=-0.000 v=0.273) | step_r=+0.0264 | ep_r= +63.26± 6.64 | grasp=  0% succ=  0% | grad=3.370 clip=0.14 | kl=0.0103 ep=4/4 | lr=4.1e-05 ent_c=0.013 | act=+0.097±0.282 off=0.0423rad logσ=-1.39 V=+0.7 | fps=778
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.025m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=19.2
+batch= 223 | frames= 1826816/10000000 | loss=+0.595 (p=-0.016 v=0.604) | step_r=+0.0385 | ep_r= +65.11± 7.29 | grasp=  0% succ=  0% | grad=3.608 clip=0.15 | kl=0.0096 ep=4/4 | lr=4.1e-05 ent_c=0.013 | act=+0.091±0.283 off=0.0425rad logσ=-1.39 V=+0.4 | fps=778
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=19.0
+batch= 224 | frames= 1835008/10000000 | loss=+0.328 (p=+0.002 v=0.318) | step_r=+0.0420 | ep_r= +64.91± 6.35 | grasp=  0% succ=  0% | grad=3.389 clip=0.14 | kl=0.0108 ep=4/4 | lr=4.1e-05 ent_c=0.013 | act=+0.108±0.291 off=0.0436rad logσ=-1.39 V=+1.3 | fps=778
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.025m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=18.8
+batch= 225 | frames= 1843200/10000000 | loss=+0.324 (p=+0.001 v=0.316) | step_r=+0.0239 | ep_r= +65.57± 6.39 | grasp=  0% succ=  0% | grad=3.240 clip=0.15 | kl=0.0110 ep=4/4 | lr=4.1e-05 ent_c=0.013 | act=+0.098±0.282 off=0.0423rad logσ=-1.39 V=+0.5 | fps=778
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=19.7
+batch= 226 | frames= 1851392/10000000 | loss=+0.425 (p=-0.001 v=0.419) | step_r=+0.0431 | ep_r= +67.45± 5.64 | grasp=  0% succ=  0% | grad=3.372 clip=0.16 | kl=0.0108 ep=4/4 | lr=4.1e-05 ent_c=0.013 | act=+0.099±0.283 off=0.0425rad logσ=-1.39 V=+1.3 | fps=778
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=19.4
+batch= 227 | frames= 1859584/10000000 | loss=+0.237 (p=-0.007 v=0.237) | step_r=+0.0183 | ep_r= +67.76± 5.57 | grasp=  0% succ=  0% | grad=3.063 clip=0.16 | kl=0.0115 ep=4/4 | lr=4.1e-05 ent_c=0.013 | act=+0.087±0.276 off=0.0414rad logσ=-1.39 V=-0.0 | fps=778
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=19.0
+batch= 228 | frames= 1867776/10000000 | loss=+0.683 (p=-0.006 v=0.681) | step_r=+0.0440 | ep_r= +67.54± 6.48 | grasp=  0% succ=  0% | grad=3.703 clip=0.14 | kl=0.0137 ep=4/4 | lr=4.1e-05 ent_c=0.013 | act=+0.092±0.289 off=0.0433rad logσ=-1.39 V=+1.2 | fps=778
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.033m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=19.8
+batch= 229 | frames= 1875968/10000000 | loss=+0.465 (p=+0.005 v=0.454) | step_r=+0.0336 | ep_r= +67.75± 6.37 | grasp=  0% succ=  0% | grad=3.469 clip=0.12 | kl=0.0090 ep=4/4 | lr=4.1e-05 ent_c=0.013 | act=+0.091±0.281 off=0.0422rad logσ=-1.39 V=+0.6 | fps=778
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=19.5
+batch= 230 | frames= 1884160/10000000 | loss=+0.318 (p=-0.001 v=0.312) | step_r=+0.0369 | ep_r= +66.81± 6.07 | grasp=  0% succ=  0% | grad=3.374 clip=0.14 | kl=0.0097 ep=4/4 | lr=4.1e-05 ent_c=0.013 | act=+0.102±0.284 off=0.0427rad logσ=-1.39 V=+1.3 | fps=778
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=19.6
+batch= 231 | frames= 1892352/10000000 | loss=+0.307 (p=-0.000 v=0.299) | step_r=+0.0271 | ep_r= +66.92± 5.63 | grasp=  0% succ=  0% | grad=3.452 clip=0.14 | kl=0.0113 ep=4/4 | lr=4.1e-05 ent_c=0.013 | act=+0.096±0.286 off=0.0429rad logσ=-1.39 V=+0.5 | fps=778
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=19.3
+batch= 232 | frames= 1900544/10000000 | loss=+0.562 (p=-0.007 v=0.561) | step_r=+0.0451 | ep_r= +68.37± 5.00 | grasp=  0% succ=  0% | grad=3.734 clip=0.16 | kl=0.0106 ep=4/4 | lr=4.0e-05 ent_c=0.013 | act=+0.098±0.285 off=0.0428rad logσ=-1.39 V=+1.3 | fps=778
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=19.2
+batch= 233 | frames= 1908736/10000000 | loss=+0.312 (p=+0.002 v=0.303) | step_r=+0.0212 | ep_r= +67.62± 4.74 | grasp=  0% succ=  0% | grad=3.276 clip=0.16 | kl=0.0134 ep=4/4 | lr=4.0e-05 ent_c=0.013 | act=+0.088±0.278 off=0.0416rad logσ=-1.39 V=+0.2 | fps=778
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=19.7
+batch= 234 | frames= 1916928/10000000 | loss=+0.588 (p=-0.001 v=0.582) | step_r=+0.0454 | ep_r= +68.06± 6.85 | grasp=  0% succ=  0% | grad=3.585 clip=0.17 | kl=0.0126 ep=4/4 | lr=4.0e-05 ent_c=0.013 | act=+0.084±0.281 off=0.0422rad logσ=-1.39 V=+1.1 | fps=778
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=19.4
+batch= 235 | frames= 1925120/10000000 | loss=+0.420 (p=+0.004 v=0.409) | step_r=+0.0238 | ep_r= +68.68± 7.09 | grasp=  0% succ=  0% | grad=3.209 clip=0.14 | kl=0.0101 ep=4/4 | lr=4.0e-05 ent_c=0.013 | act=+0.089±0.281 off=0.0421rad logσ=-1.39 V=+0.3 | fps=778
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.026m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=19.3
+
+================================================================================
+Training run started: 2026-04-19T04:57:11
+================================================================================
+Log file: results/m2/train_log_rl_only.txt
+TensorBoard log dir: results/m2/tb_logs_rl_only
+Model checkpoint dir: results/m2/models_rl_only
+Train curriculum: True (xy_range sampled in [0, 0.08])
+Using MultiSyncDataCollector with 8 workers
+Starting PPO training: mode=rl_only, total_timesteps=10000000
+Frames per batch: 8192
+Mini-batch size: 256
+Epochs per batch: 4
+LR schedule: linear, target KL: 0.05 (warmup: 100000 frames)
+Entropy schedule: 0.015 -> 0.005 (linear)
+Early stop: patience=15, min_peak=0.5, drop=0.25
+Best model tracking: True
+Waiting for first batch from collector workers (this may take 30-120s on first run)...
+First batch received after 9.0s
+batch=   1 | frames=    8192/10000000 | loss=+2.511 (p=-0.012 v=2.508) | step_r=-0.0153 | ep_r=   +nan± 0.00 | grasp=  0% succ=  0% | grad=3.535 clip=0.24 | kl=0.0162 ep=4/4 | lr=5.0e-05 ent_c=0.015 | act=-0.031±0.241 off=0.0362rad logσ=-1.50 V=-0.0 | fps=788
+batch=   2 | frames=   16384/10000000 | loss=+0.890 (p=-0.017 v=0.891) | step_r=+0.0064 | ep_r=   +nan± 0.00 | grasp=  0% succ=  0% | grad=3.578 clip=0.23 | kl=0.0156 ep=4/4 | lr=5.0e-05 ent_c=0.015 | act=-0.027±0.239 off=0.0358rad logσ=-1.50 V=+0.0 | fps=791
+batch=   3 | frames=   24576/10000000 | loss=+0.435 (p=-0.014 v=0.434) | step_r=-0.0063 | ep_r=   +nan± 0.00 | grasp=  0% succ=  0% | grad=3.254 clip=0.23 | kl=0.0166 ep=4/4 | lr=5.0e-05 ent_c=0.015 | act=-0.014±0.237 off=0.0355rad logσ=-1.50 V=-0.2 | fps=786
+batch=   4 | frames=   32768/10000000 | loss=+4.175 (p=-0.016 v=4.176) | step_r=+0.0071 | ep_r=  +1.23±38.87 | grasp=  0% succ=  0% | grad=3.708 clip=0.18 | kl=0.0128 ep=4/4 | lr=5.0e-05 ent_c=0.015 | act=-0.025±0.238 off=0.0357rad logσ=-1.50 V=-0.4 | fps=786 *BEST #1*
+         diag | ep=  8 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/8/0 | forced_wp=37.8
+batch=   5 | frames=   40960/10000000 | loss=+2.724 (p=-0.004 v=2.713) | step_r=+0.0309 | ep_r=  +1.23±38.87 | grasp=  0% succ=  0% | grad=3.699 clip=0.20 | kl=0.0127 ep=4/4 | lr=5.0e-05 ent_c=0.015 | act=-0.025±0.236 off=0.0355rad logσ=-1.50 V=+0.9 | fps=784
+batch=   6 | frames=   49152/10000000 | loss=+2.387 (p=+0.002 v=2.372) | step_r=-0.0087 | ep_r= +14.21±43.39 | grasp=  0% succ=  0% | grad=3.416 clip=0.21 | kl=0.0180 ep=4/4 | lr=5.0e-05 ent_c=0.015 | act=-0.020±0.231 off=0.0346rad logσ=-1.50 V=+0.3 | fps=786 *BEST #2*
+         diag | ep=  2 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/2/0 | forced_wp=19.0
+batch=   7 | frames=   57344/10000000 | loss=+2.009 (p=-0.013 v=2.008) | step_r=+0.0141 | ep_r= +17.96±43.04 | grasp=  0% succ=  0% | grad=3.729 clip=0.23 | kl=0.0175 ep=4/4 | lr=5.0e-05 ent_c=0.015 | act=-0.016±0.232 off=0.0348rad logσ=-1.49 V=-0.5 | fps=788 *BEST #3*
+         diag | ep=  1 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/1/0 | forced_wp=29.0
+batch=   8 | frames=   65536/10000000 | loss=+2.092 (p=-0.010 v=2.088) | step_r=+0.0282 | ep_r= +20.03±38.79 | grasp=  0% succ=  0% | grad=3.601 clip=0.24 | kl=0.0146 ep=4/4 | lr=5.0e-05 ent_c=0.015 | act=-0.022±0.231 off=0.0346rad logσ=-1.49 V=+0.1 | fps=788 *BEST #4*
+         diag | ep=  6 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/6/0 | forced_wp=35.8
+batch=   9 | frames=   73728/10000000 | loss=+0.922 (p=-0.009 v=0.916) | step_r=+0.0066 | ep_r= +21.30±38.05 | grasp=  0% succ=  0% | grad=3.264 clip=0.22 | kl=0.0136 ep=4/4 | lr=5.0e-05 ent_c=0.015 | act=-0.025±0.231 off=0.0346rad logσ=-1.49 V=+1.8 | fps=789 *BEST #5*
+         diag | ep=  1 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.035m | max_ph(pre/gd/lift)=0/1/0 | forced_wp=33.0
+batch=  10 | frames=   81920/10000000 | loss=+1.138 (p=-0.004 v=1.128) | step_r=+0.0078 | ep_r= +24.48±37.35 | grasp=  0% succ=  0% | grad=3.280 clip=0.22 | kl=0.0167 ep=4/4 | lr=5.0e-05 ent_c=0.015 | act=-0.023±0.234 off=0.0351rad logσ=-1.49 V=+1.8 | fps=785 *BEST #6*
+         diag | ep=  2 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.027m | max_ph(pre/gd/lift)=0/2/0 | forced_wp=26.0
+batch=  11 | frames=   90112/10000000 | loss=+0.783 (p=-0.010 v=0.779) | step_r=+0.0079 | ep_r= +24.48±37.35 | grasp=  0% succ=  0% | grad=3.306 clip=0.19 | kl=0.0114 ep=4/4 | lr=5.0e-05 ent_c=0.015 | act=-0.019±0.233 off=0.0349rad logσ=-1.49 V=+2.3 | fps=785 *BEST #7*
+batch=  12 | frames=   98304/10000000 | loss=+1.679 (p=-0.005 v=1.670) | step_r=+0.0294 | ep_r= +34.98±26.83 | grasp=  0% succ=  0% | grad=3.494 clip=0.19 | kl=0.0113 ep=4/4 | lr=5.0e-05 ent_c=0.015 | act=-0.018±0.235 off=0.0352rad logσ=-1.49 V=+1.7 | fps=784 *BEST #8*
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=38.4
+batch=  13 | frames=  106496/10000000 | loss=+0.946 (p=+0.001 v=0.932) | step_r=+0.0064 | ep_r= +35.92±25.15 | grasp=  0% succ=  0% | grad=3.535 clip=0.18 | kl=0.0117 ep=4/4 | lr=4.9e-05 ent_c=0.015 | act=-0.021±0.236 off=0.0353rad logσ=-1.49 V=+1.5 | fps=785 *BEST #9*
+         diag | ep=  1 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/1/0 | forced_wp=39.0
+batch=  14 | frames=  114688/10000000 | loss=+1.057 (p=-0.014 v=1.057) | step_r=+0.0112 | ep_r= +33.70±23.99 | grasp=  0% succ=  0% | grad=3.248 clip=0.20 | kl=0.0119 ep=4/4 | lr=4.9e-05 ent_c=0.015 | act=-0.021±0.236 off=0.0354rad logσ=-1.49 V=+1.3 | fps=786 *BEST #10*
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=32.0
+batch=  15 | frames=  122880/10000000 | loss=+1.481 (p=-0.009 v=1.476) | step_r=+0.0207 | ep_r= +36.06±23.44 | grasp=  0% succ=  0% | grad=3.399 clip=0.17 | kl=0.0084 ep=4/4 | lr=4.9e-05 ent_c=0.015 | act=-0.026±0.233 off=0.0350rad logσ=-1.49 V=+0.7 | fps=785 *BEST #11*
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.032m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=28.7
+batch=  16 | frames=  131072/10000000 | loss=+1.348 (p=-0.014 v=1.350) | step_r=+0.0225 | ep_r= +40.30±19.83 | grasp=  0% succ=  0% | grad=3.535 clip=0.19 | kl=0.0137 ep=4/4 | lr=4.9e-05 ent_c=0.015 | act=-0.026±0.231 off=0.0347rad logσ=-1.49 V=+0.9 | fps=785 *BEST #12*
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=35.0
+batch=  17 | frames=  139264/10000000 | loss=+1.793 (p=+0.007 v=1.771) | step_r=-0.0036 | ep_r= +42.51±20.94 | grasp=  0% succ=  0% | grad=3.964 clip=0.17 | kl=0.0150 ep=4/4 | lr=4.9e-05 ent_c=0.015 | act=-0.032±0.237 off=0.0356rad logσ=-1.49 V=+0.3 | fps=785 *BEST #13*
+         diag | ep=  1 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/1/0 | forced_wp=19.0
+batch=  18 | frames=  147456/10000000 | loss=+1.543 (p=-0.019 v=1.548) | step_r=+0.0092 | ep_r= +37.25±23.37 | grasp=  0% succ=  0% | grad=3.517 clip=0.19 | kl=0.0137 ep=4/4 | lr=4.9e-05 ent_c=0.015 | act=-0.029±0.241 off=0.0361rad logσ=-1.49 V=+1.4 | fps=785 *BEST #14*
+         diag | ep=  2 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/2/0 | forced_wp=38.5
+batch=  19 | frames=  155648/10000000 | loss=+0.876 (p=-0.004 v=0.867) | step_r=+0.0218 | ep_r= +35.94±23.20 | grasp=  0% succ=  0% | grad=3.260 clip=0.19 | kl=0.0119 ep=4/4 | lr=4.9e-05 ent_c=0.015 | act=-0.026±0.238 off=0.0357rad logσ=-1.49 V=+1.8 | fps=786 *BEST #15*
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=38.5
+batch=  20 | frames=  163840/10000000 | loss=+0.698 (p=-0.002 v=0.686) | step_r=+0.0086 | ep_r= +38.30±22.52 | grasp=  0% succ=  0% | grad=3.388 clip=0.20 | kl=0.0141 ep=4/4 | lr=4.9e-05 ent_c=0.015 | act=-0.017±0.241 off=0.0362rad logσ=-1.49 V=+1.5 | fps=785 *BEST #16*
+         diag | ep=  2 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/2/0 | forced_wp=32.0
+batch=  21 | frames=  172032/10000000 | loss=+0.732 (p=-0.009 v=0.727) | step_r=+0.0042 | ep_r= +40.59±20.44 | grasp=  0% succ=  0% | grad=3.046 clip=0.18 | kl=0.0145 ep=4/4 | lr=4.9e-05 ent_c=0.015 | act=-0.009±0.241 off=0.0361rad logσ=-1.49 V=+1.0 | fps=786 *BEST #17*
+         diag | ep=  2 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/2/0 | forced_wp=38.5
+batch=  22 | frames=  180224/10000000 | loss=+1.073 (p=-0.004 v=1.063) | step_r=-0.0052 | ep_r= +41.04±20.36 | grasp=  0% succ=  0% | grad=3.696 clip=0.18 | kl=0.0125 ep=4/4 | lr=4.9e-05 ent_c=0.015 | act=-0.017±0.244 off=0.0366rad logσ=-1.49 V=+1.8 | fps=786 *BEST #18*
+         diag | ep=  1 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/1/0 | forced_wp=38.0
+batch=  23 | frames=  188416/10000000 | loss=+1.215 (p=-0.008 v=1.209) | step_r=+0.0171 | ep_r= +40.17±19.62 | grasp=  0% succ=  0% | grad=3.291 clip=0.18 | kl=0.0137 ep=4/4 | lr=4.9e-05 ent_c=0.015 | act=-0.019±0.243 off=0.0364rad logσ=-1.48 V=+2.1 | fps=786 *BEST #19*
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.025m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=39.3
+batch=  24 | frames=  196608/10000000 | loss=+0.737 (p=-0.010 v=0.733) | step_r=+0.0156 | ep_r= +37.74±18.51 | grasp=  0% succ=  0% | grad=3.264 clip=0.19 | kl=0.0137 ep=4/4 | lr=4.9e-05 ent_c=0.015 | act=-0.014±0.246 off=0.0370rad logσ=-1.48 V=+1.6 | fps=786 *BEST #20*
+         diag | ep=  2 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/2/0 | forced_wp=38.5
+batch=  25 | frames=  204800/10000000 | loss=+1.012 (p=-0.006 v=1.005) | step_r=+0.0189 | ep_r= +32.80±27.06 | grasp=  0% succ=  0% | grad=3.102 clip=0.21 | kl=0.0147 ep=4/4 | lr=4.9e-05 ent_c=0.015 | act=-0.004±0.242 off=0.0364rad logσ=-1.48 V=+1.3 | fps=786
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.032m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=29.2
+batch=  26 | frames=  212992/10000000 | loss=+2.205 (p=-0.009 v=2.201) | step_r=-0.0032 | ep_r= +40.21±27.09 | grasp=  0% succ=  0% | grad=4.025 clip=0.17 | kl=0.0136 ep=4/4 | lr=4.9e-05 ent_c=0.015 | act=-0.008±0.247 off=0.0371rad logσ=-1.48 V=+2.1 | fps=787
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=24.0
+batch=  27 | frames=  221184/10000000 | loss=+0.475 (p=-0.008 v=0.469) | step_r=+0.0010 | ep_r= +40.09±27.05 | grasp=  0% succ=  0% | grad=3.556 clip=0.23 | kl=0.0140 ep=4/4 | lr=4.9e-05 ent_c=0.015 | act=-0.002±0.252 off=0.0379rad logσ=-1.48 V=+1.6 | fps=786
+         diag | ep=  1 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/1/0 | forced_wp=39.0
+batch=  28 | frames=  229376/10000000 | loss=+0.427 (p=-0.002 v=0.416) | step_r=+0.0021 | ep_r= +44.05±27.58 | grasp=  0% succ=  0% | grad=3.453 clip=0.22 | kl=0.0141 ep=4/4 | lr=4.9e-05 ent_c=0.015 | act=-0.003±0.252 off=0.0379rad logσ=-1.48 V=+1.0 | fps=786 *BEST #21*
+         diag | ep=  2 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/2/0 | forced_wp=19.0
+batch=  29 | frames=  237568/10000000 | loss=+3.268 (p=-0.020 v=3.274) | step_r=+0.0343 | ep_r= +28.87±51.15 | grasp=  0% succ=  0% | grad=4.165 clip=0.19 | kl=0.0117 ep=4/4 | lr=4.9e-05 ent_c=0.015 | act=-0.006±0.251 off=0.0376rad logσ=-1.48 V=+2.7 | fps=786
+         diag | ep=  6 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/6/0 | forced_wp=36.2
+batch=  30 | frames=  245760/10000000 | loss=+0.772 (p=-0.001 v=0.760) | step_r=-0.0074 | ep_r= +28.87±51.15 | grasp=  0% succ=  0% | grad=3.584 clip=0.18 | kl=0.0102 ep=4/4 | lr=4.9e-05 ent_c=0.015 | act=+0.004±0.245 off=0.0368rad logσ=-1.48 V=+1.0 | fps=786
+batch=  31 | frames=  253952/10000000 | loss=+1.136 (p=-0.008 v=1.131) | step_r=+0.0284 | ep_r= +34.42±53.43 | grasp=  0% succ=  0% | grad=3.412 clip=0.18 | kl=0.0093 ep=4/4 | lr=4.9e-05 ent_c=0.015 | act=-0.001±0.244 off=0.0366rad logσ=-1.48 V=+1.7 | fps=785
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.032m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=24.0
+batch=  32 | frames=  262144/10000000 | loss=+1.043 (p=-0.003 v=1.034) | step_r=+0.0132 | ep_r= +36.86±49.85 | grasp=  0% succ=  0% | grad=3.350 clip=0.19 | kl=0.0116 ep=4/4 | lr=4.9e-05 ent_c=0.015 | act=-0.005±0.240 off=0.0360rad logσ=-1.48 V=+0.4 | fps=785
+         diag | ep=  2 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/2/0 | forced_wp=35.5
+batch=  33 | frames=  270336/10000000 | loss=+1.102 (p=-0.013 v=1.102) | step_r=+0.0185 | ep_r= +30.37±60.00 | grasp=  0% succ=  0% | grad=3.313 clip=0.21 | kl=0.0147 ep=4/4 | lr=4.9e-05 ent_c=0.015 | act=-0.010±0.238 off=0.0357rad logσ=-1.48 V=+0.7 | fps=784
+         diag | ep=  2 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.028m | max_ph(pre/gd/lift)=0/2/0 | forced_wp=28.5
+batch=  34 | frames=  278528/10000000 | loss=+1.097 (p=-0.010 v=1.095) | step_r=+0.0194 | ep_r= +29.52±60.15 | grasp=  0% succ=  0% | grad=3.136 clip=0.20 | kl=0.0142 ep=4/4 | lr=4.9e-05 ent_c=0.015 | act=-0.003±0.240 off=0.0360rad logσ=-1.48 V=+1.0 | fps=784
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.023m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=29.2
+batch=  35 | frames=  286720/10000000 | loss=+3.083 (p=+0.001 v=3.069) | step_r=-0.0139 | ep_r= +32.84±58.01 | grasp=  0% succ=  0% | grad=5.111 clip=0.15 | kl=0.0146 ep=4/4 | lr=4.9e-05 ent_c=0.015 | act=+0.001±0.256 off=0.0384rad logσ=-1.48 V=+2.0 | fps=784
+         diag | ep=  2 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/2/0 | forced_wp=39.0
+batch=  36 | frames=  294912/10000000 | loss=+0.589 (p=-0.010 v=0.586) | step_r=+0.0041 | ep_r= +36.85±55.92 | grasp=  0% succ=  0% | grad=3.584 clip=0.17 | kl=0.0119 ep=4/4 | lr=4.9e-05 ent_c=0.015 | act=+0.022±0.257 off=0.0386rad logσ=-1.48 V=+2.1 | fps=784
+         diag | ep=  2 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.029m | max_ph(pre/gd/lift)=0/2/0 | forced_wp=28.5
+batch=  37 | frames=  303104/10000000 | loss=+0.608 (p=-0.008 v=0.603) | step_r=+0.0090 | ep_r= +45.62±41.27 | grasp=  0% succ=  0% | grad=3.311 clip=0.17 | kl=0.0116 ep=4/4 | lr=4.8e-05 ent_c=0.015 | act=+0.025±0.258 off=0.0387rad logσ=-1.47 V=+1.5 | fps=783
+         diag | ep=  2 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/2/0 | forced_wp=29.0
+batch=  38 | frames=  311296/10000000 | loss=+0.930 (p=-0.016 v=0.933) | step_r=+0.0310 | ep_r= +24.06±63.83 | grasp=  0% succ=  0% | grad=3.437 clip=0.18 | kl=0.0128 ep=4/4 | lr=4.8e-05 ent_c=0.015 | act=+0.023±0.251 off=0.0377rad logσ=-1.47 V=+1.5 | fps=783
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=34.6
+batch=  39 | frames=  319488/10000000 | loss=+0.900 (p=-0.007 v=0.895) | step_r=+0.0152 | ep_r= +24.68±64.26 | grasp=  0% succ=  0% | grad=3.403 clip=0.18 | kl=0.0153 ep=4/4 | lr=4.8e-05 ent_c=0.015 | act=+0.006±0.240 off=0.0360rad logσ=-1.47 V=+0.1 | fps=783
+         diag | ep=  1 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.028m | max_ph(pre/gd/lift)=0/1/0 | forced_wp=19.0
+batch=  40 | frames=  327680/10000000 | loss=+0.686 (p=-0.005 v=0.679) | step_r=+0.0086 | ep_r= +26.91±64.98 | grasp=  0% succ=  0% | grad=3.388 clip=0.21 | kl=0.0181 ep=4/4 | lr=4.8e-05 ent_c=0.015 | act=+0.009±0.238 off=0.0357rad logσ=-1.47 V=+0.2 | fps=783
+         diag | ep=  2 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/2/0 | forced_wp=28.5
+batch=  41 | frames=  335872/10000000 | loss=+0.912 (p=-0.007 v=0.907) | step_r=+0.0065 | ep_r= +35.45±55.49 | grasp=  0% succ=  0% | grad=3.316 clip=0.18 | kl=0.0135 ep=4/4 | lr=4.8e-05 ent_c=0.015 | act=+0.006±0.238 off=0.0358rad logσ=-1.47 V=+0.1 | fps=783
+         diag | ep=  1 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/1/0 | forced_wp=39.0
+batch=  42 | frames=  344064/10000000 | loss=+2.394 (p=-0.002 v=2.384) | step_r=+0.0436 | ep_r= +35.17±55.18 | grasp=  0% succ=  0% | grad=4.159 clip=0.21 | kl=0.0158 ep=4/4 | lr=4.8e-05 ent_c=0.015 | act=+0.009±0.241 off=0.0361rad logσ=-1.47 V=+1.6 | fps=783
+         diag | ep=  5 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.026m | max_ph(pre/gd/lift)=0/5/0 | forced_wp=35.2
+batch=  43 | frames=  352256/10000000 | loss=+0.534 (p=-0.012 v=0.535) | step_r=-0.0020 | ep_r= +35.39±55.26 | grasp=  0% succ=  0% | grad=3.093 clip=0.21 | kl=0.0157 ep=4/4 | lr=4.8e-05 ent_c=0.015 | act=+0.002±0.237 off=0.0356rad logσ=-1.47 V=-0.2 | fps=783
+         diag | ep=  1 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/1/0 | forced_wp=38.0
+batch=  44 | frames=  360448/10000000 | loss=+0.504 (p=-0.006 v=0.498) | step_r=-0.0001 | ep_r= +35.48±55.28 | grasp=  0% succ=  0% | grad=3.088 clip=0.17 | kl=0.0138 ep=4/4 | lr=4.8e-05 ent_c=0.015 | act=+0.008±0.238 off=0.0358rad logσ=-1.47 V=-0.2 | fps=782
+         diag | ep=  1 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/1/0 | forced_wp=39.0
+batch=  45 | frames=  368640/10000000 | loss=+0.652 (p=-0.005 v=0.646) | step_r=+0.0038 | ep_r= +35.33±55.21 | grasp=  0% succ=  0% | grad=3.118 clip=0.20 | kl=0.0142 ep=4/4 | lr=4.8e-05 ent_c=0.015 | act=+0.008±0.240 off=0.0360rad logσ=-1.47 V=+0.0 | fps=782
+         diag | ep=  1 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/1/0 | forced_wp=39.0
+batch=  46 | frames=  376832/10000000 | loss=+1.564 (p=+0.001 v=1.551) | step_r=+0.0458 | ep_r= +41.05±41.60 | grasp=  0% succ=  0% | grad=3.681 clip=0.16 | kl=0.0118 ep=4/4 | lr=4.8e-05 ent_c=0.015 | act=+0.004±0.237 off=0.0355rad logσ=-1.47 V=+2.2 | fps=782
+         diag | ep=  6 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/6/0 | forced_wp=38.7
+batch=  47 | frames=  385024/10000000 | loss=+0.448 (p=-0.002 v=0.438) | step_r=+0.0060 | ep_r= +44.23±40.55 | grasp=  0% succ=  0% | grad=3.332 clip=0.18 | kl=0.0122 ep=4/4 | lr=4.8e-05 ent_c=0.015 | act=+0.005±0.237 off=0.0355rad logσ=-1.47 V=+0.9 | fps=782
+         diag | ep=  1 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/1/0 | forced_wp=19.0
+batch=  48 | frames=  393216/10000000 | loss=+0.787 (p=-0.007 v=0.783) | step_r=+0.0145 | ep_r= +52.07±12.63 | grasp=  0% succ=  0% | grad=3.115 clip=0.18 | kl=0.0175 ep=4/4 | lr=4.8e-05 ent_c=0.015 | act=+0.012±0.240 off=0.0359rad logσ=-1.47 V=+1.2 | fps=782
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=26.0
+batch=  49 | frames=  401408/10000000 | loss=+0.761 (p=+0.002 v=0.748) | step_r=+0.0121 | ep_r= +50.15±11.00 | grasp=  0% succ=  0% | grad=3.520 clip=0.19 | kl=0.0132 ep=4/4 | lr=4.8e-05 ent_c=0.015 | act=+0.001±0.238 off=0.0358rad logσ=-1.47 V=+0.6 | fps=781 *BEST #22*
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=38.7
+batch=  50 | frames=  409600/10000000 | loss=+0.723 (p=+0.001 v=0.710) | step_r=+0.0224 | ep_r= +50.18±12.68 | grasp=  0% succ=  0% | grad=3.402 clip=0.20 | kl=0.0133 ep=4/4 | lr=4.8e-05 ent_c=0.015 | act=+0.008±0.241 off=0.0362rad logσ=-1.47 V=+1.3 | fps=781 *BEST #23*
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=32.7
+batch=  51 | frames=  417792/10000000 | loss=+0.539 (p=-0.008 v=0.535) | step_r=-0.0033 | ep_r= +50.18±12.68 | grasp=  0% succ=  0% | grad=3.640 clip=0.19 | kl=0.0139 ep=4/4 | lr=4.8e-05 ent_c=0.015 | act=+0.008±0.242 off=0.0363rad logσ=-1.47 V=+0.8 | fps=781 *BEST #24*
+batch=  52 | frames=  425984/10000000 | loss=+1.224 (p=-0.010 v=1.223) | step_r=+0.0329 | ep_r= +49.51±14.53 | grasp=  0% succ=  0% | grad=3.705 clip=0.19 | kl=0.0121 ep=4/4 | lr=4.8e-05 ent_c=0.015 | act=+0.011±0.243 off=0.0365rad logσ=-1.46 V=+1.5 | fps=781 *BEST #25*
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=30.5
+batch=  53 | frames=  434176/10000000 | loss=+0.803 (p=-0.006 v=0.799) | step_r=+0.0205 | ep_r= +48.06±15.26 | grasp=  0% succ=  0% | grad=3.775 clip=0.17 | kl=0.0097 ep=4/4 | lr=4.8e-05 ent_c=0.015 | act=+0.010±0.240 off=0.0360rad logσ=-1.46 V=+1.0 | fps=781 *BEST #26*
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=39.0
+batch=  54 | frames=  442368/10000000 | loss=+0.469 (p=+0.001 v=0.457) | step_r=+0.0100 | ep_r= +48.79±15.45 | grasp=  0% succ=  0% | grad=3.556 clip=0.18 | kl=0.0125 ep=4/4 | lr=4.8e-05 ent_c=0.015 | act=+0.019±0.245 off=0.0368rad logσ=-1.46 V=+1.3 | fps=781 *BEST #27*
+         diag | ep=  2 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/2/0 | forced_wp=29.0
+batch=  55 | frames=  450560/10000000 | loss=+0.761 (p=+0.001 v=0.749) | step_r=+0.0221 | ep_r= +50.66±17.27 | grasp=  0% succ=  0% | grad=3.669 clip=0.16 | kl=0.0127 ep=4/4 | lr=4.8e-05 ent_c=0.015 | act=+0.019±0.243 off=0.0365rad logσ=-1.46 V=+1.9 | fps=781 *BEST #28*
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=25.7
+batch=  56 | frames=  458752/10000000 | loss=+0.963 (p=+0.001 v=0.951) | step_r=+0.0182 | ep_r= +48.76±16.58 | grasp=  0% succ=  0% | grad=3.969 clip=0.20 | kl=0.0140 ep=4/4 | lr=4.8e-05 ent_c=0.015 | act=+0.025±0.242 off=0.0362rad logσ=-1.46 V=+1.1 | fps=781 *BEST #29*
+         diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=36.3
+batch=  57 | frames=  466944/10000000 | loss=+0.848 (p=-0.011 v=0.848) | step_r=+0.0154 | ep_r= +51.13±18.05 | grasp=  0% succ=  0% | grad=3.721 clip=0.19 | kl=0.0133 ep=4/4 | lr=4.8e-05 ent_c=0.015 | act=+0.030±0.244 off=0.0366rad logσ=-1.46 V=+1.0 | fps=781 *BEST #30*
+         diag | ep=  2 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/2/0 | forced_wp=29.5
+batch=  58 | frames=  475136/10000000 | loss=+0.965 (p=-0.006 v=0.959) | step_r=+0.0322 | ep_r= +53.21±17.22 | grasp=  0% succ=  0% | grad=3.853 clip=0.16 | kl=0.0102 ep=4/4 | lr=4.8e-05 ent_c=0.015 | act=+0.033±0.249 off=0.0374rad logσ=-1.46 V=+1.8 | fps=781 *BEST #31*
+         diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.026m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=26.2
+batch=  59 | frames=  483328/10000000 | loss=+0.577 (p=-0.005 v=0.570) | step_r=+0.0145 | ep_r= +54.80±16.69 | grasp=  0% succ=  0% | grad=3.531 clip=0.19 | kl=0.0095 ep=4/4 | lr=4.8e-05 ent_c=0.015 | act=+0.030±0.245 off=0.0367rad logσ=-1.46 V=+1.3 | fps=779 *BEST #32*
+         diag | ep=  2 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/2/0 | forced_wp=29.0
