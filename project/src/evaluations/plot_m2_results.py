@@ -65,8 +65,11 @@ def plot_success_rate(results, save_dir):
                 lo = results[lk][method].get("success_ci_lo", sr / 100) * 100
                 hi = results[lk][method].get("success_ci_hi", sr / 100) * 100
                 success_rates.append(sr)
-                ci_errors_lo.append(sr - lo)
-                ci_errors_hi.append(hi - sr)
+                # Clip to non-negative: Wilson CI at p=1.0 gives upper<1.0
+                # (e.g. 0.983 at n=100), so hi-sr goes slightly negative and
+                # matplotlib's yerr rejects it. Same symmetry applies at p=0.
+                ci_errors_lo.append(max(0.0, sr - lo))
+                ci_errors_hi.append(max(0.0, hi - sr))
             else:
                 success_rates.append(0)
                 ci_errors_lo.append(0)
