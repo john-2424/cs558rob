@@ -188,6 +188,14 @@ GRASP_FACE_ORTHO_TOL = 0.018   # fingertip may be this far from face center (m)
 GRASP_DESCEND_WAYPOINT_TOL = 0.012
 GRASP_DESCEND_WAYPOINT_MAX_STEPS = 260
 
+# Cartesian end-of-descend settle: joint-space waypoint tolerance can converge
+# while the EE is still ~14mm Cartesian-high of the grasp target (deterministic
+# nominal-planner failure mode). Before closing the gripper, drive PD toward
+# the IK solution of the current grasp target until EE is within this
+# tolerance or the step budget expires.
+GRASP_DESCEND_CARTESIAN_TOL = 0.005
+GRASP_DESCEND_CARTESIAN_SETTLE_STEPS = 80
+
 # Finger links on Panda
 LEFT_FINGER_LINK_INDEX = 9
 RIGHT_FINGER_LINK_INDEX = 10

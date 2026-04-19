@@ -7114,3 +7114,4 @@
 [grasp_diag pid=92765 #6] L_local=(-0.0889,+0.0101,+0.0010) R_local=(-0.0889,+0.0101,+0.0010) axis=y plane_err=0.0149 ortho_err=0.0889 opposite=0 below_top=1 bracket_ok=0 prox=1 contacts(t/f)=0/0 ready=0
 [grasp_diag pid=92757 #7] L_local=(+0.1225,+0.1696,-0.1605) R_local=(+0.1225,+0.1696,-0.1605) axis=x plane_err=0.0975 ortho_err=0.1696 opposite=0 below_top=0 bracket_ok=0 prox=0 contacts(t/f)=0/0 ready=0
 [grasp_diag pid=92756 #7] L_local=(-0.0349,-0.0357,+0.0181) R_local=(-0.0349,-0.0357,+0.0181) axis=x plane_err=0.0099 ortho_err=0.0357 opposite=0 below_top=1 bracket_ok=0 prox=1 contacts(t/f)=0/0 ready=0
+[grasp_diag pid=20628 #1] L_local=(+0.0000,+0.0004,+0.0212) R_local=(+0.0000,+0.0004,+0.0212) axis=y plane_err=0.0246 ortho_err=0.0000 opposite=0 below_top=0 bracket_ok=0 prox=1 contacts(t/f)=7/7 ready=0

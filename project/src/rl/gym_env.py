@@ -466,8 +466,46 @@ class PandaGraspEnv(gymnasium.Env):
 
         return False
 
+    def _cartesian_settle(self, target_pos, open_gripper=True):
+        """Drive PD toward IK(target_pos, grasp_orn) until EE is within
+        GRASP_DESCEND_CARTESIAN_TOL of target_pos or budget expires."""
+        target_pos = np.asarray(target_pos, dtype=float)
+        q_settle = self._robot.solve_ik(target_pos, self._grasp_orn)
+        max_vel = np.asarray(config.PD_MAX_JOINT_VEL, dtype=float)
+        tol = config.GRASP_DESCEND_CARTESIAN_TOL
+        budget = config.GRASP_DESCEND_CARTESIAN_SETTLE_STEPS
+        for _ in range(budget):
+            ee_pos, _ = self._robot.get_ee_pose()
+            if float(np.linalg.norm(ee_pos - target_pos)) < tol:
+                break
+            q_now = self._robot.get_joint_positions()
+            qd_now = self._robot.get_joint_velocities()
+            qd_cmd = self._robot.pd_controller.compute_velocity_command(
+                q_des=q_settle, q=q_now, qd_des=np.zeros(7), qd=qd_now,
+            )
+            qd_cmd = np.clip(qd_cmd, -max_vel, max_vel)
+            p.setJointMotorControlArray(
+                bodyUniqueId=self._robot.robot_id,
+                jointIndices=self._robot.arm_joint_indices,
+                controlMode=p.VELOCITY_CONTROL,
+                targetVelocities=qd_cmd.tolist(),
+                forces=self._robot.arm_max_forces,
+            )
+            if open_gripper:
+                self._robot.command_gripper(config.GRIPPER_OPEN_WIDTH)
+            for _ in range(config.RL_SIM_SUBSTEPS):
+                p.stepSimulation()
+
     def _auto_grasp_and_attach(self):
         self._grasp_attempted = True
+
+        # Fix A: Cartesian settle before closing. Joint-space waypoint
+        # tolerance can converge while EE is Cartesian-high of the grasp
+        # target (~14mm in planner-nominal). Drive PD toward the target
+        # until Cartesian distance is within tolerance. Skipped in rl_only.
+        if (self.mode != "rl_only"
+                and self._grasp_target_cartesian is not None):
+            self._cartesian_settle(self._grasp_target_cartesian, open_gripper=True)
 
         # Close gripper (inline sim steps not counted toward _step_count)
         for _ in range(config.GRIPPER_SETTLE_STEPS):
@@ -532,7 +570,21 @@ class PandaGraspEnv(gymnasium.Env):
         # (verify_and_attach_with_retry in pick_place.py). Does not affect
         # training because enable_grasp_retry defaults False.
         if self.enable_grasp_retry and self._grasp_target_cartesian is not None:
-            retry_pos = np.array(self._grasp_target_cartesian, dtype=float)
+            # Fix C: re-center on the cube's CURRENT pose, not the cached
+            # target. If the first attempt kicked the cube laterally, the
+            # stale target aims at empty space.
+            current_cube_pos, _ = get_body_pose(self._objects.cube_id)
+            _, current_cube_aabb_max = p.getAABB(self._objects.cube_id)
+            current_cube_top_z = current_cube_aabb_max[2]
+            grasp_bias = np.array([
+                config.GRASP_TARGET_BIAS_X,
+                config.GRASP_TARGET_BIAS_Y,
+                config.GRASP_TARGET_BIAS_Z,
+            ], dtype=float)
+            retry_pos = np.array([
+                current_cube_pos[0], current_cube_pos[1],
+                current_cube_top_z + config.PICK_DESCEND_Z_OFFSET,
+            ], dtype=float) + grasp_bias
             retry_pos[2] -= config.GRASP_DESCEND_RETRY_DELTA_Z
             q_retry = self._robot.solve_ik(retry_pos, self._grasp_orn)
 
