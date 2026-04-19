@@ -773,17 +773,6 @@ class PandaRobotDemo:
         total_contact_ok = total_contacts >= config.GRASP_MIN_TOTAL_CONTACTS
         finger_contact_ok = finger_contacts >= config.GRASP_MIN_FINGER_CONTACTS
 
-        if config.GRASP_REQUIRE_CONTACT:
-            if config.GRASP_USE_FINGER_DISTANCE:
-                ready_lenient = finger_dist_ok and total_contact_ok and finger_contact_ok
-            else:
-                ready_lenient = dist_ok and total_contact_ok and finger_contact_ok
-        else:
-            if config.GRASP_USE_FINGER_DISTANCE:
-                ready_lenient = finger_dist_ok
-            else:
-                ready_lenient = dist_ok
-
         left_pos, right_pos = self.get_finger_tip_positions()
 
         # Fingertips must sit below the cube top (rejects top-face pinches).
@@ -813,7 +802,14 @@ class PandaRobotDemo:
         bracket_score = max(0.0, 1.0 - 2.0 * abs(bracket_t - 0.5))
         worst_tip_above_top = max(left_pos[2], right_pos[2]) - cube_top_z
 
-        ready = ready_lenient and below_top and bracket_ok
+        # Lenient readiness = geometry + proximity, NO contact requirement.
+        # Contact physics are flaky (depend on exact closure timing); rewarding
+        # the geometry the policy can actually control gives a cleaner signal.
+        prox_ok = finger_dist_ok if config.GRASP_USE_FINGER_DISTANCE else dist_ok
+        ready_lenient = prox_ok and below_top and bracket_ok
+
+        # Strict readiness = lenient geometry + physics contacts (for attach).
+        ready = ready_lenient and total_contact_ok and finger_contact_ok
 
         debug = {
             "ee_to_cube_dist": ee_to_cube_dist,

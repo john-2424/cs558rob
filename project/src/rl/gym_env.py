@@ -107,7 +107,10 @@ class PandaGraspEnv(gymnasium.Env):
         self._prev_ee_target_dist = None
         self._grasp_bonus_given = False
         self._lenient_bonus_given = False
+        self._attempt_fired = False
         self._attempt_lenient_ready = False
+        self._attempt_bracket_score = None
+        self._attempt_worst_tip_above_top = None
         self._cube_nominal_pos = None
         self._cube_nominal_orn_euler = None
         self._grasp_orn = None
@@ -334,7 +337,10 @@ class PandaGraspEnv(gymnasium.Env):
         self._step_count = 0
         self._grasp_bonus_given = False
         self._lenient_bonus_given = False
+        self._attempt_fired = False
         self._attempt_lenient_ready = False
+        self._attempt_bracket_score = None
+        self._attempt_worst_tip_above_top = None
         self._milestones_given = {"m08": False, "m05": False, "m03": False}
 
         # Episode diagnostics
@@ -436,9 +442,15 @@ class PandaGraspEnv(gymnasium.Env):
         if self.trace:
             self._trace_grasp_debug = grasp_debug
 
-        # Expose the lenient result so step() can fire the lenient bonus
-        # even when the strict bracket/below_top gate fails.
+        # Expose attempt results so step() can fire terminal geom shaping +
+        # attempt bonus + lenient bonus from the geometry achieved at the
+        # moment of commitment. These are consumed once in step() then reset.
+        self._attempt_fired = True
         self._attempt_lenient_ready = bool(grasp_debug.get("ready_lenient", False))
+        self._attempt_bracket_score = float(grasp_debug.get("bracket_score", 0.0))
+        self._attempt_worst_tip_above_top = float(
+            grasp_debug.get("worst_tip_above_top", 0.0)
+        )
 
         if ready:
             self._robot.attach_object(self._objects.cube_id)
@@ -570,19 +582,16 @@ class PandaGraspEnv(gymnasium.Env):
         cube_lifted = self._check_cube_lifted()
         cube_fallen = self._check_cube_fallen()
 
-        # Dense geometric shaping inputs (FK-only; work with open gripper).
-        # Computed in GRASP_DESCEND where the geometry is meaningful.
-        bracket_score = None
-        worst_tip_above_top = None
-        if self._phase == PHASE_GRASP_DESCEND:
-            _, grasp_debug_step = self._robot.is_grasp_ready(self._objects.cube_id)
-            bracket_score = grasp_debug_step.get("bracket_score")
-            worst_tip_above_top = grasp_debug_step.get("worst_tip_above_top")
-
-        # Lenient grasp bonus fires at the attempt moment: when the strict
-        # gate fails but proximity+contact (lenient) passed. Evaluated
-        # inside _auto_grasp_and_attach and consumed once here.
+        # Terminal geom shaping, attempt bonus, and lenient bonus all fire
+        # at the moment _auto_grasp_and_attach ran. Consume flags once per
+        # step; reward.compute_reward gates on attempt_fired.
+        attempt_fired = bool(getattr(self, "_attempt_fired", False))
         lenient_ready = bool(getattr(self, "_attempt_lenient_ready", False))
+        bracket_score = self._attempt_bracket_score if attempt_fired else None
+        worst_tip_above_top = (
+            self._attempt_worst_tip_above_top if attempt_fired else None
+        )
+        self._attempt_fired = False
         self._attempt_lenient_ready = False
 
         reward, self._prev_ee_target_dist, reward_info = compute_reward(
@@ -601,6 +610,7 @@ class PandaGraspEnv(gymnasium.Env):
             worst_tip_above_top=worst_tip_above_top,
             lenient_ready=lenient_ready,
             lenient_bonus_given=self._lenient_bonus_given,
+            attempt_fired=attempt_fired,
         )
 
         fired = reward_info.get("milestones_fired", {})

@@ -287,15 +287,23 @@ REWARD_MILESTONE_08 = 2.0
 REWARD_MILESTONE_05 = 5.0
 REWARD_MILESTONE_03 = 10.0
 
-# Dense geometric shaping during GRASP_DESCEND. Gives the policy a continuous
-# gradient toward the exact geometry the strict is_grasp_ready check demands.
-# Without these, the strict bracket/below-top test is an unreachable cliff and
-# the grasp bonus never fires during training.
-REWARD_W_BRACKET = 0.3      # per-step, peak when cube centered between fingertips
-REWARD_W_BELOW_TOP = 0.2    # per-step, peak when both fingertips below cube top
-# One-shot bonus when the LENIENT readiness check fires (proximity + finger
-# contacts, no bracket/below-top gate). Decouples reward signal from attach
-# physics: policy learns to get close even before the strict check passes.
+# Geometric shaping at the GRASP ATTEMPT moment (one-shot, not per-step).
+# Per-step shaping created a reward-farm local optimum where the policy hovered
+# near the cube to accumulate dense geom reward without ever attempting a grasp.
+# Terminal shaping pays only when _auto_grasp_and_attach fires, so the policy
+# is rewarded for the geometry it achieves at the moment it commits.
+REWARD_W_BRACKET = 20.0     # one-shot at attempt, peak when cube centered between fingertips
+REWARD_W_BELOW_TOP = 10.0   # one-shot at attempt, peak when both fingertips below cube top
+# One-shot bonus for making a grasp attempt at all, regardless of outcome.
+# Dominates any "park-forever" strategy: attempting is strictly better than not.
+REWARD_ATTEMPT_BONUS = 15.0
+# Small per-step time penalty. Converts the episode into a shortest-path
+# problem: every step of hovering costs something, so the policy is pressured
+# to progress toward the goal. Classical sparse-reward-style formulation.
+REWARD_TIME_COST = 0.05
+# One-shot bonus when the LENIENT readiness check fires (now geometry-based:
+# proximity + below_top + bracket_ok; contacts NOT required). Rewards geometric
+# correctness at attempt moment even if contact physics are flaky.
 REWARD_DELTA_LENIENT = 10.0
 
 # PPO hyperparameters

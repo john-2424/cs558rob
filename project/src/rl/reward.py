@@ -8,7 +8,8 @@ def compute_reward(ee_pos, grasp_target_pos, qd_residual,
                    cube_fallen, grasp_bonus_given, phase=None,
                    milestones_given=None, cube_pos=None,
                    bracket_score=None, worst_tip_above_top=None,
-                   lenient_ready=False, lenient_bonus_given=False):
+                   lenient_ready=False, lenient_bonus_given=False,
+                   attempt_fired=False):
     # Distance to the physical grasp target pose (cube XY + cube_top_z +
     # PICK_DESCEND_Z_OFFSET). Using this instead of cube-center distance
     # prevents the "plant EE inside the cube" local optimum: the reward
@@ -42,17 +43,23 @@ def compute_reward(ee_pos, grasp_target_pos, qd_residual,
             r_milestone += config.REWARD_MILESTONE_03
             milestones_fired["m03"] = True
 
-    # Dense geometric shaping in GRASP_DESCEND: continuous gradient toward
-    # the bracket/below-top geometry that the strict is_grasp_ready check
-    # demands. Without this, the strict check is an unreachable cliff.
+    # Terminal geometric shaping: paid ONCE at the grasp attempt moment,
+    # scaled by geometry achieved at that instant. Per-step version created a
+    # hover-and-farm local optimum (zero grasps across 8000 episodes). Now the
+    # reward only pays when the policy commits to an attempt.
     r_geom = 0.0
-    if phase == 1 and bracket_score is not None and worst_tip_above_top is not None:
-        # bracket_score in [0, 1], peaks at cube centered between fingertips
+    if attempt_fired and bracket_score is not None and worst_tip_above_top is not None:
         r_geom += config.REWARD_W_BRACKET * float(bracket_score)
-        # reward fingertips below cube top; worst_tip_above_top negative = good
         below_top_depth = max(0.0, -float(worst_tip_above_top))
-        # scale so ~1 cm below top saturates the shaping (0.01 m -> 1.0)
         r_geom += config.REWARD_W_BELOW_TOP * min(1.0, below_top_depth / 0.01)
+
+    # One-shot attempt bonus: rewards the policy for committing to a grasp,
+    # regardless of outcome. Dominates any park-forever strategy.
+    r_attempt = config.REWARD_ATTEMPT_BONUS if attempt_fired else 0.0
+
+    # Per-step time cost: turns the episode into shortest-path optimization.
+    # Classical sparse-reward-style pressure against hovering.
+    r_time = -config.REWARD_TIME_COST
 
     # Lenient grasp bonus: fires on proximity+contact readiness without the
     # strict bracket/below-top gate. Decouples learning signal from attach
@@ -74,7 +81,7 @@ def compute_reward(ee_pos, grasp_target_pos, qd_residual,
     r_fail = -config.REWARD_ZETA if cube_fallen else 0.0
 
     total = (r_approach + r_residual + r_smooth + r_milestone + r_geom
-             + r_grasp_lenient + r_grasp + r_lift + r_fail)
+             + r_attempt + r_time + r_grasp_lenient + r_grasp + r_lift + r_fail)
 
     # Diagnostic: distance to cube center (kept for eval parity with older runs).
     ee_cube_dist_info = ee_target_dist
@@ -89,6 +96,8 @@ def compute_reward(ee_pos, grasp_target_pos, qd_residual,
         "r_smooth": r_smooth,
         "r_milestone": r_milestone,
         "r_geom": r_geom,
+        "r_attempt": r_attempt,
+        "r_time": r_time,
         "r_grasp_lenient": r_grasp_lenient,
         "r_grasp": r_grasp,
         "r_lift": r_lift,
