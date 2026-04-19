@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import pybullet as p
 import gymnasium
@@ -27,10 +29,12 @@ OBS_DIM = 41  # added waypoint_progress (1)
 ACT_DIM = 7
 
 # Per-worker grasp-geometry dump counter. Each worker process gets its own
-# copy; once this reaches GRASP_DIAG_DUMP_LIMIT, dumps stop. Used to
-# instrument the opposite-face/perpendicularity check without flooding logs.
+# copy; once this reaches GRASP_DIAG_DUMP_LIMIT, dumps stop. Dumps are
+# appended to results/m2/grasp_diag.txt so they survive past terminal
+# scrollback and are synced with the rest of the run artifacts.
 _GRASP_DIAG_DUMPS = 0
-GRASP_DIAG_DUMP_LIMIT = 8
+GRASP_DIAG_DUMP_LIMIT = 200
+GRASP_DIAG_PATH = os.path.join(config.M2_RESULTS_DIR, "grasp_diag.txt")
 
 # Fixed normalization scales so all observation components are roughly [-1, 1].
 _MAX_JOINT_VEL = np.asarray(config.PD_MAX_JOINT_VEL, dtype=np.float32)
@@ -471,15 +475,16 @@ class PandaGraspEnv(gymnasium.Env):
             self._trace_grasp_debug = grasp_debug
 
         # Dump the first GRASP_DIAG_DUMP_LIMIT grasp geometries per worker to
-        # stderr. Shows local-frame fingertip coords and the face-check errs
-        # so we can pick tolerances from actual data.
+        # results/m2/grasp_diag.txt. Shows local-frame fingertip coords and
+        # the face-check errs so we can pick tolerances from actual data.
+        # Appending from multiple workers — short writes are atomic on the
+        # filesystems we care about.
         global _GRASP_DIAG_DUMPS
         if _GRASP_DIAG_DUMPS < GRASP_DIAG_DUMP_LIMIT:
-            import sys, os
             _GRASP_DIAG_DUMPS += 1
             ll = grasp_debug.get("left_local")
             rl = grasp_debug.get("right_local")
-            sys.stderr.write(
+            line = (
                 f"[grasp_diag pid={os.getpid()} #{_GRASP_DIAG_DUMPS}] "
                 f"L_local=({ll[0]:+.4f},{ll[1]:+.4f},{ll[2]:+.4f}) "
                 f"R_local=({rl[0]:+.4f},{rl[1]:+.4f},{rl[2]:+.4f}) "
@@ -494,7 +499,12 @@ class PandaGraspEnv(gymnasium.Env):
                 f"{int(grasp_debug.get('finger_contacts'))} "
                 f"ready={int(grasp_debug.get('ready'))}\n"
             )
-            sys.stderr.flush()
+            try:
+                os.makedirs(config.M2_RESULTS_DIR, exist_ok=True)
+                with open(GRASP_DIAG_PATH, "a", encoding="utf-8") as f:
+                    f.write(line)
+            except OSError:
+                pass
 
         # Expose attempt results so step() can fire terminal geom shaping +
         # attempt bonus + lenient bonus from the geometry achieved at the
