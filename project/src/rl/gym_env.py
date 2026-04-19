@@ -68,10 +68,16 @@ class PandaGraspEnv(gymnasium.Env):
     def __init__(self, gui=False, mode="hybrid", perturb_xy_range=None,
                  perturb_yaw_range=None, perturb_z_range=None,
                  render_mode=None, verbose_episodes=False,
-                 curriculum=False, trace=None, trace_dir=None):
+                 curriculum=False, trace=None, trace_dir=None,
+                 enable_grasp_retry=False):
         super().__init__()
 
         self.gui = gui
+        # Retry with a deeper descend when the first grasp check fails.
+        # Off during training (policy must learn precise placement). On during
+        # eval so planner_only and hybrid face the same physics as the M1 demo,
+        # which uses retry in pick_place.py / pick_place_residual.py.
+        self.enable_grasp_retry = bool(enable_grasp_retry)
         self.mode = mode
         self.perturb_xy_range = (
             config.PERTURB_XY_RANGE if perturb_xy_range is None else perturb_xy_range
@@ -522,6 +528,54 @@ class PandaGraspEnv(gymnasium.Env):
             self._grasp_bonus_given = False
             return True
 
+        # Eval-only: one deeper-descend retry. Mirrors the M1 demo
+        # (verify_and_attach_with_retry in pick_place.py). Does not affect
+        # training because enable_grasp_retry defaults False.
+        if self.enable_grasp_retry and self._grasp_target_cartesian is not None:
+            retry_pos = np.array(self._grasp_target_cartesian, dtype=float)
+            retry_pos[2] -= config.GRASP_DESCEND_RETRY_DELTA_Z
+            q_retry = self._robot.solve_ik(retry_pos, self._grasp_orn)
+
+            # Open briefly so the retry descent can translate without the cube
+            # pinching, matching the M1 demo's open-before-descend flow.
+            self._robot.open_gripper()
+
+            max_vel = np.asarray(config.PD_MAX_JOINT_VEL, dtype=float)
+            retry_steps = int(getattr(config, "RL_MAX_STEPS_PER_WAYPOINT", 80))
+            retry_tol = config.GRASP_DESCEND_WAYPOINT_TOL
+            for _ in range(retry_steps):
+                q_now = self._robot.get_joint_positions()
+                qd_now = self._robot.get_joint_velocities()
+                qd_cmd = self._robot.pd_controller.compute_velocity_command(
+                    q_des=q_retry, q=q_now, qd_des=np.zeros(7), qd=qd_now,
+                )
+                qd_cmd = np.clip(qd_cmd, -max_vel, max_vel)
+                p.setJointMotorControlArray(
+                    bodyUniqueId=self._robot.robot_id,
+                    jointIndices=self._robot.arm_joint_indices,
+                    controlMode=p.VELOCITY_CONTROL,
+                    targetVelocities=qd_cmd.tolist(),
+                    forces=self._robot.arm_max_forces,
+                )
+                self._robot.command_gripper(config.GRIPPER_OPEN_WIDTH)
+                for _ in range(config.RL_SIM_SUBSTEPS):
+                    p.stepSimulation()
+                if self._robot.is_at_joint_target(q_retry, tol=retry_tol):
+                    break
+
+            for _ in range(config.GRIPPER_SETTLE_STEPS):
+                self._robot.close_gripper()
+                self._env.step(sleep=False)
+
+            ready2, grasp_debug2 = self._robot.is_grasp_ready(self._objects.cube_id)
+            if self.trace:
+                self._trace_grasp_debug = grasp_debug2
+            if ready2:
+                self._robot.attach_object(self._objects.cube_id)
+                self._grasp_attached = True
+                self._grasp_bonus_given = False
+                return True
+
         return False
 
     def _check_cube_fallen(self):
@@ -731,6 +785,7 @@ class PandaGraspEnv(gymnasium.Env):
             "success": cube_lifted,
             "phase": self._phase,
             "step_count": self._step_count,
+            "residual_abs_mean": float(np.mean(np.abs(qd_residual))),
             **reward_info,
             **self._diag_info(),
         }

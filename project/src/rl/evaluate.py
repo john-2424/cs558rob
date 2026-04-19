@@ -53,8 +53,8 @@ def run_episode(env, actor=None, mode="hybrid", deterministic=False):
         total_reward += reward
         step_count += 1
 
-        if "r_residual" in info:
-            residual_norms.append(abs(info["r_residual"]))
+        if "residual_abs_mean" in info:
+            residual_norms.append(float(info["residual_abs_mean"]))
 
         if terminated or truncated:
             break
@@ -96,6 +96,7 @@ def _run_episodes(mode, actor, perturb_level, num_episodes, verbose_episodes=Fal
         perturb_yaw_range=scaled_yaw,
         perturb_z_range=scaled_z,
         verbose_episodes=verbose_episodes,
+        enable_grasp_retry=True,
     )
     results = []
     try:

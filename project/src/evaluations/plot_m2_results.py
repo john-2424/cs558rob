@@ -323,8 +323,19 @@ def plot_residual_magnitude(results, save_dir):
             color=colors.get(method, None),
         )
 
+    # Budget ceiling for hybrid (position-offset residual per joint)
+    try:
+        from src import config as _cfg
+        budget = float(_cfg.RESIDUAL_MAX_POS)
+        ax.axhline(
+            budget, color="#6ACC65", linestyle="--", alpha=0.5,
+            label=f"Hybrid budget ({budget:.2f} rad)",
+        )
+    except Exception:
+        pass
+
     ax.set_xlabel("Perturbation Level (XY m / Z m / Yaw rad)")
-    ax.set_ylabel("Mean Residual Magnitude (rad)")
+    ax.set_ylabel("Mean |residual| per joint (hybrid: rad, rl_only: rad/s)")
     ax.set_title("Residual Correction Magnitude vs Perturbation")
     ax.set_xticks(perturb_values)
     ax.set_xticklabels(_perturb_tick_labels(perturb_values), fontsize=7)
