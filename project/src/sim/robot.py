@@ -733,9 +733,20 @@ class PandaRobotDemo:
 
 
     def get_finger_tip_positions(self):
-        left_pos, _ = self.get_link_pose(self.left_finger_link_index)
-        right_pos, _ = self.get_link_pose(self.right_finger_link_index)
-        return left_pos, right_pos
+        # getLinkState returns the URDF LINK FRAME (joint with the palm), not
+        # the physical fingertip. The tip sits further along the finger's
+        # local +Z; apply FINGER_TIP_LOCAL_OFFSET in the finger frame to land
+        # at the actual contact surface.
+        tip_offset = list(config.FINGER_TIP_LOCAL_OFFSET)
+        left_base, left_orn = self.get_link_pose(self.left_finger_link_index)
+        right_base, right_orn = self.get_link_pose(self.right_finger_link_index)
+        left_tip, _ = p.multiplyTransforms(
+            left_base.tolist(), left_orn.tolist(), tip_offset, [0.0, 0.0, 0.0, 1.0],
+        )
+        right_tip, _ = p.multiplyTransforms(
+            right_base.tolist(), right_orn.tolist(), tip_offset, [0.0, 0.0, 0.0, 1.0],
+        )
+        return np.asarray(left_tip, dtype=float), np.asarray(right_tip, dtype=float)
 
 
     def get_cube_center_distance(self, body_id: int) -> float:

@@ -192,6 +192,14 @@ GRASP_DESCEND_WAYPOINT_MAX_STEPS = 260
 LEFT_FINGER_LINK_INDEX = 9
 RIGHT_FINGER_LINK_INDEX = 10
 
+# Offset from the finger link frame origin (joint with palm) to the actual
+# fingertip, expressed in the finger's local frame. In Panda's URDF the finger
+# extends along +Z of the link frame; the tip sits ~5.8 cm down the finger.
+# Reading getLinkState without this offset samples the finger BASE, which is
+# above the cube top even when fingers are touching the cube — that was the
+# cause of the persistent below_top=0 failures in the grasp diagnostics.
+FINGER_TIP_LOCAL_OFFSET = (0.0, 0.0, 0.0584)
+
 # Results / phase naming
 PICK_PLACE_PHASE_PREFIX = "pick_place"
 
