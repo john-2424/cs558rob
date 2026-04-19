@@ -2446,3 +2446,37 @@ batch=  62 | frames=  507904/10000000 | loss=+0.896 (p=-0.006 v=0.891) | step_r=
          diag | ep=  4 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/4/0 | forced_wp=34.2
 batch=  63 | frames=  516096/10000000 | loss=+1.417 (p=-0.015 v=1.422) | step_r=+0.0318 | ep_r= +54.01±16.51 | grasp=  0% succ=  0% | grad=4.342 clip=0.19 | kl=0.0108 ep=4/4 | lr=4.7e-05 ent_c=0.014 | act=+0.036±0.245 off=0.0368rad logσ=-1.46 V=+0.2 | fps=782
          diag | ep=  3 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/3/0 | forced_wp=32.0
+
+================================================================================
+Training run started: 2026-04-19T04:15:29
+================================================================================
+Log file: results/m2/train_log_rl_only.txt
+TensorBoard log dir: results/m2/tb_logs_rl_only
+Model checkpoint dir: results/m2/models_rl_only
+Train curriculum: True (xy_range sampled in [0, 0.08])
+Using MultiSyncDataCollector with 8 workers
+Starting PPO training: mode=rl_only, total_timesteps=10000000
+Frames per batch: 8192
+Mini-batch size: 256
+Epochs per batch: 4
+LR schedule: linear, target KL: 0.05 (warmup: 100000 frames)
+Entropy schedule: 0.015 -> 0.005 (linear)
+Early stop: patience=15, min_peak=0.5, drop=0.25
+Best model tracking: True
+Waiting for first batch from collector workers (this may take 30-120s on first run)...
+First batch received after 9.0s
+batch=   1 | frames=    8192/10000000 | loss=+2.877 (p=-0.011 v=2.873) | step_r=-0.0304 | ep_r=   +nan± 0.00 | grasp=  0% succ=  0% | grad=4.351 clip=0.20 | kl=0.0150 ep=4/4 | lr=5.0e-05 ent_c=0.015 | act=+0.005±0.236 off=0.0354rad logσ=-1.50 V=-0.1 | fps=784
+batch=   2 | frames=   16384/10000000 | loss=+0.539 (p=-0.023 v=0.547) | step_r=-0.0003 | ep_r=   +nan± 0.00 | grasp=  0% succ=  0% | grad=4.050 clip=0.29 | kl=0.0224 ep=4/4 | lr=5.0e-05 ent_c=0.015 | act=+0.003±0.239 off=0.0358rad logσ=-1.50 V=+0.3 | fps=796
+batch=   3 | frames=   24576/10000000 | loss=+0.359 (p=-0.003 v=0.347) | step_r=-0.0039 | ep_r=   +nan± 0.00 | grasp=  0% succ=  0% | grad=3.522 clip=0.25 | kl=0.0157 ep=4/4 | lr=5.0e-05 ent_c=0.015 | act=+0.004±0.237 off=0.0356rad logσ=-1.50 V=-0.5 | fps=792
+batch=   4 | frames=   32768/10000000 | loss=+1.735 (p=+0.009 v=1.711) | step_r=-0.0017 | ep_r= -25.95± 2.90 | grasp=  0% succ=  0% | grad=3.553 clip=0.20 | kl=0.0154 ep=4/4 | lr=5.0e-05 ent_c=0.015 | act=+0.015±0.239 off=0.0358rad logσ=-1.50 V=-0.8 | fps=793 *BEST #1*
+         diag | ep=  8 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/8/0 | forced_wp=38.5
+batch=   5 | frames=   40960/10000000 | loss=+1.432 (p=-0.012 v=1.429) | step_r=-0.0064 | ep_r= -25.95± 2.90 | grasp=  0% succ=  0% | grad=5.401 clip=0.15 | kl=0.0092 ep=4/4 | lr=5.0e-05 ent_c=0.015 | act=+0.012±0.251 off=0.0377rad logσ=-1.50 V=-0.7 | fps=794
+batch=   6 | frames=   49152/10000000 | loss=+0.086 (p=-0.009 v=0.080) | step_r=-0.0075 | ep_r= -25.95± 2.90 | grasp=  0% succ=  0% | grad=3.841 clip=0.20 | kl=0.0149 ep=4/4 | lr=5.0e-05 ent_c=0.015 | act=+0.011±0.243 off=0.0364rad logσ=-1.49 V=-0.4 | fps=792 *BEST #2*
+batch=   7 | frames=   57344/10000000 | loss=+0.043 (p=-0.005 v=0.034) | step_r=-0.0097 | ep_r= -25.95± 2.90 | grasp=  0% succ=  0% | grad=3.906 clip=0.22 | kl=0.0143 ep=4/4 | lr=5.0e-05 ent_c=0.015 | act=+0.018±0.244 off=0.0365rad logσ=-1.49 V=-1.1 | fps=795
+batch=   8 | frames=   65536/10000000 | loss=+2.722 (p=-0.005 v=2.713) | step_r=-0.0149 | ep_r= -26.22± 2.74 | grasp=  0% succ=  0% | grad=7.012 clip=0.14 | kl=0.0108 ep=4/4 | lr=5.0e-05 ent_c=0.015 | act=+0.011±0.249 off=0.0373rad logσ=-1.49 V=-1.1 | fps=795
+         diag | ep=  8 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/8/0 | forced_wp=38.1
+batch=   9 | frames=   73728/10000000 | loss=+0.130 (p=-0.014 v=0.128) | step_r=+0.0058 | ep_r= -26.22± 2.74 | grasp=  0% succ=  0% | grad=3.945 clip=0.22 | kl=0.0141 ep=4/4 | lr=5.0e-05 ent_c=0.015 | act=+0.007±0.252 off=0.0377rad logσ=-1.49 V=-0.6 | fps=797
+batch=  10 | frames=   81920/10000000 | loss=+0.174 (p=+0.002 v=0.157) | step_r=-0.0105 | ep_r= -26.22± 2.74 | grasp=  0% succ=  0% | grad=3.835 clip=0.18 | kl=0.0159 ep=4/4 | lr=5.0e-05 ent_c=0.015 | act=-0.022±0.246 off=0.0370rad logσ=-1.49 V=+1.0 | fps=797
+batch=  11 | frames=   90112/10000000 | loss=+0.076 (p=+0.003 v=0.058) | step_r=-0.0075 | ep_r= -26.22± 2.74 | grasp=  0% succ=  0% | grad=3.622 clip=0.19 | kl=0.0136 ep=4/4 | lr=5.0e-05 ent_c=0.015 | act=-0.013±0.254 off=0.0381rad logσ=-1.49 V=+0.0 | fps=798
+batch=  12 | frames=   98304/10000000 | loss=+2.109 (p=-0.019 v=2.113) | step_r=-0.0053 | ep_r= -24.84± 5.92 | grasp=  0% succ=  0% | grad=4.842 clip=0.19 | kl=0.0165 ep=4/4 | lr=5.0e-05 ent_c=0.015 | act=+0.002±0.257 off=0.0385rad logσ=-1.49 V=-1.0 | fps=796 *BEST #3*
+         diag | ep=  8 | try=100% att=  0% lift=  0% fall=  0% | wp_lift= 0.0/20 cube_dz=+0.024m | max_ph(pre/gd/lift)=0/8/0 | forced_wp=38.4
