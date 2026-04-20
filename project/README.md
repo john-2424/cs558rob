@@ -9,10 +9,14 @@ This project investigates whether integrating structured geometric planning (RRT
 The hybrid control architecture consists of:
 
 - **Planning**: Joint/configuration-space RRT* for collision-free trajectory generation
-- **Classical Control**: PD velocity tracking controller
-- **Residual RL**: Bounded velocity residual learned using PPO (TorchRL)
+- **Classical Control**: PD joint-velocity tracking controller
+- **Residual RL**: Bounded joint-position residual learned with PPO (TorchRL)
 
-The total velocity command applied is: `qd_total = qd_PD + qd_RL`
+The residual is applied to the planner's IK target rather than to the velocity command:
+
+`q*_t = q_plan_t + a_t · ρ`, with `a_t ∈ [-1, 1]^7` and cap `ρ = 0.15 rad` per joint.
+
+The PD controller then tracks `q*_t` as its setpoint. The residual is phase-gated — active only during `PRE_GRASP` and `GRASP_DESCEND`, and exactly zero elsewhere (approach, lift, transfer, place, retreat, return-home). An earlier velocity-additive form (`qd_total = qd_PD + qd_RL`) was replaced because it compounded across steps and rewarded instantaneous distance deltas even when the motion was wrong; the position form is equivalent to a micro-waypoint shift and does not compound.
 
 ---
 
@@ -49,7 +53,7 @@ Run the nominal pick-and-place demo (launches PyBullet GUI):
 python -m src.main pick-place
 ```
 
-The expected task sequence is:
+The 11-phase task sequence is:
 
 1. Home
 2. Pre-grasp
@@ -62,6 +66,8 @@ The expected task sequence is:
 9. Release
 10. Retreat
 11. Return home
+
+Grasp validation (step 5) is a geometric check in the cube's local frame — below-top penetration plus a fingertip bracket `t ∈ [0.2, 0.8]` along a face axis with tight tolerance on the orthogonal in-plane axis. Contact-normal dot products were tried first but proved flaky across PyBullet's contact sampler at the configured step rate.
 
 Generate M1 evaluation plots:
 
@@ -86,19 +92,21 @@ results/m1/
 
 The M2 system introduces:
 
-- **Object pose perturbations**: Controlled randomization of cube position (XY, Z, yaw) to simulate execution uncertainty
-- **Residual PPO policy**: Bounded velocity corrections on top of the PD controller, trained with TorchRL
-- **Evaluation framework**: Comparison across planner-only, planner+residual (hybrid), and RL-only baselines at multiple perturbation levels
-- **Metrics**: Grasp success rate, episode reward, episode length across perturbation magnitudes
+- **Object pose perturbations**: Controlled randomization of cube XY (train range `‖δ_xy‖ ≤ 0.08 m`, eval extends to 0.12 m), Z (train `|δ_z| ≤ 0.01 m`), and yaw (train `|δ_yaw| ≤ 0.20 rad`). Eval scales z and yaw proportionally to the xy level (`scale = L / 0.08`), so the xy=0.12 cell sees `|δ_z| ≤ 0.015 m` and `|δ_yaw| ≤ 0.30 rad`. The 0.10 and 0.12 m eval cells are out-of-distribution on all three axes.
+- **Residual PPO policy**: Bounded joint-position residual on top of the planner's IK target, trained with TorchRL PPO (`ClipPPOLoss`)
+- **Evaluation framework**: Comparison across planner-only, planner+residual (hybrid), and RL-only baselines at 7 perturbation levels
+- **Metrics**: Wilson-CI grasp success rate, mean reward, residual magnitude, EE-to-cube distance, episode length, phase distribution
 
 ### Architecture
 
-The planner computes IK targets from the **nominal** (pre-perturbation) cube pose. After perturbation, the classical PD controller tracks these now-stale targets. The RL policy observes the real-time EE-to-cube vector and outputs bounded velocity corrections to steer the arm toward the actual cube.
+The planner computes IK targets from the **nominal** (pre-perturbation) cube pose. After perturbation, the PD controller would track these now-stale targets. The RL policy observes the real-time EE-to-cube vector and outputs a bounded joint-position residual `a_t · ρ` that is added to the planner's IK target before the PD loop.
 
-- Observation space (40-dim): joint positions, joint velocities, EE pose, cube pose, EE-to-cube vector, PD nominal velocity command, phase indicator, perturbation offset
-- Action space (7-dim): bounded residual velocity correction per joint, scaled by `RESIDUAL_MAX`
+- **Observation space (41-dim, fixed-scale normalized to roughly [-1, 1])**: joint positions q (7), joint velocities q̇ (7), EE position (3) and Euler orientation (3), cube position (3) and Euler orientation (3), EE-to-cube vector (3), PD nominal velocity command (7), scalar phase indicator (1), perturbation offset δ (3), waypoint progress ω_t ∈ [0, 1] (1).
+- **Action space (7-dim)**: `a_t ∈ [-1, 1]^7`, bounded joint-position residual per joint; cap `ρ = RESIDUAL_MAX_POS = 0.15 rad` (≈ 1 cm of tool-tip motion for the Panda).
+- **Phase gating**: the residual is active only in `PRE_GRASP ∪ GRASP_DESCEND` (`config.RESIDUAL_ACTIVE_PHASES = {0, 1}`). It is exactly zero during approach, lift, transfer, place, retreat, and return-home.
+- **Training hyperparameters** (see `src/config.py`): 1 M environment frames, 8 parallel collector workers, frames-per-batch 8192, mini-batch 256, 4 epochs per rollout, LR `5e-5` with linear decay to 0, grad-clip 0.5, critic coef 0.5, entropy coef `0.015 → 0.005` (linear anneal), target-KL early stop at 0.05 after a 100 k-frame warmup.
 
-The RL policy operates during the approach-and-grasp phases (pre-grasp, grasp-descend, lift). Post-grasp phases (transfer, place, retreat, return-home) use the classical pipeline unchanged.
+The classical pipeline runs the full 11-phase state machine (home → pre-grasp → grasp-descend → close → attach → lift → transfer → place-descend → release → retreat → return-home) unchanged in all three methods; only the residual injection differs.
 
 ### How to Run
 
@@ -160,7 +168,21 @@ results/m2/
 
 ### Grasp Success Rate
 
-Results will be populated after training completes. Evaluation runs N=50 episodes per method per perturbation level across planner-only, hybrid (PD + residual RL), and RL-only baselines.
+Evaluation runs `EVAL_EPISODES_PER_LEVEL = 100` episodes per method per perturbation level across planner-only, hybrid (planner + position residual RL), and RL-only baselines (2100 episodes total).
+
+Headline results from `results/m2/eval_results.json` (`‖δ_xy‖` in m; other axes at their full per-level magnitude):
+
+| `‖δ_xy‖` | planner | hybrid | rl_only |
+|---------:|--------:|-------:|--------:|
+| 0.00     | 1.00    | 0.78   | 0.00    |
+| 0.02     | 0.46    | 0.65   | 0.00    |
+| 0.04     | 0.45    | 0.79   | 0.00    |
+| 0.06     | 0.29    | 0.85   | 0.00    |
+| 0.08     | 0.19    | 0.78   | 0.00    |
+| 0.10     | 0.25    | 0.77   | 0.00    |
+| 0.12     | 0.22    | 0.71   | 0.00    |
+
+Hybrid stays in `[0.65, 0.85]` across every level while planner-only collapses from 1.00 to 0.22. The hybrid–planner gap exceeds 32 percentage points at every `‖δ_xy‖ ≥ 0.04 m` level and peaks at 59 points at 0.08 m. Mean residual magnitude stays between 0.0496 and 0.0549 rad — roughly one third of the 0.15 rad cap — so the policy never saturates.
 
 ---
 
