@@ -6,7 +6,18 @@ from functools import partial
 
 import numpy as np
 import torch
+import torch.multiprocessing as _mp
 from torch import nn, optim
+
+# Switch tensor sharing to file_system on Linux multi-worker collectors.
+# Default 'file_descriptor' strategy holds an FD per shared tensor and can
+# exhaust the per-process FD limit (RuntimeError: received 0 items of
+# ancdata) once worker queues warm up across multi-seed sessions.
+# No-op on Windows (which uses spawn without FD-based sharing).
+try:
+    _mp.set_sharing_strategy("file_system")
+except (RuntimeError, AttributeError):
+    pass
 
 from tensordict.nn import TensorDictModule
 
