@@ -316,16 +316,16 @@ RL_WAYPOINT_TOL = 0.025
 GRASP_TRIGGER_RADIUS = 0.025
 
 # Perturbation
-# Training range: XY ±8cm, Z ±1cm, full orientation (roll/pitch/yaw).
+# Training range: XY ±8cm, Z ±1cm, yaw ±0.2rad. Pitch/roll wired in but
+# disabled by default — full-orientation perturbation requires more
+# training compute than 1M frames to absorb alongside xy/z/yaw, so M3
+# parks it as future work. Set the ranges below to non-zero to re-enable.
 # Planner sees nominal pose; RL must correct for the offset.
-# Pitch/roll bounds are smaller than yaw because tilting the cube tips the
-# side faces away from vertical, which compounds with the planner's fixed
-# top-down approach orientation. 0.10 rad ≈ 5.7°.
 PERTURB_XY_RANGE = 0.08
 PERTURB_Z_RANGE = 0.01
 PERTURB_YAW_RANGE = 0.2
-PERTURB_PITCH_RANGE = 0.10
-PERTURB_ROLL_RANGE = 0.10
+PERTURB_PITCH_RANGE = 0.0
+PERTURB_ROLL_RANGE = 0.0
 PERTURB_LEVELS = [0.00, 0.02, 0.04, 0.06, 0.08, 0.10, 0.12]
 # Curriculum: each env's effective perturbation range is scaled by
 #   frac = clip(episode_count / CURRICULUM_RAMP_EPISODES, 0, 1)
