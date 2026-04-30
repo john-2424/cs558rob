@@ -262,6 +262,39 @@ RESIDUAL_MAX_POS = 0.15
 # Legacy velocity-additive bound kept for rl_only mode (no PD backbone).
 RESIDUAL_MAX = 0.5
 
+# Confidence-gated residual (M3 stretch). When True the actor emits an
+# extra 8th action channel; its tanh-squash remapped to [0,1] gates how
+# much of the residual is applied:
+#   q* = q_plan + gate * a * RESIDUAL_MAX_POS
+# A small per-step penalty -RESIDUAL_GATE_PENALTY * gate (active only in
+# residual phases) pushes the gate down when the residual is not earning
+# its keep — addresses the hybrid-nominal regression where the always-on
+# residual injects noise even at zero perturbation.
+# Init the gate logit at +1.5 so sigmoid(1.5) ≈ 0.82 from frame 0
+# (close to M2's always-on behaviour); penalty pressure pulls it down.
+RESIDUAL_USE_GATE = False
+RESIDUAL_GATE_PENALTY = 0.05
+RESIDUAL_GATE_INIT_LOGIT = 1.5
+
+# Learned grasp gate (M3 stretch). The hand-coded is_grasp_ready check is
+# tight in some directions and lenient in others (false rejects near the
+# bracket boundary, false accepts on edge-pinches the bracket+below_top
+# rules let through). A small MLP trained on (features, attempt outcome)
+# pairs collected during training/eval can do better than tuning more
+# constants. Modes:
+#   heuristic       — M2 behaviour, classifier idle.
+#   learned_filter  — strict heuristic AND classifier prob > threshold.
+#                     Classifier can only further reject; heuristic is the
+#                     floor. Safer for first deployment.
+#   learned_only    — classifier replaces the heuristic strict check.
+#                     Higher ceiling but only sound once dataset is large.
+GRASP_GATE_MODE = "heuristic"
+# Logging always-on while training/eval runs. Cheap (JSONL append).
+GRASP_GATE_LOG = True
+GRASP_GATE_DATASET_PATH = "results/m3/grasp_dataset.jsonl"
+GRASP_GATE_MODEL_PATH = "results/m3/grasp_gate.pt"
+GRASP_GATE_THRESHOLD = 0.5
+
 # RL simulation
 RL_SIM_SUBSTEPS = 4
 RL_MAX_EPISODE_STEPS = 4000
@@ -283,18 +316,28 @@ RL_WAYPOINT_TOL = 0.025
 GRASP_TRIGGER_RADIUS = 0.025
 
 # Perturbation
-# Training range: XY ±4cm, Z ±1cm, yaw ±0.2rad. Planner sees nominal pose;
-# RL must correct for the offset. Curriculum samples per-episode ranges.
+# Training range: XY ±8cm, Z ±1cm, full orientation (roll/pitch/yaw).
+# Planner sees nominal pose; RL must correct for the offset.
+# Pitch/roll bounds are smaller than yaw because tilting the cube tips the
+# side faces away from vertical, which compounds with the planner's fixed
+# top-down approach orientation. 0.10 rad ≈ 5.7°.
 PERTURB_XY_RANGE = 0.08
 PERTURB_Z_RANGE = 0.01
 PERTURB_YAW_RANGE = 0.2
+PERTURB_PITCH_RANGE = 0.10
+PERTURB_ROLL_RANGE = 0.10
 PERTURB_LEVELS = [0.00, 0.02, 0.04, 0.06, 0.08, 0.10, 0.12]
-# During training, sample perturbation directly from the full range
-# (no two-level sampling). Curriculum flag kept for compatibility but
-# perturbation is now uniform(-max, max) regardless.
+# Curriculum: each env's effective perturbation range is scaled by
+#   frac = clip(episode_count / CURRICULUM_RAMP_EPISODES, 0, 1)
+# so the first CURRICULUM_RAMP_EPISODES per worker train at sub-max
+# perturbation, ramping linearly to full range. With 8 workers and
+# typical episode lengths, 300 ep/worker ≈ 150k frames ≈ 15% of training.
+# Set CURRICULUM_RAMP_EPISODES = 0 to disable (full range from episode 1,
+# matching the M2 behaviour). CURRICULUM_WARMUP_EPISODES still applies
+# before the ramp begins (keeps perturbation at 0 for those episodes).
 TRAIN_CURRICULUM = True
-# Per-worker warmup disabled: policy faces perturbation from episode 1.
 CURRICULUM_WARMUP_EPISODES = 0
+CURRICULUM_RAMP_EPISODES = 300
 
 # Reward shaping
 # Milestone cascade: one-time bonuses at decreasing distance thresholds

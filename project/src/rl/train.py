@@ -78,12 +78,19 @@ class ActorWithLearnableStd(nn.Module):
     unlike NormalParamExtractor whose scale saturates around 0.58.
     """
 
-    def __init__(self, obs_dim, act_dim, init_log_std=-1.5, warm_start=True):
+    def __init__(self, obs_dim, act_dim, init_log_std=-1.5, warm_start=True,
+                 gate_init_logit=None):
         super().__init__()
         output_layer = nn.Linear(256, act_dim)
         if warm_start:
             nn.init.uniform_(output_layer.weight, -0.01, 0.01)
             nn.init.zeros_(output_layer.bias)
+        # If a gate-channel is present (act_dim = 7 + 1), warm-start its bias
+        # at the requested logit so sigmoid-mapped gate starts near "always on"
+        # instead of 0.5. Penalty pressure pulls it down only when warranted.
+        if gate_init_logit is not None and act_dim == 8:
+            with torch.no_grad():
+                output_layer.bias[7] = float(gate_init_logit)
 
         self.mean_net = nn.Sequential(
             nn.Linear(obs_dim, 256),
@@ -101,9 +108,11 @@ class ActorWithLearnableStd(nn.Module):
         return loc, scale
 
 
-def build_actor(obs_dim, act_dim, device="cpu", warm_start=True):
+def build_actor(obs_dim, act_dim, device="cpu", warm_start=True,
+                gate_init_logit=None):
     actor_net = ActorWithLearnableStd(
         obs_dim, act_dim, init_log_std=-1.5, warm_start=warm_start,
+        gate_init_logit=gate_init_logit,
     )
 
     actor_module = TensorDictModule(
@@ -179,11 +188,18 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
     print(f"Model checkpoint dir: {model_save_path}")
 
     obs_dim = 41
-    act_dim = 7
+    use_gate = bool(getattr(config, "RESIDUAL_USE_GATE", False)) and mode == "hybrid"
+    act_dim = 8 if use_gate else 7
+    if use_gate:
+        print(f"Confidence-gate enabled: act_dim={act_dim}, "
+              f"gate_init_logit={config.RESIDUAL_GATE_INIT_LOGIT}, "
+              f"penalty={config.RESIDUAL_GATE_PENALTY}")
 
     # Build actor-critic
     warm_start = (mode == "hybrid")
-    actor = build_actor(obs_dim, act_dim, device, warm_start=warm_start)
+    gate_init = float(config.RESIDUAL_GATE_INIT_LOGIT) if use_gate else None
+    actor = build_actor(obs_dim, act_dim, device, warm_start=warm_start,
+                        gate_init_logit=gate_init)
     critic = build_critic(obs_dim, device)
 
     # GAE advantage estimator
@@ -232,8 +248,16 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
     num_workers = max(1, int(num_workers if num_workers is not None
                                       else config.PPO_NUM_COLLECTOR_WORKERS))
     use_curriculum = bool(getattr(config, "TRAIN_CURRICULUM", False))
-    print(f"Train curriculum: {use_curriculum} "
-          f"(xy_range sampled in [0, {config.PERTURB_XY_RANGE}])")
+    ramp_eps = int(getattr(config, "CURRICULUM_RAMP_EPISODES", 0))
+    warmup_eps = int(getattr(config, "CURRICULUM_WARMUP_EPISODES", 0))
+    if use_curriculum and ramp_eps > 0:
+        print(f"Train curriculum: linear ramp over {ramp_eps} episodes/worker "
+              f"after {warmup_eps}-ep warmup (xy_max={config.PERTURB_XY_RANGE}, "
+              f"yaw_max={config.PERTURB_YAW_RANGE}, "
+              f"pitch_max={config.PERTURB_PITCH_RANGE}, "
+              f"roll_max={config.PERTURB_ROLL_RANGE})")
+    else:
+        print(f"Train curriculum: disabled (full perturb range from episode 1)")
     env_fn = partial(_make_env_worker, mode, perturb_xy_range, use_curriculum)
 
     if num_workers > 1:
@@ -774,10 +798,24 @@ def train(mode="hybrid", perturb_xy_range=None, total_timesteps=None,
     return final_path
 
 
-def load_trained_actor(model_path, obs_dim=41, act_dim=7, device="cpu"):
-    actor = build_actor(obs_dim, act_dim, device)
+def load_trained_actor(model_path, obs_dim=41, act_dim=None, device="cpu"):
+    """Load a trained actor checkpoint. Sniffs act_dim from the saved
+    output-layer bias when not provided so 7-d (M2) and 8-d (M3 + gate)
+    checkpoints both load without an explicit caller hint.
+    """
     checkpoint = torch.load(model_path, map_location=device, weights_only=True)
-    actor.load_state_dict(checkpoint["actor_state_dict"])
+    state = checkpoint["actor_state_dict"]
+    if act_dim is None:
+        # Find the largest "...mean_net.<idx>.bias" tensor — that is the
+        # output layer's bias and its first dim is act_dim.
+        bias_keys = [k for k in state if k.endswith(".bias") and "mean_net" in k]
+        if bias_keys:
+            act_dim = int(state[bias_keys[-1]].shape[0])
+        else:
+            act_dim = 7
+
+    actor = build_actor(obs_dim, act_dim, device)
+    actor.load_state_dict(state)
     actor.eval()
     return actor
 

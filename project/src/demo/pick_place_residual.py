@@ -352,13 +352,22 @@ def get_pick_and_place_poses_from_cube(robot, cube_id, table_id):
 
 def run_pick_place_with_residual(
     model_path=None, perturb_xy_range=None, perturb_z_range=None,
-    perturb_yaw_range=None, mode="hybrid", log_file_path=None,
+    perturb_yaw_range=None, perturb_pitch_range=None, perturb_roll_range=None,
+    mode="hybrid", log_file_path=None,
     allow_grasp_retry=True,
 ):
     model_path = model_path or os.path.join(config.M2_MODEL_DIR, "final_model.pt")
     perturb_xy_range = perturb_xy_range if perturb_xy_range is not None else config.PERTURB_XY_RANGE
     perturb_z_range = perturb_z_range if perturb_z_range is not None else float(getattr(config, "PERTURB_Z_RANGE", 0.0))
     perturb_yaw_range = perturb_yaw_range if perturb_yaw_range is not None else config.PERTURB_YAW_RANGE
+    perturb_pitch_range = (
+        perturb_pitch_range if perturb_pitch_range is not None
+        else float(getattr(config, "PERTURB_PITCH_RANGE", 0.0))
+    )
+    perturb_roll_range = (
+        perturb_roll_range if perturb_roll_range is not None
+        else float(getattr(config, "PERTURB_ROLL_RANGE", 0.0))
+    )
     log_file_path = log_file_path or os.path.join(config.M2_RESULTS_DIR, "demo_log.txt")
     os.makedirs(config.M2_RESULTS_DIR, exist_ok=True)
 
@@ -370,7 +379,8 @@ def run_pick_place_with_residual(
     action_wrapper = ResidualActionWrapper(mode=mode)
     print(f"Log file: {log_file_path}")
     print(f"Loaded model from {model_path}, mode={mode}")
-    print(f"Perturbation ranges: xy={perturb_xy_range}, z={perturb_z_range}, yaw={perturb_yaw_range}")
+    print(f"Perturbation ranges: xy={perturb_xy_range}, z={perturb_z_range}, "
+          f"yaw={perturb_yaw_range}, pitch={perturb_pitch_range}, roll={perturb_roll_range}")
     _overlay_ids.clear()
     _phase_residual_stats.clear()
 
@@ -435,8 +445,9 @@ def run_pick_place_with_residual(
 
         # Perturb cube AFTER planning — the planner targets are now "stale"
         rng = np.random.default_rng()
-        if perturb_xy_range > 0 or perturb_z_range > 0 or perturb_yaw_range > 0:
-            new_pos, new_orn, (dx, dy, dz, dyaw) = perturb_cube_pose(
+        if (perturb_xy_range > 0 or perturb_z_range > 0 or perturb_yaw_range > 0
+                or perturb_pitch_range > 0 or perturb_roll_range > 0):
+            new_pos, new_orn, (dx, dy, dz, droll, dpitch, dyaw) = perturb_cube_pose(
                 cube_id=objects.cube_id,
                 nominal_pos=list(nominal_pos),
                 nominal_orn_euler=config.CUBE_BASE_ORN_EULER,
@@ -444,14 +455,19 @@ def run_pick_place_with_residual(
                 xy_range=perturb_xy_range,
                 yaw_range=perturb_yaw_range,
                 z_range=perturb_z_range,
+                pitch_range=perturb_pitch_range,
+                roll_range=perturb_roll_range,
             )
             perturbed_pos, perturbed_orn = p.getBasePositionAndOrientation(objects.cube_id)
             perturbed_euler = p.getEulerFromQuaternion(perturbed_orn)
             print(f"[demo] Cube PERTURBED pose: "
                   f"xy=({perturbed_pos[0]:.4f}, {perturbed_pos[1]:.4f}) m, "
-                  f"z={perturbed_pos[2]:.4f} m, yaw={perturbed_euler[2]:.4f} rad")
+                  f"z={perturbed_pos[2]:.4f} m, "
+                  f"roll={perturbed_euler[0]:.4f} pitch={perturbed_euler[1]:.4f} "
+                  f"yaw={perturbed_euler[2]:.4f} rad")
             print(f"[demo] Perturbation delta: "
                   f"dx={dx:+.4f} m, dy={dy:+.4f} m, dz={dz:+.4f} m, "
+                  f"droll={droll:+.4f} rad, dpitch={dpitch:+.4f} rad, "
                   f"dyaw={dyaw:+.4f} rad ({np.degrees(dyaw):+.2f} deg)")
             total_offset = float(np.sqrt(dx**2 + dy**2 + dz**2))
             print(f"[demo] Planner targets are from NOMINAL — "

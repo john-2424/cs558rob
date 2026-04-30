@@ -31,12 +31,16 @@ def run_episode(env, actor=None, mode="hybrid", deterministic=False):
     total_reward = 0.0
     step_count = 0
     residual_norms = []
+    gate_values = []
 
     # TanhNormal: DETERMINISTIC uses tanh(loc) which can produce constant
     # non-zero residuals that prevent waypoint convergence. Use RANDOM
     # (sample from the learned distribution) to match training behavior.
     # With 50 episodes per level, stochastic noise averages out.
     exploration_type = ExplorationType.DETERMINISTIC if deterministic else ExplorationType.RANDOM
+
+    # Action dim follows the env (7 or 8 with confidence gate).
+    fallback_dim = int(env.action_space.shape[-1])
 
     while True:
         if actor is not None and mode != "planner_only":
@@ -47,7 +51,7 @@ def run_episode(env, actor=None, mode="hybrid", deterministic=False):
                 td = actor(td)
             action = td["action"].squeeze(0).numpy()
         else:
-            action = np.zeros(7, dtype=np.float32)
+            action = np.zeros(fallback_dim, dtype=np.float32)
 
         obs, reward, terminated, truncated, info = env.step(action)
         total_reward += reward
@@ -55,6 +59,8 @@ def run_episode(env, actor=None, mode="hybrid", deterministic=False):
 
         if "residual_abs_mean" in info:
             residual_norms.append(float(info["residual_abs_mean"]))
+        if "gate" in info:
+            gate_values.append(float(info["gate"]))
 
         if terminated or truncated:
             break
@@ -73,6 +79,7 @@ def run_episode(env, actor=None, mode="hybrid", deterministic=False):
         "total_reward": total_reward,
         "step_count": step_count,
         "mean_residual": float(np.mean(residual_norms)) if residual_norms else 0.0,
+        "mean_gate": float(np.mean(gate_values)) if gate_values else 1.0,
         "truncated": bool(truncated),
         "terminated": bool(terminated),
     }
@@ -84,17 +91,22 @@ def run_episode(env, actor=None, mode="hybrid", deterministic=False):
 
 def _run_episodes(mode, actor, perturb_level, num_episodes, verbose_episodes=False):
     """Serially run a batch of episodes in one PyBullet client."""
-    # Scale yaw and z proportionally to xy so all perturbation axes are tested.
+    # Scale yaw, z, pitch, roll proportionally to xy so all perturbation axes
+    # ramp together across the eval grid.
     max_xy = config.PERTURB_XY_RANGE or 1.0
     scale = perturb_level / max_xy if max_xy > 0 else 0.0
     scaled_yaw = config.PERTURB_YAW_RANGE * scale
     scaled_z = float(getattr(config, "PERTURB_Z_RANGE", 0.0)) * scale
+    scaled_pitch = float(getattr(config, "PERTURB_PITCH_RANGE", 0.0)) * scale
+    scaled_roll = float(getattr(config, "PERTURB_ROLL_RANGE", 0.0)) * scale
     env = PandaGraspEnv(
         gui=False,
         mode=mode,
         perturb_xy_range=perturb_level,
         perturb_yaw_range=scaled_yaw,
         perturb_z_range=scaled_z,
+        perturb_pitch_range=scaled_pitch,
+        perturb_roll_range=scaled_roll,
         verbose_episodes=verbose_episodes,
         enable_grasp_retry=True,
     )
@@ -291,8 +303,11 @@ def run_evaluation(model_path=None, rl_only_model_path=None, log_file_path=None,
             scale = perturb_level / max_xy if max_xy > 0 else 0.0
             scaled_yaw = config.PERTURB_YAW_RANGE * scale
             scaled_z = float(getattr(config, "PERTURB_Z_RANGE", 0.0)) * scale
+            scaled_pitch = float(getattr(config, "PERTURB_PITCH_RANGE", 0.0)) * scale
+            scaled_roll = float(getattr(config, "PERTURB_ROLL_RANGE", 0.0)) * scale
             print(f"\n=== Perturbation level: xy={perturb_level:.3f}m "
-                  f"z={scaled_z:.3f}m yaw={scaled_yaw:.3f}rad ===")
+                  f"z={scaled_z:.3f}m yaw={scaled_yaw:.3f}rad "
+                  f"pitch={scaled_pitch:.3f}rad roll={scaled_roll:.3f}rad ===")
 
             all_results[level_key]["planner_only"] = _eval_one_method(
                 label="planner_only",

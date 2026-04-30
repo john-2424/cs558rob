@@ -17,6 +17,8 @@ from src.sim.state import (
 from src.rl.perturbation import perturb_cube_pose
 from src.rl.reward import compute_reward
 from src.rl.residual_policy import ResidualActionWrapper
+from src.rl.grasp_gate import FEATURE_KEYS as _GRASP_GATE_FEATURE_KEYS
+from src.rl.grasp_gate import LearnedGraspGate
 from src.trajectory.joint_trajectory import interpolate_joint_trajectory
 
 # Phase indices
@@ -27,6 +29,11 @@ NUM_RL_PHASES = 3
 
 OBS_DIM = 41  # added waypoint_progress (1)
 ACT_DIM = 7
+# Total action dim including the optional confidence-gate channel.
+# When config.RESIDUAL_USE_GATE is True, the actor emits an 8th channel
+# that gates the residual magnitude. Action space and policy net adapt.
+def _act_dim_total():
+    return ACT_DIM + (1 if bool(getattr(config, "RESIDUAL_USE_GATE", False)) else 0)
 
 # Per-worker grasp-geometry dump counter. Each worker process gets its own
 # copy; once this reaches GRASP_DIAG_DUMP_LIMIT, dumps stop. Dumps are
@@ -67,6 +74,7 @@ class PandaGraspEnv(gymnasium.Env):
 
     def __init__(self, gui=False, mode="hybrid", perturb_xy_range=None,
                  perturb_yaw_range=None, perturb_z_range=None,
+                 perturb_pitch_range=None, perturb_roll_range=None,
                  render_mode=None, verbose_episodes=False,
                  curriculum=False, trace=None, trace_dir=None,
                  enable_grasp_retry=False):
@@ -89,12 +97,25 @@ class PandaGraspEnv(gymnasium.Env):
             float(getattr(config, "PERTURB_Z_RANGE", 0.0))
             if perturb_z_range is None else perturb_z_range
         )
-        # Curriculum: if True, each reset() samples an effective xy_range
-        # uniformly in [0, self.perturb_xy_range]. Used during training so the
-        # agent sees easy (~nominal) episodes early and gradually harder ones.
+        self.perturb_pitch_range = (
+            float(getattr(config, "PERTURB_PITCH_RANGE", 0.0))
+            if perturb_pitch_range is None else perturb_pitch_range
+        )
+        self.perturb_roll_range = (
+            float(getattr(config, "PERTURB_ROLL_RANGE", 0.0))
+            if perturb_roll_range is None else perturb_roll_range
+        )
+        # Curriculum: when True, each env scales its effective perturbation
+        # range by frac = clip((episode_count - warmup) / ramp_episodes, 0, 1)
+        # so early episodes train at sub-max perturbation. After warmup +
+        # ramp_episodes, frac=1 and the env runs at full PERTURB_*_RANGE.
+        # ramp_episodes = 0 disables the ramp (full range from episode 1).
         self.curriculum = curriculum
         self.curriculum_warmup_episodes = int(
             getattr(config, "CURRICULUM_WARMUP_EPISODES", 0)
+        )
+        self.curriculum_ramp_episodes = int(
+            getattr(config, "CURRICULUM_RAMP_EPISODES", 0)
         )
         self._episode_count = 0
         self.verbose_episodes = verbose_episodes
@@ -103,8 +124,9 @@ class PandaGraspEnv(gymnasium.Env):
             low=-np.inf, high=np.inf, shape=(OBS_DIM,), dtype=np.float32,
         )
         self.action_space = spaces.Box(
-            low=-1.0, high=1.0, shape=(ACT_DIM,), dtype=np.float32,
+            low=-1.0, high=1.0, shape=(_act_dim_total(),), dtype=np.float32,
         )
+        self._use_gate = bool(getattr(config, "RESIDUAL_USE_GATE", False))
 
         self.action_wrapper = ResidualActionWrapper(mode=mode)
 
@@ -132,6 +154,28 @@ class PandaGraspEnv(gymnasium.Env):
         self._grasp_orn = None
         self._grasp_target_cartesian = None
         self._perturb_offset = np.zeros(3, dtype=np.float32)
+        self._last_gate = 1.0
+        self._last_residual_active = False
+
+        # Learned grasp-gate setup. Mode "heuristic" means classifier is
+        # never consulted. Other modes load the trained classifier; if the
+        # checkpoint is missing the gate marks itself unloaded and the env
+        # falls back to heuristic.
+        self._grasp_gate_mode = str(getattr(config, "GRASP_GATE_MODE", "heuristic"))
+        self._grasp_gate_log = bool(getattr(config, "GRASP_GATE_LOG", True))
+        self._grasp_gate_dataset_path = str(
+            getattr(config, "GRASP_GATE_DATASET_PATH",
+                    "results/m3/grasp_dataset.jsonl")
+        )
+        self._learned_grasp_gate = None
+        if self._grasp_gate_mode != "heuristic":
+            self._learned_grasp_gate = LearnedGraspGate()
+            if not self._learned_grasp_gate.loaded:
+                print(f"[grasp_gate] mode={self._grasp_gate_mode} but no "
+                      f"checkpoint loaded — falling back to heuristic")
+        # Per-episode attempt buffer; flushed at episode end with the
+        # final outcome label.
+        self._grasp_attempt_log: list = []
 
         self._initialized = False
 
@@ -291,15 +335,25 @@ class PandaGraspEnv(gymnasium.Env):
             effective_xy = 0.0
             effective_yaw = 0.0
             effective_z = 0.0
+            effective_pitch = 0.0
+            effective_roll = 0.0
         else:
-            # Sample perturbation directly from the full range — no two-level
-            # sampling. This gives a uniform distribution over the entire
-            # perturbation space instead of concentrating near zero.
-            effective_xy = self.perturb_xy_range
-            effective_yaw = self.perturb_yaw_range
-            effective_z = self.perturb_z_range
+            # Linear ramp: scale all axes by frac in [0, 1] over the first
+            # ramp_episodes after warmup. ramp=0 short-circuits to frac=1
+            # and matches the M2 "full range from episode 1" behaviour.
+            if self.curriculum and self.curriculum_ramp_episodes > 0:
+                ramp_step = self._episode_count - self.curriculum_warmup_episodes
+                frac = max(0.0, min(1.0, ramp_step / self.curriculum_ramp_episodes))
+            else:
+                frac = 1.0
+            effective_xy = self.perturb_xy_range * frac
+            effective_yaw = self.perturb_yaw_range * frac
+            effective_z = self.perturb_z_range * frac
+            effective_pitch = self.perturb_pitch_range * frac
+            effective_roll = self.perturb_roll_range * frac
 
-        if effective_xy > 0 or effective_z > 0:
+        if (effective_xy > 0 or effective_z > 0 or effective_yaw > 0
+                or effective_pitch > 0 or effective_roll > 0):
             perturb_cube_pose(
                 cube_id=self._objects.cube_id,
                 nominal_pos=self._cube_nominal_pos,
@@ -308,6 +362,8 @@ class PandaGraspEnv(gymnasium.Env):
                 xy_range=effective_xy,
                 yaw_range=effective_yaw,
                 z_range=effective_z,
+                pitch_range=effective_pitch,
+                roll_range=effective_roll,
             )
 
             for _ in range(20):
@@ -365,6 +421,7 @@ class PandaGraspEnv(gymnasium.Env):
         self._forced_waypoint_advances = 0
         self._grasp_attempted = False
         self._grasp_attached = False
+        self._grasp_attempt_log = []
         self._summary_printed = False
 
         # Initial EE-to-grasp-target distance (reward attractor)
@@ -496,6 +553,57 @@ class PandaGraspEnv(gymnasium.Env):
             for _ in range(config.RL_SIM_SUBSTEPS):
                 p.stepSimulation()
 
+    def _record_grasp_attempt(self, grasp_debug: dict, attempt_idx: int):
+        """Append a feature snapshot of one grasp attempt to the per-episode
+        buffer. Outcome label is filled in at episode end (when lifted /
+        fallen are decided)."""
+        if not self._grasp_gate_log:
+            return
+        row = {k: grasp_debug.get(k, 0.0) for k in _GRASP_GATE_FEATURE_KEYS}
+        # Coerce booleans to JSON-friendly bools (numpy bool_ is not).
+        for k, v in list(row.items()):
+            if isinstance(v, (np.bool_,)):
+                row[k] = bool(v)
+        row["ready_heuristic"] = bool(grasp_debug.get("ready", False))
+        row["attempt_idx"] = int(attempt_idx)
+        row["perturb_xy"] = float(self.perturb_xy_range)
+        row["perturb_yaw"] = float(self.perturb_yaw_range)
+        self._grasp_attempt_log.append(row)
+
+    def _flush_grasp_attempt_log(self, lifted: bool, fallen: bool):
+        """Tag buffered grasp attempts with final outcome and append to JSONL."""
+        import json as _json
+        path = self._grasp_gate_dataset_path
+        try:
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "a", encoding="utf-8") as f:
+                for row in self._grasp_attempt_log:
+                    row["lifted"] = bool(lifted)
+                    row["fallen"] = bool(fallen)
+                    f.write(_json.dumps(row) + "\n")
+        except OSError:
+            pass
+        self._grasp_attempt_log = []
+
+    def _apply_learned_gate(self, heuristic_ready: bool, grasp_debug: dict) -> bool:
+        """Combine heuristic decision with learned classifier (if loaded).
+
+        learned_filter: classifier acts as additional gate on top of heuristic.
+                        Returns heuristic_ready AND classifier_prob > thresh.
+        learned_only:   classifier alone decides; heuristic ignored.
+        Other modes (or unloaded classifier): pass heuristic through unchanged.
+        """
+        gate = self._learned_grasp_gate
+        if gate is None or not gate.loaded:
+            return heuristic_ready
+        prob = gate.predict_prob(grasp_debug)
+        passes_classifier = prob >= gate.threshold
+        if self._grasp_gate_mode == "learned_only":
+            return passes_classifier
+        if self._grasp_gate_mode == "learned_filter":
+            return bool(heuristic_ready) and passes_classifier
+        return heuristic_ready
+
     def _auto_grasp_and_attach(self):
         self._grasp_attempted = True
 
@@ -517,6 +625,8 @@ class PandaGraspEnv(gymnasium.Env):
         ready, grasp_debug = self._robot.is_grasp_ready(self._objects.cube_id)
         if self.trace:
             self._trace_grasp_debug = grasp_debug
+        self._record_grasp_attempt(grasp_debug, attempt_idx=0)
+        ready = self._apply_learned_gate(ready, grasp_debug)
 
         # Dump the first GRASP_DIAG_DUMP_LIMIT grasp geometries per worker to
         # results/m2/grasp_diag.txt. Shows local-frame fingertip coords and
@@ -622,6 +732,8 @@ class PandaGraspEnv(gymnasium.Env):
             ready2, grasp_debug2 = self._robot.is_grasp_ready(self._objects.cube_id)
             if self.trace:
                 self._trace_grasp_debug = grasp_debug2
+            self._record_grasp_attempt(grasp_debug2, attempt_idx=1)
+            ready2 = self._apply_learned_gate(ready2, grasp_debug2)
             if ready2:
                 self._robot.attach_object(self._objects.cube_id)
                 self._grasp_attached = True
@@ -643,10 +755,27 @@ class PandaGraspEnv(gymnasium.Env):
     def step(self, action):
         action = np.asarray(action, dtype=np.float32).clip(-1.0, 1.0)
 
+        # Confidence gate: split off the 8th channel (if present) and remap
+        # tanh-squashed [-1, 1] -> sigmoid-style [0, 1]. The first 7 dims
+        # are the joint-space residual; the 8th scales the residual's
+        # effective magnitude. Falls back to gate=1.0 when the feature is off.
+        if self._use_gate and action.shape[-1] >= ACT_DIM + 1:
+            gate = float((action[ACT_DIM] + 1.0) * 0.5)
+            action = action[:ACT_DIM]
+        else:
+            gate = 1.0
+
         # Phase-gate: zero residual in phases where PD alone suffices
-        if (getattr(config, "RESIDUAL_PHASE_GATE", False)
-                and self._phase not in getattr(config, "RESIDUAL_ACTIVE_PHASES", {1, 2})):
+        residual_active = not (getattr(config, "RESIDUAL_PHASE_GATE", False)
+                               and self._phase not in getattr(config, "RESIDUAL_ACTIVE_PHASES", {1, 2}))
+        if not residual_active:
             action = np.zeros_like(action)
+
+        # Apply confidence gate to the residual magnitude.
+        if self._use_gate and residual_active:
+            action = (action * gate).astype(np.float32)
+        self._last_gate = gate
+        self._last_residual_active = residual_active
 
         self._step_count += 1
 
@@ -794,6 +923,14 @@ class PandaGraspEnv(gymnasium.Env):
         if grasp_ready and not self._grasp_bonus_given:
             self._grasp_bonus_given = True
 
+        # Confidence-gate penalty: small per-step cost proportional to gate
+        # value, applied only in residual-active phases. Pushes the gate
+        # down when the residual isn't earning its keep at nominal poses.
+        if self._use_gate and self._last_residual_active:
+            gate_pen = float(getattr(config, "RESIDUAL_GATE_PENALTY", 0.0)) * self._last_gate
+            reward = float(reward) - gate_pen
+            reward_info["r_gate_penalty"] = -gate_pen
+
         # Termination
         truncated = self._step_count >= config.RL_MAX_EPISODE_STEPS
 
@@ -838,6 +975,7 @@ class PandaGraspEnv(gymnasium.Env):
             "phase": self._phase,
             "step_count": self._step_count,
             "residual_abs_mean": float(np.mean(np.abs(qd_residual))),
+            "gate": float(self._last_gate) if self._use_gate else 1.0,
             **reward_info,
             **self._diag_info(),
         }
@@ -861,6 +999,13 @@ class PandaGraspEnv(gymnasium.Env):
                 "ep_cube_fallen": bool(cube_fallen),
                 "ep_cube_lifted": bool(cube_lifted),
             })
+            # Flush per-episode grasp attempt log: tag each buffered row
+            # with the final outcome and append to JSONL. Append-only,
+            # multi-worker-safe (short writes are atomic on the FSes we use).
+            if self._grasp_gate_log and self._grasp_attempt_log:
+                self._flush_grasp_attempt_log(
+                    lifted=bool(cube_lifted), fallen=bool(cube_fallen),
+                )
             if self.verbose_episodes and not self._summary_printed:
                 self._summary_printed = True
                 phase_names = {0: "pre_grasp", 1: "grasp_descend", 2: "lift"}

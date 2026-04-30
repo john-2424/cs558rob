@@ -17,6 +17,14 @@ def _add_perturb_args(parser):
         "--perturb-yaw", type=float, default=None,
         help="Cube yaw perturbation range in radians (default: PERTURB_YAW_RANGE from config).",
     )
+    parser.add_argument(
+        "--perturb-pitch", type=float, default=None,
+        help="Cube pitch perturbation range in radians (default: PERTURB_PITCH_RANGE from config).",
+    )
+    parser.add_argument(
+        "--perturb-roll", type=float, default=None,
+        help="Cube roll perturbation range in radians (default: PERTURB_ROLL_RANGE from config).",
+    )
 
 
 def _build_parser():
@@ -89,6 +97,37 @@ def _build_parser():
     )
     _add_perturb_args(demo_p)
 
+    ms_p = sub.add_parser("multi-seed",
+                          help="M3: multi-seed train + eval orchestrator.")
+    ms_p.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2])
+    ms_p.add_argument("--modes", nargs="+", default=["hybrid", "rl_only"],
+                      choices=["hybrid", "rl_only"])
+    ms_p.add_argument("--root", default="results/m3")
+    ms_p.add_argument("--total-timesteps", type=int, default=None)
+    ms_p.add_argument("--workers", type=int, default=None)
+    ms_p.add_argument("--force-retrain", action="store_true")
+    ms_p.add_argument("--force-reeval", action="store_true")
+    ms_p.add_argument("--train-only", action="store_true")
+    ms_p.add_argument("--eval-only", action="store_true")
+
+    agg_p = sub.add_parser("aggregate-seeds",
+                           help="M3: aggregate per-seed eval JSONs into one summary.")
+    agg_p.add_argument("--index", required=True,
+                       help="Path to multi_seed_index.json.")
+    agg_p.add_argument("--out", default=None,
+                       help="Output path (default: <index dir>/eval_aggregate.json).")
+
+    gg_p = sub.add_parser("train-grasp-gate",
+                          help="M3: train learned grasp gate from logged dataset.")
+    gg_p.add_argument("--dataset", default=None,
+                      help="Path to grasp_dataset.jsonl (default: from config).")
+    gg_p.add_argument("--out", default=None,
+                      help="Where to write grasp_gate.pt (default: from config).")
+    gg_p.add_argument("--epochs", type=int, default=80)
+    gg_p.add_argument("--batch-size", type=int, default=64)
+    gg_p.add_argument("--lr", type=float, default=1e-3)
+    gg_p.add_argument("--seed", type=int, default=0)
+
     return parser
 
 
@@ -121,7 +160,29 @@ def main():
             perturb_xy_range=args.perturb_xy,
             perturb_z_range=args.perturb_z,
             perturb_yaw_range=args.perturb_yaw,
+            perturb_pitch_range=args.perturb_pitch,
+            perturb_roll_range=args.perturb_roll,
             allow_grasp_retry=not args.no_retry,
+        )
+    elif args.command == "multi-seed":
+        if args.train_only and args.eval_only:
+            raise SystemExit("--train-only and --eval-only are mutually exclusive")
+        from src.rl.multi_seed import run_multi_seed
+        run_multi_seed(
+            seeds=args.seeds, modes=tuple(args.modes), root=args.root,
+            total_timesteps=args.total_timesteps, num_workers=args.workers,
+            force_retrain=args.force_retrain, force_reeval=args.force_reeval,
+            train_only=args.train_only, eval_only=args.eval_only,
+        )
+    elif args.command == "aggregate-seeds":
+        from src.evaluations.aggregate_seeds import aggregate_from_index
+        aggregate_from_index(args.index, args.out)
+    elif args.command == "train-grasp-gate":
+        from src.rl.grasp_gate import train_classifier
+        train_classifier(
+            dataset_path=args.dataset, model_path=args.out,
+            epochs=args.epochs, batch_size=args.batch_size,
+            lr=args.lr, seed=args.seed,
         )
 
 
