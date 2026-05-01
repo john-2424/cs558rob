@@ -272,7 +272,7 @@ RESIDUAL_MAX = 0.5
 # residual injects noise even at zero perturbation.
 # Init the gate logit at +1.5 so sigmoid(1.5) ≈ 0.82 from frame 0
 # (close to M2's always-on behaviour); penalty pressure pulls it down.
-RESIDUAL_USE_GATE = False
+RESIDUAL_USE_GATE = True
 RESIDUAL_GATE_PENALTY = 0.05
 RESIDUAL_GATE_INIT_LOGIT = 1.5
 
