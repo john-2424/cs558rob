@@ -1,0 +1,324 @@
+{
+  "perturb_0.000": {
+    "planner_only": {
+      "success_rate": 1.0,
+      "success_ci_lo": 0.9630051925239981,
+      "success_ci_hi": 0.9999999999999999,
+      "mean_reward": 275.23890098516307,
+      "std_reward": 5.684341886080802e-14,
+      "mean_steps": 888.0,
+      "mean_residual": 0.0,
+      "num_episodes": 100,
+      "phase_distribution": {
+        "pre_grasp": 0,
+        "grasp_descend": 0,
+        "lift": 100
+      },
+      "grasp_attempted_rate": 1.0,
+      "grasp_attached_rate": 1.0,
+      "cube_fallen_rate": 0.0,
+      "cube_lifted_rate": 1.0,
+      "mean_cube_dz": 0.10060038936794237,
+      "mean_ee_cube_dist": 0.019933393876519403,
+      "mean_forced_wp_advances": 0.0
+    },
+    "hybrid": {
+      "success_rate": 0.58,
+      "success_ci_lo": 0.48206307998895276,
+      "success_ci_hi": 0.672017750814887,
+      "mean_reward": 94.66455357347559,
+      "std_reward": 97.38612659199916,
+      "mean_steps": 2151.5,
+      "mean_residual": 0.030531779442237315,
+      "num_episodes": 100,
+      "phase_distribution": {
+        "pre_grasp": 0,
+        "grasp_descend": 42,
+        "lift": 58
+      },
+      "grasp_attempted_rate": 1.0,
+      "grasp_attached_rate": 0.58,
+      "cube_fallen_rate": 0.0,
+      "cube_lifted_rate": 0.58,
+      "mean_cube_dz": 0.06931103487993666,
+      "mean_ee_cube_dist": 0.025857519748319152,
+      "mean_forced_wp_advances": 12.96
+    }
+  },
+  "perturb_0.020": {
+    "planner_only": {
+      "success_rate": 0.63,
+      "success_ci_lo": 0.5322034757513312,
+      "success_ci_hi": 0.7181778743049083,
+      "mean_reward": 198.21708586523312,
+      "std_reward": 97.26558350741986,
+      "mean_steps": 866.88,
+      "mean_residual": 0.0,
+      "num_episodes": 100,
+      "phase_distribution": {
+        "pre_grasp": 0,
+        "grasp_descend": 37,
+        "lift": 63
+      },
+      "grasp_attempted_rate": 1.0,
+      "grasp_attached_rate": 0.63,
+      "cube_fallen_rate": 0.0,
+      "cube_lifted_rate": 0.63,
+      "mean_cube_dz": 0.07363210664913518,
+      "mean_ee_cube_dist": 0.026732207717325845,
+      "mean_forced_wp_advances": 0.0
+    },
+    "hybrid": {
+      "success_rate": 0.6,
+      "success_ci_lo": 0.5020007846184025,
+      "success_ci_hi": 0.6906002538863971,
+      "mean_reward": 95.25942564137964,
+      "std_reward": 98.7050674710145,
+      "mean_steps": 2174.9,
+      "mean_residual": 0.030655881554560047,
+      "num_episodes": 100,
+      "phase_distribution": {
+        "pre_grasp": 0,
+        "grasp_descend": 40,
+        "lift": 60
+      },
+      "grasp_attempted_rate": 1.0,
+      "grasp_attached_rate": 0.6,
+      "cube_fallen_rate": 0.0,
+      "cube_lifted_rate": 0.6,
+      "mean_cube_dz": 0.0713859641716635,
+      "mean_ee_cube_dist": 0.02701832974615147,
+      "mean_forced_wp_advances": 13.12
+    }
+  },
+  "perturb_0.040": {
+    "planner_only": {
+      "success_rate": 0.47,
+      "success_ci_lo": 0.3751065198210374,
+      "success_ci_hi": 0.5671131686275227,
+      "mean_reward": 163.5192868060319,
+      "std_reward": 98.88944005561261,
+      "mean_steps": 872.46,
+      "mean_residual": 0.0,
+      "num_episodes": 100,
+      "phase_distribution": {
+        "pre_grasp": 0,
+        "grasp_descend": 53,
+        "lift": 47
+      },
+      "grasp_attempted_rate": 1.0,
+      "grasp_attached_rate": 0.47,
+      "cube_fallen_rate": 0.0,
+      "cube_lifted_rate": 0.47,
+      "mean_cube_dz": 0.06255395524225084,
+      "mean_ee_cube_dist": 0.03377835976086229,
+      "mean_forced_wp_advances": 0.02
+    },
+    "hybrid": {
+      "success_rate": 0.77,
+      "success_ci_lo": 0.6784543514317231,
+      "success_ci_hi": 0.841568452531236,
+      "mean_reward": 124.5658945009499,
+      "std_reward": 83.82425301088729,
+      "mean_steps": 2311.06,
+      "mean_residual": 0.030909960846148575,
+      "num_episodes": 100,
+      "phase_distribution": {
+        "pre_grasp": 0,
+        "grasp_descend": 23,
+        "lift": 77
+      },
+      "grasp_attempted_rate": 1.0,
+      "grasp_attached_rate": 0.77,
+      "cube_fallen_rate": 0.0,
+      "cube_lifted_rate": 0.77,
+      "mean_cube_dz": 0.08428223791317019,
+      "mean_ee_cube_dist": 0.019653683127980076,
+      "mean_forced_wp_advances": 14.44
+    }
+  },
+  "perturb_0.060": {
+    "planner_only": {
+      "success_rate": 0.28,
+      "success_ci_lo": 0.2013955916759837,
+      "success_ci_hi": 0.37488212361345724,
+      "mean_reward": 119.99252623594074,
+      "std_reward": 89.79972526052883,
+      "mean_steps": 870.9,
+      "mean_residual": 0.0,
+      "num_episodes": 100,
+      "phase_distribution": {
+        "pre_grasp": 0,
+        "grasp_descend": 72,
+        "lift": 28
+      },
+      "grasp_attempted_rate": 1.0,
+      "grasp_attached_rate": 0.28,
+      "cube_fallen_rate": 0.0,
+      "cube_lifted_rate": 0.28,
+      "mean_cube_dz": 0.04753143343630005,
+      "mean_ee_cube_dist": 0.04270880703777909,
+      "mean_forced_wp_advances": 0.09
+    },
+    "hybrid": {
+      "success_rate": 0.85,
+      "success_ci_lo": 0.7671626666784216,
+      "success_ci_hi": 0.906940968088377,
+      "mean_reward": 130.1208556982102,
+      "std_reward": 77.96191054064002,
+      "mean_steps": 2448.77,
+      "mean_residual": 0.03129786197437768,
+      "num_episodes": 100,
+      "phase_distribution": {
+        "pre_grasp": 0,
+        "grasp_descend": 15,
+        "lift": 85
+      },
+      "grasp_attempted_rate": 1.0,
+      "grasp_attached_rate": 0.85,
+      "cube_fallen_rate": 0.0,
+      "cube_lifted_rate": 0.85,
+      "mean_cube_dz": 0.08934590261248086,
+      "mean_ee_cube_dist": 0.020269468525006138,
+      "mean_forced_wp_advances": 15.85
+    }
+  },
+  "perturb_0.080": {
+    "planner_only": {
+      "success_rate": 0.29,
+      "success_ci_lo": 0.21014706973984146,
+      "success_ci_hi": 0.38539074940007934,
+      "mean_reward": 122.05523264051563,
+      "std_reward": 92.3071054964526,
+      "mean_steps": 866.22,
+      "mean_residual": 0.0,
+      "num_episodes": 100,
+      "phase_distribution": {
+        "pre_grasp": 0,
+        "grasp_descend": 71,
+        "lift": 29
+      },
+      "grasp_attempted_rate": 1.0,
+      "grasp_attached_rate": 0.29,
+      "cube_fallen_rate": 0.0,
+      "cube_lifted_rate": 0.29,
+      "mean_cube_dz": 0.04834022621292345,
+      "mean_ee_cube_dist": 0.04126509508253533,
+      "mean_forced_wp_advances": 0.06
+    },
+    "hybrid": {
+      "success_rate": 0.71,
+      "success_ci_lo": 0.6146092505999207,
+      "success_ci_hi": 0.7898529302601586,
+      "mean_reward": 90.16075246442477,
+      "std_reward": 98.2799413379106,
+      "mean_steps": 2593.99,
+      "mean_residual": 0.03202085460099561,
+      "num_episodes": 100,
+      "phase_distribution": {
+        "pre_grasp": 0,
+        "grasp_descend": 29,
+        "lift": 71
+      },
+      "grasp_attempted_rate": 1.0,
+      "grasp_attached_rate": 0.71,
+      "cube_fallen_rate": 0.0,
+      "cube_lifted_rate": 0.71,
+      "mean_cube_dz": 0.07871439520828333,
+      "mean_ee_cube_dist": 0.020663852814414737,
+      "mean_forced_wp_advances": 17.4
+    }
+  },
+  "perturb_0.100": {
+    "planner_only": {
+      "success_rate": 0.22,
+      "success_ci_lo": 0.15001174503655804,
+      "success_ci_hi": 0.3107053471500031,
+      "mean_reward": 103.39221278373317,
+      "std_reward": 84.67325836567012,
+      "mean_steps": 864.96,
+      "mean_residual": 0.0,
+      "num_episodes": 100,
+      "phase_distribution": {
+        "pre_grasp": 0,
+        "grasp_descend": 78,
+        "lift": 22
+      },
+      "grasp_attempted_rate": 1.0,
+      "grasp_attached_rate": 0.22,
+      "cube_fallen_rate": 0.0,
+      "cube_lifted_rate": 0.22,
+      "mean_cube_dz": 0.04273980771137702,
+      "mean_ee_cube_dist": 0.05191159353221992,
+      "mean_forced_wp_advances": 0.07
+    },
+    "hybrid": {
+      "success_rate": 0.65,
+      "success_ci_lo": 0.5525426042919797,
+      "success_ci_hi": 0.7363589534652197,
+      "mean_reward": 77.00118740190292,
+      "std_reward": 101.76838259508345,
+      "mean_steps": 2616.73,
+      "mean_residual": 0.032711877555681064,
+      "num_episodes": 100,
+      "phase_distribution": {
+        "pre_grasp": 0,
+        "grasp_descend": 35,
+        "lift": 65
+      },
+      "grasp_attempted_rate": 1.0,
+      "grasp_attached_rate": 0.65,
+      "cube_fallen_rate": 0.0,
+      "cube_lifted_rate": 0.65,
+      "mean_cube_dz": 0.07397625274393875,
+      "mean_ee_cube_dist": 0.0294717090623856,
+      "mean_forced_wp_advances": 17.8
+    }
+  },
+  "perturb_0.120": {
+    "planner_only": {
+      "success_rate": 0.21,
+      "success_ci_lo": 0.14165549531645788,
+      "success_ci_hi": 0.2998014930196232,
+      "mean_reward": 102.76715964993498,
+      "std_reward": 81.25713818969034,
+      "mean_steps": 863.59,
+      "mean_residual": 0.0,
+      "num_episodes": 100,
+      "phase_distribution": {
+        "pre_grasp": 0,
+        "grasp_descend": 79,
+        "lift": 21
+      },
+      "grasp_attempted_rate": 1.0,
+      "grasp_attached_rate": 0.21,
+      "cube_fallen_rate": 0.0,
+      "cube_lifted_rate": 0.21,
+      "mean_cube_dz": 0.04109558583514115,
+      "mean_ee_cube_dist": 0.057459661424653204,
+      "mean_forced_wp_advances": 0.03
+    },
+    "hybrid": {
+      "success_rate": 0.41,
+      "success_ci_lo": 0.31867157095664655,
+      "success_ci_hi": 0.5079874943890338,
+      "mean_reward": 26.32076267669178,
+      "std_reward": 106.57504075760863,
+      "mean_steps": 2623.17,
+      "mean_residual": 0.03406302824053265,
+      "num_episodes": 100,
+      "phase_distribution": {
+        "pre_grasp": 0,
+        "grasp_descend": 59,
+        "lift": 41
+      },
+      "grasp_attempted_rate": 1.0,
+      "grasp_attached_rate": 0.41,
+      "cube_fallen_rate": 0.0,
+      "cube_lifted_rate": 0.41,
+      "mean_cube_dz": 0.05560601714542859,
+      "mean_ee_cube_dist": 0.028177846856612045,
+      "mean_forced_wp_advances": 18.13
+    }
+  }
+}

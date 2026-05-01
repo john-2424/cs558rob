@@ -1,0 +1,15 @@
+{
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "eval_json_paths": {
+    "0": "results/m3_gated/seed_000/eval_results.json",
+    "1": "results/m3_gated/seed_001/eval_results.json",
+    "2": "results/m3_gated/seed_002/eval_results.json"
+  },
+  "modes": [
+    "hybrid"
+  ]
+}
