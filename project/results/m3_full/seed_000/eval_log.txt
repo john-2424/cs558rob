@@ -1,0 +1,154 @@
+
+================================================================================
+Evaluation run started: 2026-05-01T04:08:30
+================================================================================
+Log file: results/m3_gated/seed_000/eval_log.txt
+Results path: results/m3_gated/seed_000/eval_results.json
+Found hybrid model at results/m3_gated/seed_000/models_hybrid/final_model.pt
+Using 8 parallel worker(s) per method-level
+
+=== Perturbation level: xy=0.000m z=0.000m yaw=0.000rad pitch=0.000rad roll=0.000rad ===
+  Evaluating planner_only (100 episodes, 8 worker(s))...
+    planner_only  | succ=100.00% [96.30%,100.00%] | reward=+275.24± 0.00 | steps= 888.0 | residual=0.000 | time=10.4s
+      diag: max_phase_reached[pre_grasp=0 grasp_descend=0 lift=100] | grasp_try=100/100 attach=100/100 lifted=100/100 | trunc=0 term=100 fallen=0 | forced_wp/ep=0.0 | final cube_dz=+0.101 ee_cube=0.020
+  Evaluating hybrid (100 episodes, 8 worker(s))...
+    hybrid        | succ=58.00% [48.21%,67.20%] | reward= +94.66±97.39 | steps=2151.5 | residual=0.031 | time=43.7s
+      diag: max_phase_reached[pre_grasp=0 grasp_descend=42 lift=58] | grasp_try=100/100 attach=58/100 lifted=58/100 | trunc=0 term=100 fallen=0 | forced_wp/ep=13.0 | final cube_dz=+0.069 ee_cube=0.026
+
+=== Perturbation level: xy=0.020m z=0.003m yaw=0.050rad pitch=0.000rad roll=0.000rad ===
+  Evaluating planner_only (100 episodes, 8 worker(s))...
+    planner_only  | succ=63.00% [53.22%,71.82%] | reward=+198.22±97.27 | steps= 866.9 | residual=0.000 | time=10.7s
+      diag: max_phase_reached[pre_grasp=0 grasp_descend=37 lift=63] | grasp_try=100/100 attach=63/100 lifted=63/100 | trunc=0 term=100 fallen=0 | forced_wp/ep=0.0 | final cube_dz=+0.074 ee_cube=0.027
+  Evaluating hybrid (100 episodes, 8 worker(s))...
+    hybrid        | succ=60.00% [50.20%,69.06%] | reward= +95.26±98.71 | steps=2174.9 | residual=0.031 | time=43.7s
+      diag: max_phase_reached[pre_grasp=0 grasp_descend=40 lift=60] | grasp_try=100/100 attach=60/100 lifted=60/100 | trunc=0 term=100 fallen=0 | forced_wp/ep=13.1 | final cube_dz=+0.071 ee_cube=0.027
+
+=== Perturbation level: xy=0.040m z=0.005m yaw=0.100rad pitch=0.000rad roll=0.000rad ===
+  Evaluating planner_only (100 episodes, 8 worker(s))...
+    planner_only  | succ=47.00% [37.51%,56.71%] | reward=+163.52±98.89 | steps= 872.5 | residual=0.000 | time=10.9s
+      diag: max_phase_reached[pre_grasp=0 grasp_descend=53 lift=47] | grasp_try=100/100 attach=47/100 lifted=47/100 | trunc=0 term=100 fallen=0 | forced_wp/ep=0.0 | final cube_dz=+0.063 ee_cube=0.034
+  Evaluating hybrid (100 episodes, 8 worker(s))...
+    hybrid        | succ=77.00% [67.85%,84.16%] | reward=+124.57±83.82 | steps=2311.1 | residual=0.031 | time=47.6s
+      diag: max_phase_reached[pre_grasp=0 grasp_descend=23 lift=77] | grasp_try=100/100 attach=77/100 lifted=77/100 | trunc=0 term=100 fallen=0 | forced_wp/ep=14.4 | final cube_dz=+0.084 ee_cube=0.020
+
+=== Perturbation level: xy=0.060m z=0.007m yaw=0.150rad pitch=0.000rad roll=0.000rad ===
+  Evaluating planner_only (100 episodes, 8 worker(s))...
+    planner_only  | succ=28.00% [20.14%,37.49%] | reward=+119.99±89.80 | steps= 870.9 | residual=0.000 | time=10.7s
+      diag: max_phase_reached[pre_grasp=0 grasp_descend=72 lift=28] | grasp_try=100/100 attach=28/100 lifted=28/100 | trunc=0 term=100 fallen=0 | forced_wp/ep=0.1 | final cube_dz=+0.048 ee_cube=0.043
+  Evaluating hybrid (100 episodes, 8 worker(s))...
+    hybrid        | succ=85.00% [76.72%,90.69%] | reward=+130.12±77.96 | steps=2448.8 | residual=0.031 | time=49.5s
+      diag: max_phase_reached[pre_grasp=0 grasp_descend=15 lift=85] | grasp_try=100/100 attach=85/100 lifted=85/100 | trunc=0 term=100 fallen=0 | forced_wp/ep=15.8 | final cube_dz=+0.089 ee_cube=0.020
+
+=== Perturbation level: xy=0.080m z=0.010m yaw=0.200rad pitch=0.000rad roll=0.000rad ===
+  Evaluating planner_only (100 episodes, 8 worker(s))...
+    planner_only  | succ=29.00% [21.01%,38.54%] | reward=+122.06±92.31 | steps= 866.2 | residual=0.000 | time=11.1s
+      diag: max_phase_reached[pre_grasp=0 grasp_descend=71 lift=29] | grasp_try=100/100 attach=29/100 lifted=29/100 | trunc=0 term=100 fallen=0 | forced_wp/ep=0.1 | final cube_dz=+0.048 ee_cube=0.041
+  Evaluating hybrid (100 episodes, 8 worker(s))...
+    hybrid        | succ=71.00% [61.46%,78.99%] | reward= +90.16±98.28 | steps=2594.0 | residual=0.032 | time=53.0s
+      diag: max_phase_reached[pre_grasp=0 grasp_descend=29 lift=71] | grasp_try=100/100 attach=71/100 lifted=71/100 | trunc=0 term=100 fallen=0 | forced_wp/ep=17.4 | final cube_dz=+0.079 ee_cube=0.021
+
+=== Perturbation level: xy=0.100m z=0.013m yaw=0.250rad pitch=0.000rad roll=0.000rad ===
+  Evaluating planner_only (100 episodes, 8 worker(s))...
+    planner_only  | succ=22.00% [15.00%,31.07%] | reward=+103.39±84.67 | steps= 865.0 | residual=0.000 | time=10.8s
+      diag: max_phase_reached[pre_grasp=0 grasp_descend=78 lift=22] | grasp_try=100/100 attach=22/100 lifted=22/100 | trunc=0 term=100 fallen=0 | forced_wp/ep=0.1 | final cube_dz=+0.043 ee_cube=0.052
+  Evaluating hybrid (100 episodes, 8 worker(s))...
+    hybrid        | succ=65.00% [55.25%,73.64%] | reward= +77.00±101.77 | steps=2616.7 | residual=0.033 | time=53.6s
+      diag: max_phase_reached[pre_grasp=0 grasp_descend=35 lift=65] | grasp_try=100/100 attach=65/100 lifted=65/100 | trunc=0 term=100 fallen=0 | forced_wp/ep=17.8 | final cube_dz=+0.074 ee_cube=0.029
+
+=== Perturbation level: xy=0.120m z=0.015m yaw=0.300rad pitch=0.000rad roll=0.000rad ===
+  Evaluating planner_only (100 episodes, 8 worker(s))...
+    planner_only  | succ=21.00% [14.17%,29.98%] | reward=+102.77±81.26 | steps= 863.6 | residual=0.000 | time=11.2s
+      diag: max_phase_reached[pre_grasp=0 grasp_descend=79 lift=21] | grasp_try=100/100 attach=21/100 lifted=21/100 | trunc=0 term=100 fallen=0 | forced_wp/ep=0.0 | final cube_dz=+0.041 ee_cube=0.057
+  Evaluating hybrid (100 episodes, 8 worker(s))...
+    hybrid        | succ=41.00% [31.87%,50.80%] | reward= +26.32±106.58 | steps=2623.2 | residual=0.034 | time=53.5s
+      diag: max_phase_reached[pre_grasp=0 grasp_descend=59 lift=41] | grasp_try=100/100 attach=41/100 lifted=41/100 | trunc=0 term=100 fallen=0 | forced_wp/ep=18.1 | final cube_dz=+0.056 ee_cube=0.028
+
+Total evaluation time: 420.4s
+
+Results saved to results/m3_gated/seed_000/eval_results.json
+
+============================================================
+Summary: success rate (%) by method x perturbation level
+============================================================
+method          |   perturb_0.000 |   perturb_0.020 |   perturb_0.040 |   perturb_0.060 |   perturb_0.080 |   perturb_0.100 |   perturb_0.120
+---------------------------------------------------------------------------------------------------------------------------------------------
+hybrid          |         58.00% |         60.00% |         77.00% |         85.00% |         71.00% |         65.00% |         41.00%
+planner_only    |        100.00% |         63.00% |         47.00% |         28.00% |         29.00% |         22.00% |         21.00%
+============================================================
+
+================================================================================
+Evaluation run started: 2026-05-01T22:42:18
+================================================================================
+Log file: results/m3_full/seed_000/eval_log.txt
+Results path: results/m3_full/seed_000/eval_results.json
+Found hybrid model at results/m3_full/seed_000/models_hybrid/final_model.pt
+Using 8 parallel worker(s) per method-level
+
+=== Perturbation level: xy=0.000m z=0.000m yaw=0.000rad pitch=0.000rad roll=0.000rad ===
+  Evaluating planner_only (100 episodes, 8 worker(s))...
+    planner_only  | succ=100.00% [96.30%,100.00%] | reward=+275.24± 0.00 | steps= 888.0 | residual=0.000 | time=10.8s
+      diag: max_phase_reached[pre_grasp=0 grasp_descend=0 lift=100] | grasp_try=100/100 attach=100/100 lifted=100/100 | trunc=0 term=100 fallen=0 | forced_wp/ep=0.0 | final cube_dz=+0.101 ee_cube=0.020
+  Evaluating hybrid (100 episodes, 8 worker(s))...
+    hybrid        | succ=63.00% [53.22%,71.82%] | reward=+102.68±96.93 | steps=2174.7 | residual=0.030 | time=43.6s
+      diag: max_phase_reached[pre_grasp=0 grasp_descend=37 lift=63] | grasp_try=100/100 attach=63/100 lifted=63/100 | trunc=0 term=100 fallen=0 | forced_wp/ep=13.1 | final cube_dz=+0.073 ee_cube=0.026
+
+=== Perturbation level: xy=0.020m z=0.003m yaw=0.050rad pitch=0.000rad roll=0.000rad ===
+  Evaluating planner_only (100 episodes, 8 worker(s))...
+    planner_only  | succ=48.00% [38.46%,57.68%] | reward=+168.08±100.61 | steps= 854.7 | residual=0.000 | time=10.5s
+      diag: max_phase_reached[pre_grasp=0 grasp_descend=52 lift=48] | grasp_try=100/100 attach=48/100 lifted=48/100 | trunc=0 term=100 fallen=0 | forced_wp/ep=0.0 | final cube_dz=+0.062 ee_cube=0.027
+  Evaluating hybrid (100 episodes, 8 worker(s))...
+    hybrid        | succ=58.00% [48.21%,67.20%] | reward= +91.37±100.11 | steps=2185.4 | residual=0.031 | time=43.7s
+      diag: max_phase_reached[pre_grasp=0 grasp_descend=42 lift=58] | grasp_try=100/100 attach=58/100 lifted=58/100 | trunc=0 term=100 fallen=0 | forced_wp/ep=13.2 | final cube_dz=+0.070 ee_cube=0.025
+
+=== Perturbation level: xy=0.040m z=0.005m yaw=0.100rad pitch=0.000rad roll=0.000rad ===
+  Evaluating planner_only (100 episodes, 8 worker(s))...
+    planner_only  | succ=35.00% [26.36%,44.75%] | reward=+140.68±94.70 | steps= 861.8 | residual=0.000 | time=10.8s
+      diag: max_phase_reached[pre_grasp=0 grasp_descend=65 lift=35] | grasp_try=100/100 attach=35/100 lifted=35/100 | trunc=0 term=100 fallen=0 | forced_wp/ep=0.0 | final cube_dz=+0.053 ee_cube=0.040
+  Evaluating hybrid (100 episodes, 8 worker(s))...
+    hybrid        | succ=80.00% [71.12%,86.66%] | reward=+133.62±84.24 | steps=2255.9 | residual=0.031 | time=45.2s
+      diag: max_phase_reached[pre_grasp=0 grasp_descend=20 lift=80] | grasp_try=100/100 attach=80/100 lifted=80/100 | trunc=0 term=100 fallen=0 | forced_wp/ep=13.9 | final cube_dz=+0.086 ee_cube=0.022
+
+=== Perturbation level: xy=0.060m z=0.007m yaw=0.150rad pitch=0.000rad roll=0.000rad ===
+  Evaluating planner_only (100 episodes, 8 worker(s))...
+    planner_only  | succ=39.00% [30.02%,48.80%] | reward=+140.13±97.14 | steps= 878.1 | residual=0.000 | time=11.1s
+      diag: max_phase_reached[pre_grasp=0 grasp_descend=61 lift=39] | grasp_try=100/100 attach=39/100 lifted=39/100 | trunc=0 term=100 fallen=0 | forced_wp/ep=0.1 | final cube_dz=+0.056 ee_cube=0.034
+  Evaluating hybrid (100 episodes, 8 worker(s))...
+    hybrid        | succ=84.00% [75.58%,89.90%] | reward=+124.27±77.06 | steps=2523.3 | residual=0.031 | time=51.9s
+      diag: max_phase_reached[pre_grasp=0 grasp_descend=16 lift=84] | grasp_try=100/100 attach=84/100 lifted=84/100 | trunc=0 term=100 fallen=0 | forced_wp/ep=16.7 | final cube_dz=+0.088 ee_cube=0.020
+
+=== Perturbation level: xy=0.080m z=0.010m yaw=0.200rad pitch=0.000rad roll=0.000rad ===
+  Evaluating planner_only (100 episodes, 8 worker(s))...
+    planner_only  | succ=21.00% [14.17%,29.98%] | reward=+104.62±80.25 | steps= 860.5 | residual=0.000 | time=11.1s
+      diag: max_phase_reached[pre_grasp=0 grasp_descend=79 lift=21] | grasp_try=100/100 attach=21/100 lifted=21/100 | trunc=0 term=100 fallen=0 | forced_wp/ep=0.0 | final cube_dz=+0.042 ee_cube=0.048
+  Evaluating hybrid (100 episodes, 8 worker(s))...
+    hybrid        | succ=64.00% [54.24%,72.73%] | reward= +77.36±101.70 | steps=2594.7 | residual=0.032 | time=53.1s
+      diag: max_phase_reached[pre_grasp=0 grasp_descend=36 lift=64] | grasp_try=100/100 attach=64/100 lifted=64/100 | trunc=0 term=100 fallen=0 | forced_wp/ep=17.6 | final cube_dz=+0.073 ee_cube=0.023
+
+=== Perturbation level: xy=0.100m z=0.013m yaw=0.250rad pitch=0.000rad roll=0.000rad ===
+  Evaluating planner_only (100 episodes, 8 worker(s))...
+    planner_only  | succ=22.00% [15.00%,31.07%] | reward=+103.60±83.25 | steps= 865.6 | residual=0.000 | time=10.8s
+      diag: max_phase_reached[pre_grasp=0 grasp_descend=78 lift=22] | grasp_try=100/100 attach=22/100 lifted=22/100 | trunc=0 term=100 fallen=0 | forced_wp/ep=0.1 | final cube_dz=+0.043 ee_cube=0.041
+  Evaluating hybrid (100 episodes, 8 worker(s))...
+    hybrid        | succ=56.00% [46.23%,65.33%] | reward= +58.37±108.48 | steps=2604.4 | residual=0.033 | time=53.1s
+      diag: max_phase_reached[pre_grasp=0 grasp_descend=44 lift=56] | grasp_try=100/100 attach=56/100 lifted=56/100 | trunc=0 term=100 fallen=0 | forced_wp/ep=17.8 | final cube_dz=+0.067 ee_cube=0.026
+
+=== Perturbation level: xy=0.120m z=0.015m yaw=0.300rad pitch=0.000rad roll=0.000rad ===
+  Evaluating planner_only (100 episodes, 8 worker(s))...
+    planner_only  | succ=16.00% [10.10%,24.42%] | reward= +93.26±72.63 | steps= 855.7 | residual=0.000 | time=10.7s
+      diag: max_phase_reached[pre_grasp=0 grasp_descend=84 lift=16] | grasp_try=100/100 attach=16/100 lifted=16/100 | trunc=0 term=100 fallen=0 | forced_wp/ep=0.0 | final cube_dz=+0.038 ee_cube=0.047
+  Evaluating hybrid (100 episodes, 8 worker(s))...
+    hybrid        | succ=47.00% [37.51%,56.71%] | reward= +33.25±104.34 | steps=2670.8 | residual=0.034 | time=54.7s
+      diag: max_phase_reached[pre_grasp=0 grasp_descend=53 lift=47] | grasp_try=100/100 attach=47/100 lifted=47/100 | trunc=0 term=100 fallen=0 | forced_wp/ep=18.4 | final cube_dz=+0.061 ee_cube=0.029
+
+Total evaluation time: 421.0s
+
+Results saved to results/m3_full/seed_000/eval_results.json
+
+============================================================
+Summary: success rate (%) by method x perturbation level
+============================================================
+method          |   perturb_0.000 |   perturb_0.020 |   perturb_0.040 |   perturb_0.060 |   perturb_0.080 |   perturb_0.100 |   perturb_0.120
+---------------------------------------------------------------------------------------------------------------------------------------------
+hybrid          |         63.00% |         58.00% |         80.00% |         84.00% |         64.00% |         56.00% |         47.00%
+planner_only    |        100.00% |         48.00% |         35.00% |         39.00% |         21.00% |         22.00% |         16.00%
+============================================================
