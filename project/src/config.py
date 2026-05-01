@@ -288,7 +288,7 @@ RESIDUAL_GATE_INIT_LOGIT = 1.5
 #                     floor. Safer for first deployment.
 #   learned_only    — classifier replaces the heuristic strict check.
 #                     Higher ceiling but only sound once dataset is large.
-GRASP_GATE_MODE = "heuristic"
+GRASP_GATE_MODE = "learned_filter"
 # Logging always-on while training/eval runs. Cheap (JSONL append).
 GRASP_GATE_LOG = True
 GRASP_GATE_DATASET_PATH = "results/m3/grasp_dataset.jsonl"
