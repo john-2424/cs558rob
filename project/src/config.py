@@ -330,14 +330,17 @@ PERTURB_LEVELS = [0.00, 0.02, 0.04, 0.06, 0.08, 0.10, 0.12]
 # Curriculum: each env's effective perturbation range is scaled by
 #   frac = clip(episode_count / CURRICULUM_RAMP_EPISODES, 0, 1)
 # so the first CURRICULUM_RAMP_EPISODES per worker train at sub-max
-# perturbation, ramping linearly to full range. With 8 workers and
-# typical episode lengths, 300 ep/worker ≈ 150k frames ≈ 15% of training.
-# Set CURRICULUM_RAMP_EPISODES = 0 to disable (full range from episode 1,
-# matching the M2 behaviour). CURRICULUM_WARMUP_EPISODES still applies
-# before the ramp begins (keeps perturbation at 0 for those episodes).
+# perturbation, ramping linearly to full range. ramp=0 disables (full
+# range from episode 1, matching M2). M3 leaves the ramp at 0: empirically
+# the linear easy-first ramp interacts badly with the warm-started actor
+# (Uchendu et al. 2023 "Jump-Start RL", Sec. 4.3 — vanishing policy
+# gradient when both base policy succeeds and residual is near-zero on
+# easy cases) and Johannink 2019 / Silver 2018 train residual policies on
+# the full perturbation distribution from frame 0. Future work: replace
+# with a success-rate-adaptive curriculum (Akkaya et al. 2019 ADR-style).
 TRAIN_CURRICULUM = True
 CURRICULUM_WARMUP_EPISODES = 0
-CURRICULUM_RAMP_EPISODES = 300
+CURRICULUM_RAMP_EPISODES = 0
 
 # Reward shaping
 # Milestone cascade: one-time bonuses at decreasing distance thresholds
