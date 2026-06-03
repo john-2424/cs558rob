@@ -9,6 +9,8 @@ The main work in this repository lives in [`project/`](project/): a full robot-l
 
 The central question is simple: if a classical robot pipeline plans from a nominal object pose, can a small learned correction recover robustness when the object is shifted at execution time? The project answers yes for a simulated Franka Panda in PyBullet. A classical RRT* + IK + PD backbone succeeds at the nominal cube pose, but degrades sharply when the cube is perturbed. A bounded PPO residual, added on top of the planner's joint targets only during approach and grasp descent, recovers much of that lost success without throwing away the classical structure.
 
+![Franka Panda pick-and-place scene in PyBullet](project/assets/franka_panda_pybullet_scene.png)
+
 This root README is the single guide for the repository. The final project comes first because it is the most complete piece of work; the assignment folders are summarized afterward.
 
 ### Project arc
