@@ -21,6 +21,34 @@ This root README is the single guide for the repository. The final project comes
 
 The final report and M2 presentation were used as references for the framing, architecture summary, evaluation protocol, and headline results summarized here.
 
+### Visual overview
+
+```mermaid
+flowchart LR
+    P0["Nominal cube pose"] --> Plan["RRT* joint-space planner"]
+    Plan --> IK["IK waypoints"]
+    IK --> Sum["Corrected joint target"]
+    Obs["Robot + cube observation"] --> Actor["PPO residual actor"]
+    Actor --> Residual["Bounded residual, rho = 0.15 rad"]
+    Residual --> Phase["Phase gate: PRE_GRASP + GRASP_DESCEND"]
+    Phase --> Sum
+    Sum --> PD["PD velocity controller"]
+    PD --> Sim["PyBullet Franka Panda scene"]
+    Sim --> Obs
+```
+
+| M2 perturbation sweep | M3 multi-seed ablation |
+|---|---|
+| ![M2 success rate versus perturbation](project/results/m2/plots/success_rate_vs_perturbation.png) | ![M3 confidence gate and learned grasp gate ablation](project/results/m3/plots/m3_comparison.png) |
+| The hybrid residual flattens the planner's perturbation cliff while `rl_only` fails. | The final M3 comparison overlays the baseline, confidence-gated, learned-grasp-gate, and stacked variants. |
+
+| Residual usage | Classical trajectory tracking |
+|---|---|
+| ![Mean residual magnitude versus perturbation](project/results/m2/plots/residual_magnitude.png) | ![M1 end-effector XZ trajectory](project/results/m1/plots/ee_xz_path.png) |
+| The residual uses roughly a third of its allowed `0.15 rad` cap instead of saturating. | The M1 classical backbone produces the nominal pick-and-place trajectory that the residual policy later corrects. |
+
+The final project currently commits result plots rather than video/GIF demos. The GUI demos can be regenerated with the `residual-demo` commands below; if a demo GIF is added later, GitHub can render it directly with standard Markdown image syntax.
+
 ### Core idea
 
 The classical stack computes nominal joint targets:
@@ -321,6 +349,8 @@ The repository also contains earlier CS558ROB assignments under [`assignments/`]
 - `part2_2d/`: RRT* sample code adapted for a 2D planning problem with oriented-rectangle collision checks and obstacle geometry.
 - `CS55800_ROB_Assignment1.pdf`: assignment handout.
 
+![Assignment 1 PyBullet planning environment](assignments/assignment1/part1_3d/environment.png)
+
 ### Assignment 2: Classical Control
 
 [`assignments/assignment2/`](assignments/assignment2/) contains a notebook for classical control of a 2-DOF robot arm:
@@ -333,6 +363,10 @@ The repository also contains earlier CS558ROB assignments under [`assignments/`]
 
 The folder also includes `robotArm.png` and `arm_traj.png` used by the notebook.
 
+| Robot arm | Tracked trajectory |
+|---|---|
+| ![Assignment 2 robot arm](assignments/assignment2/robotArm.png) | ![Assignment 2 arm trajectory](assignments/assignment2/arm_traj.png) |
+
 ### Assignment 3: MPNet Neural Planning
 
 [`assignments/assignment3/`](assignments/assignment3/) contains a PyTorch MPNet-based neural planning assignment, adapted from the MPNet homework codebase:
@@ -344,7 +378,21 @@ The folder also includes `robotArm.png` and `arm_traj.png` used by the notebook.
 - training logs,
 - generated path outputs and comparison figures.
 
+| 2D MPNet comparison | 3D MPNet comparison |
+|---|---|
+| ![Assignment 3 2D MPNet comparison](assignments/assignment3/fig_q1_multi.png) | ![Assignment 3 3D MPNet comparison](assignments/assignment3/fig_q2_multi.png) |
+
 This assignment is large because it includes model checkpoints and many generated path files.
+
+### Assignment 4: Policy Gradients
+
+[`assignments/assignment4/`](assignments/assignment4/) contains policy-gradient experiments for discrete and continuous control:
+
+- CartPole-v1 with REINFORCE variants: full-episode return, reward-to-go, reward normalization, and episode-count comparisons.
+- ReacherPyBulletEnv-v1 with a Gaussian policy for continuous control.
+- Training and evaluation scripts, result CSVs, plots, model checkpoints, and a rendered Reacher rollout GIF.
+
+![Assignment 4 Reacher policy rollout](assignments/assignment4/results/reacher_ep30_eval.gif)
 
 ## Repository Notes
 
